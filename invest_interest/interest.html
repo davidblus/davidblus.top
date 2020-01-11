@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>年化利率折线图</title>
+</head>
+<body>
+  <div id="app">
+    <ve-line :data="abchinaRmbGoldChartData" :settings="abchinaRmbGoldChartSettings" :title="abchinaRmbGoldTitle" 
+    :data-zoom="abchinaRmbGoldDataZoom" width="1000px">
+    </ve-line>
+    <ve-line :data="yhfund000286ChartData" :settings="yhfund000286ChartSettings" :title="yhfund000286Title" 
+    :data-zoom="yhfund000286DataZoom" width="1000px">
+    </ve-line>
+    <ve-line :data="cmfchina217011ChartData" :settings="cmfchina217011ChartSettings" :title="cmfchina217011Title" 
+    :data-zoom="cmfchina217011DataZoom" width="1000px">
+    </ve-line>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css">
+  <script src="https://unpkg.com/axios/dist/axios.min.js">
+    import axios from 'axios'
+  </script>
+  <script src="./js/utils.js"></script>
+  <script>
+    var vm = new Vue({
+      el: '#app',
+      data: function () {
+        basicDataZoom = [
+          {
+            type: 'inside',
+            start: 0,
+            end: 100
+          }
+        ];
+        basicChartSettings = {
+          labelMap: {
+            time: '时间',
+            annual_interest_rate: '我的年化利率',
+          },
+          yAxisType: ['0.000%']
+        };
+
+        this.abchinaRmbGoldTitle = {
+          text: '中国农业银行-人民币黄金-我的年化利率', 
+        }
+        this.abchinaRmbGoldDataZoom = JSON.parse(JSON.stringify(basicDataZoom));
+        this.abchinaRmbGoldDataZoom[0].start = 80;
+        this.abchinaRmbGoldChartSettings = JSON.parse(JSON.stringify(basicChartSettings));
+        // this.abchinaRmbGoldChartSettings.labelMap.annual_interest_rate = '中国农业银行-人民币黄金-我的年化利率';
+        
+        this.yhfund000286Title = {
+          text: '银华信用季季红债券A-000286-我的年化利率',
+        }
+        this.yhfund000286DataZoom = JSON.parse(JSON.stringify(basicDataZoom));
+        this.yhfund000286DataZoom[0].start = 20;
+        this.yhfund000286ChartSettings = JSON.parse(JSON.stringify(basicChartSettings));
+
+        this.cmfchina217011Title = {
+          text: '招商安心收益债券-217011-我的年化利率',
+          textStyle: {
+            fontSize: 14,
+          }
+        }
+        this.cmfchina217011DataZoom = JSON.parse(JSON.stringify(basicDataZoom));
+        this.cmfchina217011DataZoom[0].start = 20;
+        this.cmfchina217011ChartSettings = JSON.parse(JSON.stringify(basicChartSettings));
+
+        basicChartData = {
+          columns: ['time', 'annual_interest_rate'],
+          rows: [
+            { 'time': '2月2日', 'annual_interest_rate': 4.33 },
+            { 'time': '2月6日', 'annual_interest_rate': 3.76 }
+          ]
+        };
+        return {
+          abchinaRmbGoldChartData: JSON.parse(JSON.stringify(basicChartData)),
+          yhfund000286ChartData: JSON.parse(JSON.stringify(basicChartData)),
+          cmfchina217011ChartData: JSON.parse(JSON.stringify(basicChartData)),
+        }
+      }
+    });
+    
+    axios.getAndSetChartDataRows = function(url, chartData) {
+      this.get(url)
+      .then(function (response) {
+        // handle success
+        console.log(response);
+        chartData.rows = response.data;
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+    };
+    axios.getAndSetChartDataColumnsAndRows = function(url, chartData) {
+      this.get(url)
+      .then(function (response) {
+        // handle success
+        console.log(response);
+        responseData = response.data;
+        lastRow = responseData[responseData.length - 1];
+        columns = Object.keys(lastRow);
+        columns.sort();
+        columns.unshift(columns.pop());
+
+        chartData.columns = columns;
+        chartData.rows = responseData;
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      })
+      .then(function () {
+        // always executed
+      });
+    };
+    axios.getAndSetChartDataColumnsAndRows('http://davidblus.top/wsgi_flask/invest_interest/abchina_rmb_gold', vm.abchinaRmbGoldChartData);
+    axios.getAndSetChartDataColumnsAndRows('http://davidblus.top/wsgi_flask/invest_interest/fund?fund_name=yhfund&fund_code=000286', vm.yhfund000286ChartData);
+    axios.getAndSetChartDataColumnsAndRows('http://davidblus.top/wsgi_flask/invest_interest/fund?fund_name=cmfchina&fund_code=217011', vm.cmfchina217011ChartData);
+
+  </script>
+</body>
+</html>

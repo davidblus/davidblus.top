@@ -1,0 +1,15 @@
+User-agent: *
+Disallow: /wordpress/wp-admin/
+Disallow: /wordpress/wp-content/
+Disallow: /wordpress/wp-includes/
+Disallow: /wordpress/*/comment-page-*
+Disallow: /wordpress/*?replytocom=*
+Disallow: /wordpress/category/*/page/
+Disallow: /wordpress/tag/*/page/
+Disallow: /wordpress/*/trackback
+Disallow: /wordpress/feed
+Disallow: /wordpress/*/feed
+Disallow: /wordpress/comments/feed
+Disallow: /wordpress/?s=*
+Disallow: /wordpress/*/?s=*\
+Disallow: /wordpress/attachment/
