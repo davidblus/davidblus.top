@@ -15,6 +15,9 @@
     <ve-line :data="cmfchina217011ChartData" :settings="cmfchina217011ChartSettings" :title="cmfchina217011Title" 
     :data-zoom="cmfchina217011DataZoom" width="1000px">
     </ve-line>
+    <ve-line :data="cmfchina161716ChartData" :settings="cmfchina161716ChartSettings" :title="cmfchina161716Title" 
+    :data-zoom="cmfchina161716DataZoom" width="1000px">
+    </ve-line>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
@@ -68,6 +71,16 @@
         this.cmfchina217011DataZoom[0].start = 20;
         this.cmfchina217011ChartSettings = JSON.parse(JSON.stringify(basicChartSettings));
 
+        this.cmfchina161716Title = {
+          text: '招商双债增强LOF-161716-我的年化利率',
+          textStyle: {
+            fontSize: 14,
+          }
+        }
+        this.cmfchina161716DataZoom = JSON.parse(JSON.stringify(basicDataZoom));
+        this.cmfchina161716DataZoom[0].start = 20;
+        this.cmfchina161716ChartSettings = JSON.parse(JSON.stringify(basicChartSettings));
+
         basicChartData = {
           columns: ['time', 'annual_interest_rate'],
           rows: [
@@ -79,6 +92,7 @@
           abchinaRmbGoldChartData: JSON.parse(JSON.stringify(basicChartData)),
           yhfund000286ChartData: JSON.parse(JSON.stringify(basicChartData)),
           cmfchina217011ChartData: JSON.parse(JSON.stringify(basicChartData)),
+          cmfchina161716ChartData: JSON.parse(JSON.stringify(basicChartData)),
         }
       }
     });
@@ -120,9 +134,11 @@
         // always executed
       });
     };
+
     axios.getAndSetChartDataColumnsAndRows('http://davidblus.top/wsgi_flask/invest_interest/abchina_rmb_gold', vm.abchinaRmbGoldChartData);
     axios.getAndSetChartDataColumnsAndRows('http://davidblus.top/wsgi_flask/invest_interest/fund?fund_name=yhfund&fund_code=000286', vm.yhfund000286ChartData);
     axios.getAndSetChartDataColumnsAndRows('http://davidblus.top/wsgi_flask/invest_interest/fund?fund_name=cmfchina&fund_code=217011', vm.cmfchina217011ChartData);
+    axios.getAndSetChartDataColumnsAndRows('http://davidblus.top/wsgi_flask/invest_interest/fund?fund_name=cmfchina&fund_code=161716', vm.cmfchina161716ChartData);
 
   </script>
 </body>
