@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: GlotPress/2.4.0-alpha\n"
+"X-Generator: GlotPress/3.0.0-alpha\n"
 "Language: zh_CN\n"
 "Project-Id-Version: WordPress - 5.4.x - Development - Administration\n"
 
@@ -184,11 +184,11 @@ msgstr "提供更多能以最佳图片让文章及页面更生动的方式。"
 msgid "Every major release adds more to the block editor."
 msgstr "每个版本都会为区块编辑器新增更多功能。"
 
-#: wp-admin/about.php:79
+#: wp-admin/about.php:46
 msgid "More ways to make your pages come alive. With easier ways to get it all done and looking better than ever&mdash;and boosts in speed you can feel."
 msgstr "提供更多能让页面更生动的方式。以更简单的方式完成，看起来也比以前更好，还能让您感到速度的提升。"
 
-#: wp-admin/about.php:77
+#: wp-admin/about.php:44
 msgid "Say hello to more and better."
 msgstr "向更多和更好说你好。"
 
@@ -257,7 +257,7 @@ msgstr "回收站中没有评论。"
 msgid "File is empty. Please upload something more substantial. This error could also be caused by uploads being disabled in your %1$s file or by %2$s being defined as smaller than %3$s in %1$s."
 msgstr "文件是空的。请上传有内容的文件。这个错误也有可能是因为您的%1$s文件禁止了上传，或%1$s中%2$s的值小于%3$s的值。"
 
-#: wp-admin/includes/class-wp-site-health.php:2296
+#: wp-admin/includes/class-wp-site-health.php:2302
 msgid "A test is unavailable"
 msgstr "测试不可用"
 
@@ -1271,7 +1271,7 @@ msgstr "现在有较新版本的%1$s可用，但它不能与您的PHP版本一�
 msgid "This plugin failed to load properly and is paused during recovery mode."
 msgstr "此插件未能正确载入并已在恢复模式中暂停。"
 
-#: wp-admin/includes/theme.php:935
+#: wp-admin/includes/theme.php:937
 msgid "Go to the Themes screen"
 msgstr "前往主题页面"
 
@@ -2535,7 +2535,7 @@ msgstr "未能安装"
 #. translators: %s: WordPress version.
 #. translators: %s: WordPress version
 #: wp-admin/includes/update.php:300 wp-admin/install.php:239
-#: wp-admin/update-core.php:82 wp-admin/upgrade.php:83 wp-admin/about.php:65
+#: wp-admin/update-core.php:82 wp-admin/upgrade.php:83 wp-admin/about.php:73
 msgid "https://wordpress.org/support/wordpress-version/version-%s/"
 msgstr "https://wordpress.org/support/wordpress-version/version-%s/"
 
@@ -2550,11 +2550,11 @@ msgctxt "plugin"
 msgid "Resume %s"
 msgstr "恢复%s"
 
-#: wp-admin/includes/theme.php:933
+#: wp-admin/includes/theme.php:935
 msgid "You can find more details and make changes on the Themes screen."
 msgstr "您可以在主题页面获取更多信息及做出修改。"
 
-#: wp-admin/includes/theme.php:932
+#: wp-admin/includes/theme.php:934
 msgid "One or more themes failed to load properly."
 msgstr "一个或多个主题未能成功加载。"
 
@@ -2563,7 +2563,7 @@ msgstr "一个或多个主题未能成功加载。"
 msgid "Deleting a category does not delete the posts in that category. Instead, posts that were only assigned to the deleted category are set to the default category %s. The default category cannot be deleted."
 msgstr "删除分类不会删除分类中的文章。仅指定在被删除分类的文章将会被设置为默认分类%s。此默认分类不能被删除。"
 
-#: wp-admin/includes/theme.php:905
+#: wp-admin/includes/theme.php:907
 msgid "Could not resume the theme."
 msgstr "未能恢复此主题。"
 
@@ -2756,7 +2756,7 @@ msgid "Privacy Policy Page"
 msgstr "隐私政策页"
 
 #. translators: %s: Page title.
-#: wp-admin/includes/misc.php:1385
+#: wp-admin/includes/misc.php:1408
 msgid "%s (Draft)"
 msgstr "%s（草稿）"
 
@@ -3924,7 +3924,7 @@ msgstr "未知"
 msgid "View posts by %s"
 msgstr "阅读%s的文章"
 
-#: wp-admin/includes/class-wp-terms-list-table.php:542
+#: wp-admin/includes/class-wp-terms-list-table.php:543
 msgid "No description"
 msgstr "无描述"
 
@@ -4093,7 +4093,7 @@ msgid "Select one or more Theme features to filter by"
 msgstr "选择一个或多个主题特征来过滤"
 
 #. translators: %s: Number of ratings.
-#: wp-admin/includes/theme.php:746 wp-admin/theme-install.php:342
+#: wp-admin/includes/theme.php:748 wp-admin/theme-install.php:342
 msgid "(%s ratings)"
 msgstr "（%s个评价）"
 
@@ -4264,7 +4264,7 @@ msgstr "%s被成功删除。"
 msgid "The search for installed plugins will search for terms in their name, description, or author."
 msgstr "搜索已安装的插件将在主题的名字、描述、作者和标签中搜索。"
 
-#: wp-admin/includes/theme.php:284
+#: wp-admin/includes/theme.php:285
 msgid "Custom Logo"
 msgstr "自定义标志"
 
@@ -4433,11 +4433,11 @@ msgstr "电商"
 msgid "Blog"
 msgstr "博客"
 
-#: wp-admin/includes/theme.php:288
+#: wp-admin/includes/theme.php:289
 msgid "Footer Widgets"
 msgstr "页脚小工具"
 
-#: wp-admin/includes/theme.php:296
+#: wp-admin/includes/theme.php:297
 msgid "Grid Layout"
 msgstr "网格布局"
 
@@ -5035,7 +5035,7 @@ msgstr "https://cn.gravatar.com/"
 msgid "Profile Picture"
 msgstr "资料图片"
 
-#: wp-admin/about.php:45 wp-admin/about.php:267
+#: wp-admin/about.php:53 wp-admin/about.php:267
 msgid "Maintenance and Security Releases"
 msgstr "维护和安全更新"
 
@@ -5872,7 +5872,7 @@ msgstr "文章页"
 msgid "You are currently editing the page that shows your latest posts."
 msgstr "您正在编辑展示最新文章的页面。"
 
-#: wp-admin/includes/theme.php:710 wp-admin/themes.php:538
+#: wp-admin/includes/theme.php:712 wp-admin/themes.php:538
 msgid "Close details dialog"
 msgstr "关闭详情对话框"
 
@@ -5973,7 +5973,7 @@ msgstr ""
 
 #. translators: Do not translate USERNAME, ADMIN_URL, EMAIL, SITENAME, SITEURL:
 #. those are placeholders.
-#: wp-admin/includes/misc.php:1306
+#: wp-admin/includes/misc.php:1329
 msgid ""
 "Howdy ###USERNAME###,\n"
 "\n"
@@ -6601,7 +6601,7 @@ msgid "Accessibility Ready"
 msgstr "无障碍友好"
 
 #. translators: %s: Theme name.
-#: wp-admin/includes/theme.php:767 wp-admin/themes.php:578
+#: wp-admin/includes/theme.php:769 wp-admin/themes.php:578
 msgid "This is a child theme of %s."
 msgstr "这是%s的子主题。"
 
@@ -6694,15 +6694,15 @@ msgstr "以下插件已成功升级："
 msgid "Add Widget"
 msgstr "添加小工具"
 
-#: wp-admin/includes/theme.php:709 wp-admin/themes.php:537
+#: wp-admin/includes/theme.php:711 wp-admin/themes.php:537
 msgid "Show next theme"
 msgstr "显示下一主题"
 
-#: wp-admin/includes/theme.php:708 wp-admin/themes.php:536
+#: wp-admin/includes/theme.php:710 wp-admin/themes.php:536
 msgid "Show previous theme"
 msgstr "显示前一主题"
 
-#: wp-admin/includes/theme.php:757 wp-admin/themes.php:568
+#: wp-admin/includes/theme.php:759 wp-admin/themes.php:568
 msgid "Update Available"
 msgstr "升级可用"
 
@@ -7512,7 +7512,7 @@ msgid "You cannot move this item to the Trash. %s is currently editing."
 msgstr "您不能移动此项目到回收站。%s正在编辑。"
 
 #. translators: %s: User's display name.
-#: wp-admin/includes/misc.php:1075
+#: wp-admin/includes/misc.php:1098
 msgid "%s has taken over and is currently editing."
 msgstr "%s已接管并正在编辑。"
 
@@ -7566,7 +7566,7 @@ msgid "The Documentation menu below the editor lists the PHP functions recognize
 msgstr "“文档”菜单列出了我们从该文件中找到的所有函数。点击“查询”按钮可查看有关该函数的页面。"
 
 #. translators: %s: User's display name.
-#: wp-admin/includes/misc.php:1025
+#: wp-admin/includes/misc.php:1048
 #: wp-admin/includes/class-wp-posts-list-table.php:1003
 msgid "%s is currently editing"
 msgstr "%s当前正在编辑"
@@ -8309,7 +8309,7 @@ msgstr[0] "已暂停<span class=\"count\">（%s）</span>"
 
 #. translators: New admin email address notification email subject. %s: Site
 #. title.
-#: wp-admin/includes/misc.php:1359
+#: wp-admin/includes/misc.php:1382
 msgid "[%s] New Admin Email Address"
 msgstr "[%s] 新管理邮件地址"
 
@@ -8528,14 +8528,14 @@ msgstr[0] "<strong>%1$s版本</strong>修复了%2$s个问题。"
 #. than one security issue.
 #. translators: 1: WordPress version number, 2: Plural number of bugs. More
 #. than one security issue.
-#: wp-admin/about.php:50 wp-admin/about.php:287
+#: wp-admin/about.php:58 wp-admin/about.php:287
 msgid "<strong>Version %1$s</strong> addressed some security issues and fixed %2$s bug."
 msgid_plural "<strong>Version %1$s</strong> addressed some security issues and fixed %2$s bugs."
 msgstr[0] "<strong>%1$s版本</strong>修补了安全漏洞、修正了%2$s个问题。"
 
 #. translators: %s: HelpHub URL
 #. translators: %s: Documentation URL.
-#: wp-admin/about.php:62 wp-admin/about.php:293
+#: wp-admin/about.php:70 wp-admin/about.php:293
 msgid "For more information, see <a href=\"%s\">the release notes</a>."
 msgstr "欲了解更多，参见<a href=\"%s\">发行注记</a>。"
 
@@ -9041,7 +9041,7 @@ msgid "Plugins %s"
 msgstr "插件%s"
 
 #. translators: %s: Plugin name.
-#: wp-admin/includes/theme.php:793
+#: wp-admin/includes/theme.php:795
 #: wp-admin/includes/class-wp-theme-install-list-table.php:483
 #: wp-admin/includes/deprecated.php:1384 wp-admin/theme-install.php:300
 #: wp-admin/theme-install.php:320
@@ -9055,7 +9055,7 @@ msgstr "所有用户"
 #: wp-admin/includes/class-wp-links-list-table.php:88
 #: wp-admin/includes/class-wp-links-list-table.php:334
 #: wp-admin/includes/class-wp-themes-list-table.php:233
-#: wp-admin/includes/theme.php:788
+#: wp-admin/includes/theme.php:790
 #: wp-admin/includes/class-wp-plugins-list-table.php:531
 #: wp-admin/includes/class-wp-plugins-list-table.php:699
 #: wp-admin/includes/class-wp-plugins-list-table.php:748
@@ -9160,7 +9160,7 @@ msgstr "用户已添加。"
 #: wp-admin/includes/class-wp-debug-data.php:853
 #: wp-admin/includes/class-wp-debug-data.php:1036
 #: wp-admin/includes/class-wp-themes-list-table.php:263
-#: wp-admin/includes/theme.php:734
+#: wp-admin/includes/theme.php:736
 #: wp-admin/includes/class-wp-plugins-list-table.php:904
 #: wp-admin/includes/class-wp-plugin-install-list-table.php:507
 #: wp-admin/includes/class-wp-theme-install-list-table.php:360
@@ -9286,19 +9286,19 @@ msgstr ""
 "如果您愿意，请点击下面的链接来激活您的用户账户：\n"
 "%%s"
 
-#: wp-admin/includes/theme.php:287
+#: wp-admin/includes/theme.php:288
 msgid "Featured Images"
 msgstr "特色图像"
 
-#: wp-admin/includes/theme.php:290 wp-admin/includes/meta-boxes.php:480
+#: wp-admin/includes/theme.php:291 wp-admin/includes/meta-boxes.php:480
 msgid "Post Formats"
 msgstr "文章形式"
 
-#: wp-admin/includes/theme.php:289
+#: wp-admin/includes/theme.php:290
 msgid "Full Width Template"
 msgstr "占满宽度的模板"
 
-#: wp-admin/includes/theme.php:286
+#: wp-admin/includes/theme.php:287
 msgid "Featured Image Header"
 msgstr "顶部特色图像"
 
@@ -9318,7 +9318,7 @@ msgstr "发现无效的菜单项。请进行检查，或删除它们。"
 
 #: wp-admin/edit-tags.php:440
 #: wp-admin/includes/class-wp-terms-list-table.php:182
-#: wp-admin/includes/class-wp-terms-list-table.php:645
+#: wp-admin/includes/class-wp-terms-list-table.php:646
 #: wp-admin/edit-tag-form.php:132
 msgctxt "term name"
 msgid "Name"
@@ -9469,7 +9469,7 @@ msgstr "已上传的图像"
 msgid "<strong>Random:</strong> Show a different image on each page."
 msgstr "<strong>随机：</strong>在每个页面上显示不同的图像。"
 
-#: wp-admin/includes/theme.php:295 wp-admin/includes/theme.php:330
+#: wp-admin/includes/theme.php:296 wp-admin/includes/theme.php:332
 #: wp-admin/includes/class-wp-screen.php:1200 wp-admin/index.php:68
 msgid "Layout"
 msgstr "布局"
@@ -9749,7 +9749,7 @@ msgstr "正开始升级。这个过程在某些服务器上花的时间要长些
 msgid "Apply Filters"
 msgstr "应用过滤器"
 
-#: wp-admin/includes/theme.php:285
+#: wp-admin/includes/theme.php:286
 msgid "Editor Style"
 msgstr "编辑器样式支持"
 
@@ -10821,7 +10821,7 @@ msgstr "可用小工具"
 msgid "Error in displaying the widget settings form."
 msgstr "显示小工具设置页错误。"
 
-#: wp-admin/includes/misc.php:1195 wp-admin/includes/post.php:1941
+#: wp-admin/includes/misc.php:1218 wp-admin/includes/post.php:1941
 #: wp-admin/widgets.php:378
 msgid "Error while saving."
 msgstr "保存时发生错误。"
@@ -10964,7 +10964,7 @@ msgstr "名字"
 msgid "Enable keyboard shortcuts for comment moderation."
 msgstr "管理评论时启用键盘快捷键。"
 
-#: wp-admin/includes/misc.php:924 wp-admin/user-edit.php:295
+#: wp-admin/includes/misc.php:947 wp-admin/user-edit.php:295
 msgid "Admin Color Scheme"
 msgstr "管理界面配色方案"
 
@@ -11102,7 +11102,7 @@ msgstr ""
 "将删除“%s”主题\n"
 "点击“取消”放弃，点击“确定”删除。"
 
-#: wp-admin/includes/theme.php:723 wp-admin/themes.php:551
+#: wp-admin/includes/theme.php:725 wp-admin/themes.php:551
 msgid "Current Theme"
 msgstr "当前主题"
 
@@ -11118,7 +11118,7 @@ msgstr "选择要编辑的主题："
 msgid "Edit Themes"
 msgstr "编辑主题"
 
-#: wp-admin/includes/theme.php:777 wp-admin/themes.php:584
+#: wp-admin/includes/theme.php:779 wp-admin/themes.php:584
 msgid "Tags:"
 msgstr "标签："
 
@@ -11933,7 +11933,7 @@ msgid "Unable to locate WordPress theme directory."
 msgstr "无法找到WordPress主题目录。"
 
 #. translators: %s: Theme version.
-#: wp-admin/includes/theme.php:728 wp-admin/themes.php:556
+#: wp-admin/includes/theme.php:730 wp-admin/themes.php:556
 #: wp-admin/theme-install.php:352
 msgid "Version: %s"
 msgstr "版本：%s"
@@ -11950,47 +11950,47 @@ msgstr "寻找主题"
 msgid "Holiday"
 msgstr "节日"
 
-#: wp-admin/includes/theme.php:267 wp-admin/includes/theme.php:332
+#: wp-admin/includes/theme.php:267 wp-admin/includes/theme.php:334
 msgid "Subject"
 msgstr "主题"
 
-#: wp-admin/includes/theme.php:291
+#: wp-admin/includes/theme.php:292
 msgid "Sticky Post"
 msgstr "文章置顶"
 
-#: wp-admin/includes/theme.php:292
+#: wp-admin/includes/theme.php:293
 msgid "Theme Options"
 msgstr "主题选项"
 
-#: wp-admin/includes/theme.php:282
+#: wp-admin/includes/theme.php:283
 msgid "Custom Colors"
 msgstr "自定义颜色"
 
-#: wp-admin/includes/theme.php:279 wp-admin/includes/theme.php:331
+#: wp-admin/includes/theme.php:279 wp-admin/includes/theme.php:333
 msgid "Features"
 msgstr "特色"
 
-#: wp-admin/includes/theme.php:302
+#: wp-admin/includes/theme.php:303
 msgid "Right Sidebar"
 msgstr "边栏在右侧"
 
-#: wp-admin/includes/theme.php:301
+#: wp-admin/includes/theme.php:302
 msgid "Left Sidebar"
 msgstr "边栏在左侧"
 
-#: wp-admin/includes/theme.php:300
+#: wp-admin/includes/theme.php:301
 msgid "Four Columns"
 msgstr "四栏"
 
-#: wp-admin/includes/theme.php:299
+#: wp-admin/includes/theme.php:300
 msgid "Three Columns"
 msgstr "三栏"
 
-#: wp-admin/includes/theme.php:298
+#: wp-admin/includes/theme.php:299
 msgid "Two Columns"
 msgstr "两栏"
 
-#: wp-admin/includes/theme.php:297
+#: wp-admin/includes/theme.php:298
 msgid "One Column"
 msgstr "一栏"
 
@@ -12172,7 +12172,7 @@ msgstr "标题"
 msgid "Quick&nbsp;Edit"
 msgstr "快速编辑"
 
-#: wp-admin/includes/class-wp-terms-list-table.php:642
+#: wp-admin/includes/class-wp-terms-list-table.php:643
 #: wp-admin/includes/class-wp-posts-list-table.php:1528
 msgid "Quick Edit"
 msgstr "快速编辑"
@@ -13672,7 +13672,7 @@ msgstr "图像处理出错"
 msgid "Header updated. <a href=\"%s\">Visit your site</a> to see how it looks."
 msgstr "顶部已更新。<a href=\"%s\">访问您的站点</a>来看看效果。"
 
-#: wp-admin/includes/theme.php:283
+#: wp-admin/includes/theme.php:284
 #: wp-admin/includes/class-custom-image-header.php:475
 msgid "Custom Header"
 msgstr "自定义顶部"
@@ -13693,7 +13693,7 @@ msgid "Background updated. <a href=\"%s\">Visit your site</a> to see how it look
 msgstr "背景已更新。<a href=\"%s\">访问您的站点</a>来看看效果。"
 
 #: wp-admin/includes/class-custom-background.php:226
-#: wp-admin/includes/theme.php:281
+#: wp-admin/includes/theme.php:282
 msgid "Custom Background"
 msgstr "自定义背景"
 
@@ -13773,12 +13773,12 @@ msgid "Someone"
 msgstr "有人"
 
 #. translators: %s: Date and time.
-#: wp-admin/includes/misc.php:1203
+#: wp-admin/includes/misc.php:1226
 msgid "Draft saved at %s."
 msgstr "草稿保存于%s。"
 
 #. translators: Draft saved date format, see https://www.php.net/date
-#: wp-admin/includes/misc.php:1199
+#: wp-admin/includes/misc.php:1222
 msgid "g:i:s a"
 msgstr "ag:i:s"
 

@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: GlotPress/2.4.0-alpha\n"
+"X-Generator: GlotPress/3.0.0-alpha\n"
 "Language: zh_CN\n"
 "Project-Id-Version: Themes - Twenty Twenty\n"
 
@@ -176,7 +176,7 @@ msgstr "社交网络链接菜单"
 msgid "Pages:"
 msgstr "页码："
 
-#: functions.php:499
+#: functions.php:497
 msgid "Secondary"
 msgstr "从"
 
@@ -197,7 +197,7 @@ msgstr "页脚"
 msgid "Edit <span class=\"screen-reader-text\">%s</span>"
 msgstr "编辑<span class=\"screen-reader-text\">%s</span>"
 
-#: inc/starter-content.php:176 inc/starter-content.php:186 functions.php:494
+#: inc/starter-content.php:176 inc/starter-content.php:186 functions.php:492
 msgid "Primary"
 msgstr "主"
 
@@ -339,55 +339,55 @@ msgstr "搜索"
 msgid "Continue reading"
 msgstr "继续阅读"
 
-#: functions.php:551
+#: functions.php:549
 msgctxt "Short name of the larger font size in the block editor."
 msgid "XL"
 msgstr "XL"
 
-#: functions.php:550
+#: functions.php:548
 msgctxt "Name of the larger font size in the block editor"
 msgid "Larger"
 msgstr "更大"
 
-#: functions.php:545
+#: functions.php:543
 msgctxt "Short name of the large font size in the block editor."
 msgid "L"
 msgstr "L"
 
-#: functions.php:544
+#: functions.php:542
 msgctxt "Name of the large font size in the block editor"
 msgid "Large"
 msgstr "大"
 
-#: functions.php:539
+#: functions.php:537
 msgctxt "Short name of the regular font size in the block editor."
 msgid "M"
 msgstr "M"
 
-#: functions.php:538
+#: functions.php:536
 msgctxt "Name of the regular font size in the block editor"
 msgid "Regular"
 msgstr "常规"
 
-#: functions.php:533
+#: functions.php:531
 msgctxt "Short name of the small font size in the block editor."
 msgid "S"
 msgstr "S"
 
-#: functions.php:532
+#: functions.php:530
 msgctxt "Name of the small font size in the block editor"
 msgid "Small"
 msgstr "小"
 
-#: functions.php:517
+#: functions.php:515
 msgid "Background Color"
 msgstr "背景色"
 
-#: functions.php:504
+#: functions.php:502
 msgid "Subtle Background"
 msgstr "轻微背景"
 
-#: functions.php:489
+#: functions.php:487
 msgid "Accent Color"
 msgstr "强调色"
 
