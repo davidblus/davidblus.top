@@ -2,12 +2,12 @@
 # This file is distributed under the same license as the Themes - Twenty Nineteen package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2019-07-28 02:09:24+0000\n"
+"PO-Revision-Date: 2021-03-10 03:53:12+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: GlotPress/3.0.0-alpha\n"
+"X-Generator: GlotPress/3.0.0-alpha.2\n"
 "Language: zh_CN\n"
 "Project-Id-Version: Themes - Twenty Nineteen\n"
 
@@ -16,8 +16,144 @@ msgid "Our 2019 default theme is designed to show off the power of the block edi
 msgstr "我们的二〇一九默认主题旨在展示区块编辑器的强大功能。它具备适用于全部默认区块的自定义样式。编辑器中的所见即所得内容，会与网站前端呈现的结果几近一致。二〇一九适用于各种类型的网站，无论您是运作照片博客、开拓新业务还是支持非营利组织。足够的留白及具备现代感的非衬线字体标题，搭配经典的衬线字体内容，在各种尺寸的屏幕上均相当美观。"
 
 #. Theme Name of the theme
+#: inc/block-patterns.php:20
 msgid "Twenty Nineteen"
 msgstr "二〇一九"
+
+#: inc/block-patterns.php:195
+msgid "We help companies communicate with their customers."
+msgstr "我们帮助公司与顾客沟通。"
+
+#: inc/block-patterns.php:195
+msgid "Spark interest on social media"
+msgstr "在社交媒体上激起人们的兴趣"
+
+#: inc/block-patterns.php:192
+msgid "We help businesses grow."
+msgstr "我们助力企业成长。"
+
+#: inc/block-patterns.php:192
+msgid "Activate new customers"
+msgstr "开发新客户"
+
+#: inc/block-patterns.php:189
+msgid "We help startups define (or refine) a clear brand identity."
+msgstr "我们协助初创企业设计或重塑清晰的品牌形象。"
+
+#: inc/block-patterns.php:189
+msgid "Redefine brands"
+msgstr "重塑品牌"
+
+#: inc/block-patterns.php:179 inc/block-patterns.php:186
+msgid "What We Do"
+msgstr "我们的业务"
+
+#: inc/block-patterns.php:167
+msgid "Oddly enough, Doug Watson also grew up working alongside his parents at a family-owned restaurant in Queens, NY. He &nbsp;worked on digital campaigns for Fortune 500 Companies before joining Eva Green Consulting."
+msgstr "巧合的是，华道格也在杨浦区父母经营的餐厅中长大成人。在加入杨亦凡顾问公司前，他曾在某财富五百强企业中从事在线营销业务。"
+
+#: inc/block-patterns.php:164
+msgid "Doug Watson"
+msgstr "华道格"
+
+#: inc/block-patterns.php:159
+msgid "Eva Young grew up working alongside her parents at their restaurant in Queens, NY. She opened Eva Young Consulting in 2014 to help small businesses like her parents’ restaurant adapt to the digital age."
+msgstr "杨亦凡从小在上海市杨浦区长大，父母在当地经营餐厅。她在2014年开设了杨亦凡顾问公司，专门协助像他父母的餐厅一样的中小企业在数字时代继续成长。"
+
+#: inc/block-patterns.php:156
+msgid "Eva Young"
+msgstr "杨亦凡"
+
+#: inc/block-patterns.php:145 inc/block-patterns.php:152
+msgid "Team"
+msgstr "团队"
+
+#: inc/block-patterns.php:131
+msgid "Content Strategy"
+msgstr "内容策略"
+
+#: inc/block-patterns.php:126
+msgid "Copywriting"
+msgstr "文案撰写"
+
+#: inc/block-patterns.php:121
+msgid "Marketing"
+msgstr "市场营销"
+
+#: inc/block-patterns.php:114
+msgid "Social Media"
+msgstr "社交媒体"
+
+#: inc/block-patterns.php:109
+msgid "Mobile"
+msgstr "移动端"
+
+#: inc/block-patterns.php:104
+msgid "Website Design"
+msgstr "网站设计"
+
+#: inc/block-patterns.php:103 inc/block-patterns.php:108
+#: inc/block-patterns.php:113 inc/block-patterns.php:120
+#: inc/block-patterns.php:125 inc/block-patterns.php:130
+#: inc/block-patterns.php:155 inc/block-patterns.php:163
+msgid "Gradient"
+msgstr "渐变色"
+
+#: inc/block-patterns.php:92 inc/block-patterns.php:98
+msgid "Services"
+msgstr "服务项目"
+
+#: inc/block-patterns.php:80
+msgid "Contact Us"
+msgstr "联系我们"
+
+#: inc/block-patterns.php:74
+msgid "example@example.com"
+msgstr "example@example.com"
+
+#: inc/block-patterns.php:74
+msgid "(555) 555-5555"
+msgstr "(010) 8888-8888"
+
+#: inc/block-patterns.php:69
+msgid "New York, New York 10023"
+msgstr "邮政编码：100000"
+
+#: inc/block-patterns.php:69
+msgid "20 Cooper Avenue"
+msgstr "北京市西城区金融大街19号"
+
+#: inc/block-patterns.php:58 inc/block-patterns.php:64
+msgid "Get In Touch"
+msgstr "联系我们"
+
+#: inc/block-patterns.php:46
+msgid "Learn More"
+msgstr "了解更多"
+
+#: inc/block-patterns.php:42
+msgid "Eva Young Consulting was founded in 2014 to meet the needs of small businesses in the San Francisco Bay Area. We help startups define a clear brand identity and digital strategy that will carry them through their financing rounds and scale as their business grows. Discover how we can boost your brand with a unique and powerful digital marketing strategy."
+msgstr "杨亦凡顾问公司成立于2014年，旨在满足北京市西城区中小企业的需求。我们协助初创企业确立明确的品牌形象及线上营销策略，帮助企业完成融资，促进企业规模扩张。欢迎进一步了解我们如何通过独特、强大的线上营销策略提升品牌价值。"
+
+#: inc/block-patterns.php:39
+msgid "Advocating for Businesses and Entrepreneurs since 2014"
+msgstr "助力企业和创业者，始创于2014年"
+
+#: inc/block-patterns.php:33
+msgid "About"
+msgstr "关于"
+
+#: classes/class-twentynineteen-walker-comment.php:98
+msgid "Your comment is awaiting moderation. This is a preview; your comment will be visible after it has been approved."
+msgstr "您的评论正在等待审核。此为预览，您的评论将在获得批准后显示。"
+
+#: functions.php:154
+msgid "Dark Blue"
+msgstr "深蓝色"
+
+#: functions.php:149
+msgid "Blue"
+msgstr "蓝色"
 
 #. translators: %s: Parent post link.
 #: single.php:31
@@ -66,49 +202,49 @@ msgctxt "primary color"
 msgid "Default"
 msgstr "默认"
 
-#: functions.php:168
+#: functions.php:169
 msgid "White"
 msgstr "白色"
 
-#: functions.php:163
+#: functions.php:164
 msgid "Light Gray"
 msgstr "浅灰色"
 
-#: functions.php:158
+#: functions.php:159
 msgid "Dark Gray"
 msgstr "深灰色"
 
-#: functions.php:136
+#: functions.php:137
 msgid "XL"
 msgstr "XL"
 
-#: functions.php:135
+#: functions.php:136
 msgid "Huge"
 msgstr "超大"
 
-#: functions.php:130
+#: functions.php:131
 msgid "L"
 msgstr "L"
 
-#: functions.php:129
+#: functions.php:130
 msgid "Large"
 msgstr "大"
 
-#: functions.php:124
+#: functions.php:125
 msgid "M"
 msgstr "M"
 
-#: functions.php:123
+#: functions.php:124
 msgid "Normal"
 msgstr "常规"
 
-#: functions.php:117
-msgid "Small"
-msgstr "小"
-
-#: functions.php:118
+#: functions.php:119
 msgid "S"
 msgstr "S"
+
+#: functions.php:118
+msgid "Small"
+msgstr "小"
 
 #: functions.php:60 footer.php:37
 msgid "Footer Menu"
@@ -123,83 +259,17 @@ msgstr "全尺寸"
 msgid "Page"
 msgstr "页"
 
-#: functions.php:192
+#: functions.php:196
 msgid "Add widgets here to appear in your footer."
 msgstr "在此向页脚中添加挂件。"
 
-#: functions.php:190 template-parts/footer/footer-widgets.php:12
+#: template-parts/footer/footer-widgets.php:12 functions.php:194
 msgid "Footer"
 msgstr "页脚"
 
 #: inc/customizer.php:53
 msgid "Primary Color"
 msgstr "主颜色"
-
-#: 404.php:24
-msgid "It looks like nothing was found at this location. Maybe try a search?"
-msgstr "这儿似乎什么都没有，试试搜索？"
-
-#: 404.php:20
-msgid "Oops! That page can&rsquo;t be found."
-msgstr "有点尴尬诶！该页无法显示。"
-
-#: comments.php:116
-msgid "Comments are closed."
-msgstr "评论已关闭。"
-
-#: functions.php:61 template-parts/header/site-branding.php:46
-msgid "Social Links Menu"
-msgstr "社交网络链接菜单"
-
-#: header.php:25
-msgid "Skip to content"
-msgstr "跳至内容"
-
-#: image.php:52 template-parts/content/content-page.php:27
-#: template-parts/content/content.php:49
-#: template-parts/content/content-single.php:40
-msgid "Pages:"
-msgstr "页码："
-
-#. translators: %s: Post title. Only visible to screen readers.
-#: template-parts/content/content.php:36
-#: template-parts/content/content-single.php:27
-msgid "Continue reading<span class=\"screen-reader-text\"> \"%s\"</span>"
-msgstr "继续阅读<span class=\"screen-reader-text\">“%s”</span>"
-
-#: single.php:41
-msgid "Previous Post"
-msgstr "上一篇文章"
-
-#: template-parts/content/content-none.php:16
-msgid "Nothing Found"
-msgstr "未找到"
-
-#. translators: 1: Link to WP admin new post page.
-#: template-parts/content/content-none.php:26
-msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
-msgstr "准备好发布第一篇文章了？<a href=\"%1$s\">从这里开始</a>。"
-
-#: template-parts/content/content-none.php:39
-msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
-msgstr "抱歉，没有符合您搜索条件的结果。请换其它关键词再试。"
-
-#: template-parts/content/content-none.php:46
-msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
-msgstr "我们可能无法找到您需要的内容。或许搜索功能可以帮到您。"
-
-#: template-parts/header/site-branding.php:33
-msgid "Top Menu"
-msgstr "顶部菜单"
-
-#. translators: Used between list items, there is a space after the comma.
-#: inc/template-tags.php:86 inc/template-tags.php:98
-msgid ", "
-msgstr "、"
-
-#: single.php:38
-msgid "Next Post"
-msgstr "下一篇文章"
 
 #: template-parts/post/discussion-meta.php:18
 msgid "No comments"
@@ -220,21 +290,67 @@ msgstr "查看更多文章"
 msgid "Published by %s"
 msgstr "发布者：%s"
 
+#: template-parts/header/site-branding.php:33
+msgid "Top Menu"
+msgstr "顶部菜单"
+
+#. translators: %s: Post title. Only visible to screen readers.
+#. translators: %s: Post title.
+#: template-parts/content/content.php:36
+#: template-parts/content/content-single.php:27 functions.php:225
+msgid "Continue reading<span class=\"screen-reader-text\"> \"%s\"</span>"
+msgstr "继续阅读<span class=\"screen-reader-text\">“%s”</span>"
+
+#: template-parts/content/content.php:49
+#: template-parts/content/content-page.php:27
+#: template-parts/content/content-single.php:40 image.php:52
+msgid "Pages:"
+msgstr "页码："
+
+#: template-parts/content/content-none.php:46
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "我们可能无法找到您需要的内容。或许搜索功能可以帮到您。"
+
+#: template-parts/content/content-none.php:39
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "抱歉，没有符合您搜索条件的结果。请换其它关键词再试。"
+
+#. translators: %s: Link to WP admin new post page.
+#: template-parts/content/content-none.php:26
+msgid "Ready to publish your first post? <a href=\"%s\">Get started here</a>."
+msgstr "准备好发布您的第一篇文章了吗？请从<a href=\"%s\">这里</a>开始。"
+
+#: template-parts/content/content-none.php:16
+msgid "Nothing Found"
+msgstr "未找到"
+
 #: single.php:42
 msgid "Previous post:"
 msgstr "上一篇文章："
+
+#: single.php:41
+msgid "Previous Post"
+msgstr "上一篇文章"
 
 #: single.php:39
 msgid "Next post:"
 msgstr "下一篇文章："
 
+#: single.php:38
+msgid "Next Post"
+msgstr "下一篇文章"
+
+#: search.php:22
+msgid "Search results for: "
+msgstr "搜索结果："
+
 #: inc/template-tags.php:234
 msgid "Older posts"
-msgstr "较早的文章"
+msgstr "较早文章"
 
 #: inc/template-tags.php:230
 msgid "Newer posts"
-msgstr "较新的文章"
+msgstr "较新文章"
 
 #: inc/template-tags.php:104
 msgid "Tags:"
@@ -243,6 +359,11 @@ msgstr "标签："
 #: inc/template-tags.php:92
 msgid "Posted in"
 msgstr "发布于"
+
+#. translators: Used between list items, there is a space after the comma.
+#: inc/template-tags.php:86 inc/template-tags.php:98
+msgid ", "
+msgstr "、"
 
 #. translators: %s: Post title. Only visible to screen readers.
 #: inc/template-tags.php:63
@@ -306,6 +427,14 @@ msgstr "分类存档："
 msgid "Edit <span class=\"screen-reader-text\">%s</span>"
 msgstr "编辑<span class=\"screen-reader-text\">%s</span>"
 
+#: header.php:25
+msgid "Skip to content"
+msgstr "跳至内容"
+
+#: template-parts/header/site-branding.php:46 functions.php:61
+msgid "Social Links Menu"
+msgstr "社交网络链接菜单"
+
 #: functions.php:59
 msgid "Primary"
 msgstr "主"
@@ -314,6 +443,18 @@ msgstr "主"
 #: footer.php:28
 msgid "Proudly powered by %s."
 msgstr "自豪地由%s驱动。"
+
+#: comments.php:116
+msgid "Comments are closed."
+msgstr "评论已关闭。"
+
+#: comments.php:96
+msgid "Next"
+msgstr "下一页"
+
+#: comments.php:95
+msgid "Previous"
+msgstr "上一页"
 
 #: comments.php:92 comments.php:95 comments.php:96
 msgid "Comments"
@@ -340,16 +481,16 @@ msgstr "留下评论"
 msgid "Join the Conversation"
 msgstr "加入对话"
 
-#: classes/class-twentynineteen-walker-comment.php:94
+#: classes/class-twentynineteen-walker-comment.php:96
 msgid "Your comment is awaiting moderation."
 msgstr "您的评论正在等待审核。"
 
-#: classes/class-twentynineteen-walker-comment.php:87
+#: classes/class-twentynineteen-walker-comment.php:89
 msgid "Edit"
 msgstr "编辑"
 
 #. translators: 1: Comment date, 2: Comment time.
-#: classes/class-twentynineteen-walker-comment.php:79
+#: classes/class-twentynineteen-walker-comment.php:78
 msgid "%1$s at %2$s"
 msgstr "%1$s %2$s"
 
@@ -358,13 +499,13 @@ msgstr "%1$s %2$s"
 msgid "%s <span class=\"screen-reader-text says\">says:</span>"
 msgstr "%s<span class=\"screen-reader-text says\">说：</span>"
 
-#: comments.php:95
-msgid "Previous"
-msgstr "上一页"
+#: 404.php:24
+msgid "It looks like nothing was found at this location. Maybe try a search?"
+msgstr "这儿似乎什么都没有，试试搜索？"
 
-#: comments.php:96
-msgid "Next"
-msgstr "下一页"
+#: 404.php:20
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "有点尴尬诶！该页无法显示。"
 
 #. Theme URI of the theme
 msgid "https://wordpress.org/themes/twentynineteen/"

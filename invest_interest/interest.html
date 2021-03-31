@@ -18,6 +18,9 @@
     <ve-line :data="cmfchina161716ChartData" :settings="cmfchina161716ChartSettings" :title="cmfchina161716Title" 
     :data-zoom="cmfchina161716DataZoom" width="1000px">
     </ve-line>
+    <ve-line :data="gyrx485111ChartData" :settings="gyrx485111ChartSettings" :title="gyrx485111Title" 
+    :data-zoom="gyrx485111DataZoom" width="1000px">
+    </ve-line>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
@@ -44,6 +47,13 @@
             annual_interest_rate: '我的年化利率',
           },
           yAxisType: ['0.000%']
+        };
+        basicChartData = {
+          columns: ['time', 'annual_interest_rate'],
+          rows: [
+            { 'time': '2月2日', 'annual_interest_rate': 4.33 },
+            { 'time': '2月6日', 'annual_interest_rate': 3.76 }
+          ]
         };
 
         this.abchinaRmbGoldTitle = {
@@ -81,18 +91,22 @@
         this.cmfchina161716DataZoom[0].start = 20;
         this.cmfchina161716ChartSettings = JSON.parse(JSON.stringify(basicChartSettings));
 
-        basicChartData = {
-          columns: ['time', 'annual_interest_rate'],
-          rows: [
-            { 'time': '2月2日', 'annual_interest_rate': 4.33 },
-            { 'time': '2月6日', 'annual_interest_rate': 3.76 }
-          ]
-        };
+        this.gyrx485111Title = {
+          text: '工银瑞信双利A-485111-我的年化利率',
+          textStyle: {
+            fontSize: 14,
+          }
+        }
+        this.gyrx485111DataZoom = JSON.parse(JSON.stringify(basicDataZoom));
+        this.gyrx485111DataZoom[0].start = 20;
+        this.gyrx485111ChartSettings = JSON.parse(JSON.stringify(basicChartSettings));
+
         return {
           abchinaRmbGoldChartData: JSON.parse(JSON.stringify(basicChartData)),
           yhfund000286ChartData: JSON.parse(JSON.stringify(basicChartData)),
           cmfchina217011ChartData: JSON.parse(JSON.stringify(basicChartData)),
           cmfchina161716ChartData: JSON.parse(JSON.stringify(basicChartData)),
+          gyrx485111ChartData: JSON.parse(JSON.stringify(basicChartData)),
         }
       }
     });
@@ -139,6 +153,7 @@
     axios.getAndSetChartDataColumnsAndRows('http://davidblus.top/wsgi_flask/invest_interest/fund?fund_name=yhfund&fund_code=000286', vm.yhfund000286ChartData);
     axios.getAndSetChartDataColumnsAndRows('http://davidblus.top/wsgi_flask/invest_interest/fund?fund_name=cmfchina&fund_code=217011', vm.cmfchina217011ChartData);
     axios.getAndSetChartDataColumnsAndRows('http://davidblus.top/wsgi_flask/invest_interest/fund?fund_name=cmfchina&fund_code=161716', vm.cmfchina161716ChartData);
+    axios.getAndSetChartDataColumnsAndRows('http://davidblus.top/wsgi_flask/invest_interest/fund?fund_name=gyrx&fund_code=485111', vm.gyrx485111ChartData);
 
   </script>
 </body>
