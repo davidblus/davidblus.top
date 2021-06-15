@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Akismet Spam Protection - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2020-12-05 09:20:26+0000\n"
+"PO-Revision-Date: 2021-05-29 22:41:02+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -38,7 +38,7 @@ msgstr "Akismet 无法检查该评论，稍后将自动重试。"
 msgid "Comment was caught by %s."
 msgstr "评论已被 %s 捕获。"
 
-#: class.akismet.php:569
+#: class.akismet.php:575
 msgid "Akismet is not configured. Please enter an API key."
 msgstr "Akismet 尚未完成配置。请输入 API 密钥。"
 
@@ -94,15 +94,15 @@ msgstr "Akismet隐私通知"
 msgid "Privacy"
 msgstr "隐私"
 
-#: class.akismet.php:1516
+#: class.akismet.php:1616
 msgid "This site uses Akismet to reduce spam. <a href=\"%s\" target=\"_blank\" rel=\"nofollow noopener\">Learn how your comment data is processed</a>."
 msgstr "此站点使用Akismet来减少垃圾评论。<a href=\"%s\" target=\"_blank\" rel=\"nofollow noopener\">了解我们如何处理您的评论数据</a>。"
 
 #: class.akismet-admin.php:87
 msgid "We collect information about visitors who comment on Sites that use our Akismet anti-spam service. The information we collect depends on how the User sets up Akismet for the Site, but typically includes the commenter's IP address, user agent, referrer, and Site URL (along with other information directly provided by the commenter such as their name, username, email address, and the comment itself)."
-msgstr "我们收集关于在使用我们的Akismet反垃圾评论服务的站点处评论的访客的信息。我们收集的信息取决于用户如何为站点设置Akismet，但通常包括了评论者的IP地址、user agent、引用页及站点URL（和其他由评论者直接提供的信息如姓名、用户名、电子邮件地址和评论本文）。"
+msgstr "我们收集关于在使用我们的Akismet反垃圾评论服务的站点处评论的访客的信息。我们收集的信息取决于用户如何为站点设置Akismet，但通常包括了评论者的IP地址、user agent、referrer及站点URL（和其他由评论者直接提供的信息如姓名、用户名、电子邮箱地址和评论内容）。"
 
-#: class.akismet.php:244
+#: class.akismet.php:250
 msgid "Comment discarded."
 msgstr "评论已丢弃。"
 
@@ -159,7 +159,7 @@ msgstr "由千百万人使用，Akismet可能是保护您的站点免受垃圾�
 #. Plugin Name of the plugin
 #: class.akismet-admin.php:112 class.akismet-admin.php:115
 msgid "Akismet Anti-Spam"
-msgstr "Akismet反垃圾评论"
+msgstr "Akismet反垃圾评论和表单提交"
 
 #: views/enter.php:9
 msgid "Connect with API key"
@@ -191,7 +191,7 @@ msgstr "您要<a href=\"%s\">查看待审评论</a>吗？"
 msgid "Akismet is now protecting your site from spam. Happy blogging!"
 msgstr "Akismet正在保护您的站点免受垃圾评论的侵扰。 开始畅意写作吧！"
 
-#: views/notice.php:14 views/setup.php:3
+#: views/setup.php:3 views/notice.php:14
 msgid "Set up your Akismet account"
 msgstr "设置您的Akismet帐户"
 
@@ -229,7 +229,7 @@ msgstr[0] "Akismet 已检查 %s 则评论。"
 msgid "There were no comments to check. Akismet will only check comments awaiting moderation."
 msgstr "没有可供检查的评论。 Akismet 只会检查等待审核的评论。"
 
-#: class.akismet.php:575
+#: class.akismet.php:581
 msgid "Comment not found."
 msgstr "未找到评论。"
 
@@ -512,7 +512,7 @@ msgstr "保存更改"
 
 #: views/config.php:170
 msgid "Disconnect this account"
-msgstr "断开连接这个账户"
+msgstr "断开此帐户的连接"
 
 #: views/config.php:141
 msgid "Spam in the <a href=\"%1$s\">spam folder</a> older than 1 day is deleted automatically."
@@ -525,7 +525,7 @@ msgstr "注："
 
 #: views/config.php:133
 msgid "Always put spam in the Spam folder for review."
-msgstr "总是将垃圾放入垃圾目录以便审阅。"
+msgstr "总是将垃圾评论放入垃圾评论目录以便审阅。"
 
 #: views/config.php:132
 msgid "Silently discard the worst and most pervasive spam so I never see it."
@@ -533,7 +533,7 @@ msgstr "自动丢弃显而易见的广告。"
 
 #: views/config.php:131
 msgid "Akismet anti-spam strictness"
-msgstr "Akismet反垃圾评论严密度"
+msgstr "Akismet 反垃圾严密度"
 
 #: views/config.php:122
 msgid "Show the number of approved comments beside each comment author"
@@ -560,11 +560,11 @@ msgstr[0] "已阻挡的垃圾评论"
 msgid "Past six months"
 msgstr "过去六个月"
 
-#: class.akismet.php:1364
+#: class.akismet.php:1370
 msgid "Please <a href=\"%1$s\">upgrade WordPress</a> to a current version, or <a href=\"%2$s\">downgrade to version 2.4 of the Akismet plugin</a>."
 msgstr "请<a href=\"%1$s\">升级WordPress</a>，或<a href=\"%2$s\">将Akismet插件降级至2.4版本</a>。"
 
-#: class.akismet.php:1364
+#: class.akismet.php:1370
 msgid "Akismet %s requires WordPress %s or higher."
 msgstr "Akismet %s需要WordPress %s或更高。"
 
@@ -712,7 +712,7 @@ msgstr[0] "<a href=\"%1$s\">Akismet</a>为您的站点阻挡了<a href=\"%2$s\">
 #: class.akismet-admin.php:345
 msgctxt "comments"
 msgid "Spam"
-msgstr "垃圾"
+msgstr "垃圾评论"
 
 #: class.akismet-admin.php:275
 msgid "Cheatin&#8217; uh?"

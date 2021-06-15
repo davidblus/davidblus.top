@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Themes - Twenty Twenty-One package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2021-03-10 03:54:10+0000\n"
+"PO-Revision-Date: 2021-04-19 12:55:11+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -36,11 +36,11 @@ msgstr "https://wordpress.org/support/article/twenty-twenty-one/#dark-mode-suppo
 #. translators: %s: Twenty Twenty-One support article URL.
 #: classes/class-twenty-twenty-one-dark-mode.php:188
 msgid "Dark Mode is a device setting. If a visitor to your site requests it, your site will be shown with a dark background and light text. <a href=\"%s\">Learn more about Dark Mode.</a>"
-msgstr "深色模式是设备设置。如果您的网站的访问者提出要求，则会以深色背景和浅色文字显示您的网站。<a href=\"%s\">详细了解深色模式</a>。"
+msgstr "深色模式是一项设备设置。如果访问者的设备像此站点发出要求，您的站点将显示为深色背景和浅色文字。<a href=\"%s\">了解有关深色模式的更多信息。</a>"
 
 #: classes/class-twenty-twenty-one-dark-mode.php:192
 msgid "Dark Mode can also be turned on and off with a button that you can find in the bottom right corner of the page."
-msgstr "还可以使用页面右下角的按钮来打开和关闭深色模式。"
+msgstr "深色模式还可以通过页面右下角的按钮来自行切换。"
 
 #: classes/class-twenty-twenty-one-dark-mode.php:408
 msgid "This website uses LocalStorage to save the setting when Dark Mode support is turned on or off.<br> LocalStorage is necessary for the setting to work and is only used when a user clicks on the Dark Mode button.<br> No data is saved in the database or transferred."
@@ -121,9 +121,9 @@ msgid "This theme requires WordPress 5.3 or newer. You are running version %s. P
 msgstr "此主题需要WordPress 5.3或更高版本。您正在运行版本%s。请升级。"
 
 #. translators: %: Page number.
-#: image.php:46 template-parts/content/content-single.php:30
-#: template-parts/content/content-page.php:36
 #: template-parts/content/content.php:36
+#: template-parts/content/content-page.php:36
+#: template-parts/content/content-single.php:30 image.php:46
 msgid "Page %"
 msgstr "第%页"
 
@@ -192,7 +192,7 @@ msgstr "深色模式：%s"
 
 #: inc/template-functions.php:397
 msgid "This content is password protected. Please enter a password to view."
-msgstr "本内容受密码保护。请输入密码查看。"
+msgstr "此内容受密码保护。请输入密码查看。"
 
 #: inc/menu-functions.php:35
 msgid "Open menu"
@@ -210,8 +210,8 @@ msgstr "《自画像》（作者：贝尔特·莫里索）"
 msgid "&#8220;Daffodils&#8221; by Berthe Morisot"
 msgstr "《黄水仙》（作者：贝尔特·莫里索）"
 
-#: inc/starter-content.php:43 inc/block-patterns.php:72
-#: inc/block-patterns.php:107
+#: inc/block-patterns.php:72 inc/block-patterns.php:107
+#: inc/starter-content.php:43
 msgid "&#8220;Roses Trémières&#8221; by Berthe Morisot"
 msgstr "《蜀葵》（作者：贝尔特·莫里索）"
 
@@ -306,13 +306,13 @@ msgstr "贝尔特·莫里索在19世纪末所画的美丽花园"
 msgid "&#8220;The Garden at Bougival&#8221; by Berthe Morisot"
 msgstr "《布吉瓦花园》（作者：贝尔特·莫里索）"
 
-#: inc/starter-content.php:61 inc/block-patterns.php:72
-#: inc/block-patterns.php:107
+#: inc/block-patterns.php:72 inc/block-patterns.php:107
+#: inc/starter-content.php:61
 msgid "&#8220;Young Woman in Mauve&#8221; by Berthe Morisot"
 msgstr "《身着淡紫色衣服的年轻女子》（作者：贝尔特·莫里索）"
 
-#: inc/starter-content.php:51 inc/block-patterns.php:72
-#: inc/block-patterns.php:107
+#: inc/block-patterns.php:72 inc/block-patterns.php:107
+#: inc/starter-content.php:51
 msgid "&#8220;In the Bois de Boulogne&#8221; by Berthe Morisot"
 msgstr "《在布洛涅河畔》（作者：贝尔特·莫里索）"
 
@@ -355,7 +355,7 @@ msgid "View all of %s's posts."
 msgstr "查看%s的所有文章。"
 
 #. translators: %s: Author name.
-#: inc/template-tags.php:49 template-parts/post/author-bio.php:19
+#: template-parts/post/author-bio.php:19 inc/template-tags.php:49
 msgid "By %s"
 msgstr "作者：%s"
 
@@ -413,7 +413,7 @@ msgstr "标签：%s"
 #. translators: %s: List of categories.
 #: inc/template-tags.php:108 inc/template-tags.php:152
 msgid "Categorized as %s"
-msgstr "归类为%s"
+msgstr "分类：%s"
 
 #. translators: Used between list items, there is a space after the comma.
 #: inc/template-tags.php:104 inc/template-tags.php:114
@@ -422,8 +422,8 @@ msgid ", "
 msgstr "、"
 
 #. translators: %s: Name of current post. Only visible to screen readers.
-#: inc/template-tags.php:92 inc/template-tags.php:135 image.php:68 image.php:93
-#: template-parts/content/content-page.php:48
+#: template-parts/content/content-page.php:48 image.php:68 image.php:93
+#: inc/template-tags.php:92 inc/template-tags.php:135
 msgid "Edit %s"
 msgstr "编辑%s"
 
@@ -548,12 +548,12 @@ msgstr "原始尺寸"
 #. translators: %s: Publish date.
 #: inc/template-tags.php:29
 msgid "Published %s"
-msgstr "发布于%s"
+msgstr "发布日期：%s"
 
-#: comments.php:62 inc/template-tags.php:228 image.php:43
-#: template-parts/content/content-single.php:27
-#: template-parts/content/content-page.php:33
 #: template-parts/content/content.php:33
+#: template-parts/content/content-page.php:33
+#: template-parts/content/content-single.php:27 comments.php:62 image.php:43
+#: inc/template-tags.php:228
 msgid "Page"
 msgstr " "
 
@@ -565,14 +565,14 @@ msgstr "关闭"
 msgid "Menu"
 msgstr "菜单"
 
-#: inc/starter-content.php:154 functions.php:76
-#: template-parts/header/site-nav.php:13
+#: template-parts/header/site-nav.php:13 functions.php:76
+#: inc/starter-content.php:154
 msgid "Primary menu"
 msgstr "主菜单"
 
 #: header.php:26
 msgid "Skip to content"
-msgstr "跳转到内容"
+msgstr "跳至内容"
 
 #: functions.php:360
 msgid "Add widgets here to appear in your footer."
@@ -646,7 +646,7 @@ msgstr "绿色"
 msgid "Gray"
 msgstr "灰色"
 
-#: inc/block-styles.php:107 functions.php:223
+#: functions.php:223 inc/block-styles.php:107
 msgid "Dark gray"
 msgstr "深灰"
 
@@ -687,13 +687,13 @@ msgstr "超小"
 msgid "Proudly powered by %s."
 msgstr "自豪地采用%s。"
 
-#: footer.php:24 inc/starter-content.php:165 functions.php:77
+#: functions.php:77 inc/starter-content.php:165 footer.php:24
 msgid "Secondary menu"
 msgstr "次要菜单"
 
 #: comments.php:79
 msgid "Comments are closed."
-msgstr "评论功能被关闭。"
+msgstr "评论已关闭。"
 
 #: comments.php:71
 msgid "Newer comments"
@@ -715,7 +715,7 @@ msgstr "显示站点标题和副标题"
 msgid "It looks like nothing was found at this location. Maybe try a search?"
 msgstr "看起来在这个位置找不到任何东西。您可以尝试搜索？"
 
-#: 404.php:16 template-parts/content/content-none.php:30
+#: template-parts/content/content-none.php:30 404.php:16
 msgid "Nothing here"
 msgstr "什么都没有"
 
