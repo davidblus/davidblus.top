@@ -23,7 +23,7 @@ class Referred
      *
      * @var string
      */
-    public static $referrer_spam_link = 'https://raw.githubusercontent.com/matomo-org/referrer-spam-blacklist/master/spammers.txt';
+    public static $referrer_spam_link = 'https://cdn.jsdelivr.net/gh/matomo-org/referrer-spam-list@4.0.0/spammers.txt';
 
     /**
      * Referred constructor.
@@ -41,7 +41,7 @@ class Referred
      */
     public static function getRefererURL()
     {
-        return (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
+        return (isset($_SERVER['HTTP_REFERER']) ? sanitize_url(wp_unslash($_SERVER['HTTP_REFERER'])) : '');
     }
 
     /**
@@ -56,7 +56,7 @@ class Referred
         $referred = self::getRefererURL();
 
         // Sanitize Referer Url
-        $referred = esc_sql(strip_tags($referred));
+        $referred = esc_url_raw(strip_tags($referred));
 
         // If Referer is Empty then use same WebSite Url
         if (empty($referred)) {
@@ -107,6 +107,8 @@ class Referred
             $html_referrer = '//' . $html_referrer;
         }
 
+        $html_referrer = esc_url($html_referrer);
+
         // Parse Url
         $base_url = @parse_url($html_referrer);
 
@@ -140,7 +142,7 @@ class Referred
             $referrer = substr($referrer, 0, $length);
         }
 
-        return htmlentities($referrer, ENT_QUOTES);
+        return $referrer;
     }
 
     /**
@@ -222,7 +224,7 @@ class Referred
 
             // Check Validate IP
             if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                $result['ip'] = $ip;
+                $result['ip']      = $ip;
                 $result['country'] = GeoIP::getCountry($ip);
             }
         }
@@ -274,7 +276,7 @@ class Referred
         $ISOCountryCode = Country::getList();
 
         //Get Refer Site Detail
-        $refer_opt = get_option(self::$referral_detail_opt);
+        $refer_opt     = get_option(self::$referral_detail_opt);
         $referrer_list = (empty($refer_opt) ? array() : $refer_opt);
 
         if (!$get_urls) {
@@ -289,24 +291,24 @@ class Referred
 
             //Get Site information if Not Exist
             if (!array_key_exists($domain, $referrer_list)) {
-                $get_site_inf = Referred::get_domain_server($domain);
-                $get_site_title = Helper::get_site_title_by_url($domain);
+                $get_site_inf           = Referred::get_domain_server($domain);
+                $get_site_title         = Helper::get_site_title_by_url($domain);
                 $referrer_list[$domain] = array(
-                    'ip' => $get_site_inf['ip'],
+                    'ip'      => $get_site_inf['ip'],
                     'country' => $get_site_inf['country'],
-                    'title' => ($get_site_title === false ? '' : $get_site_title),
+                    'title'   => ($get_site_title === false ? '' : $get_site_title),
                 );
             }
 
             // Push to list
             $list[] = array(
-                'domain' => $domain,
-                'title' => $referrer_list[$domain]['title'],
-                'ip' => ($referrer_list[$domain]['ip'] != "" ? $referrer_list[$domain]['ip'] : '-'),
-                'country' => ($referrer_list[$domain]['country'] != "" ? $ISOCountryCode[$referrer_list[$domain]['country']] : ''),
-                'flag' => ($referrer_list[$domain]['country'] != "" ? Country::flag($referrer_list[$domain]['country']) : ''),
-                'page_link' => Menus::admin_url('referrers', array('referr' => $referrer_html)),
-                'number' => number_format_i18n($number)
+                'domain'    => $domain,
+                'title'     => $referrer_list[$domain]['title'],
+                'ip'        => ($referrer_list[$domain]['ip'] != "" ? $referrer_list[$domain]['ip'] : '-'),
+                'country'   => ($referrer_list[$domain]['country'] != "" ? $ISOCountryCode[$referrer_list[$domain]['country']] : ''),
+                'flag'      => ($referrer_list[$domain]['country'] != "" ? Country::flag($referrer_list[$domain]['country']) : ''),
+                'page_link' => Menus::admin_url('referrers', array('referrer' => $referrer_html)),
+                'number'    => number_format_i18n($number)
             );
         }
 
@@ -363,7 +365,7 @@ class Referred
         $domain_name = rtrim(preg_replace('/^https?:\/\//', '', get_site_url()), " / ");
         foreach (array("http", "https", "ftp") as $protocol) {
             foreach (array('', 'www.') as $w3) {
-                $where = " AND `referred` NOT LIKE '{$protocol}://{$w3}{$domain_name}%' ";
+                $where .= " AND `referred` NOT LIKE '{$protocol}://{$w3}{$domain_name}%' ";
             }
         }
 

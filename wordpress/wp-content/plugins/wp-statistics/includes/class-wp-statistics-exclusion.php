@@ -54,7 +54,7 @@ class Exclusion
         // Create Default Object
         $exclude = array('exclusion_match' => false, 'exclusion_reason' => '');
 
-        // Get List Of Exclusion WP-Statistics
+        // Get List Of Exclusion WP Statistics
         $exclusion_list = apply_filters('wp_statistics_exclusion_list', array_keys(Exclusion::exclusion_list()));
 
         // Check Exclusion
@@ -71,7 +71,7 @@ class Exclusion
     }
 
     /**
-     * Record Exclusion in WP-Statistics DB.
+     * Record Exclusion in WP Statistics DB.
      *
      * @param array $exclusion
      */
@@ -90,9 +90,9 @@ class Exclusion
             $insert = $wpdb->insert(
                 DB::table('exclusions'),
                 array(
-                    'date' => TimeZone::getCurrentDate('Y-m-d'),
+                    'date'   => TimeZone::getCurrentDate('Y-m-d'),
                     'reason' => $exclusion['exclusion_reason'],
-                    'count' => 1,
+                    'count'  => 1,
                 )
             );
             if (!$insert) {
@@ -181,8 +181,9 @@ class Exclusion
     {
 
         if (Option::get('excluded_urls')) {
-            $script    = $_SERVER['REQUEST_URI'];
+            $script    = sanitize_url(wp_unslash($_SERVER['REQUEST_URI']));
             $delimiter = strpos($script, '?');
+
             if ($delimiter > 0) {
                 $script = substr($script, 0, $delimiter);
             }

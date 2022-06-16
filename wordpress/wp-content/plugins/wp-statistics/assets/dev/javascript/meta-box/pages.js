@@ -2,7 +2,7 @@ wps_js.pages_meta_box = {
 
     view: function (args = []) {
         let t = '';
-        t += `<table width="100%" class="widefat table-stats wps-report-table"><tbody>
+        t += `<table width="100%" class="widefat table-stats wps-report-table wps-table-fixed"><tbody>
         <tr>
             <td width='10%'>${wps_js._('id')}</td>
             <td width='40%'>${wps_js._('title')}</td>
@@ -16,7 +16,7 @@ wps_js.pages_meta_box = {
 			<td style='text-align: left;'>${i}</td>
 			<td style='text-align: left;'><span title='${value['title']}' class='wps-cursor-default wps-text-wrap'>${value['title']}</span></td>
 			<td style='text-align: left;'><a href="${value['link']}" title="${value['title']}" target="_blank">${value['str_url']}</a></td>
-		    <td style="text-align: left"><a href="${value['hits_page']}" class="wps-text-danger">${value['number']}</a></td>
+		    <td style="text-align: left"><a href="${value['hits_page']}" class="wps-text-muted">${value['number']}</a></td>
 			</tr>`;
             i++;
         });

@@ -29,7 +29,7 @@ define('DB_USER', 'davidblus');
 define('DB_PASSWORD', 'davidblus');
 
 /** MySQL主机 */
-define('DB_HOST', 'database-1.chujhdepmq5v.ap-northeast-1.rds.amazonaws.com');
+define('DB_HOST', 'database-1.cq0aeueppgwj.ap-northeast-1.rds.amazonaws.com');
 
 /** 创建数据表时默认的文字编码 */
 define('DB_CHARSET', 'utf8mb4');

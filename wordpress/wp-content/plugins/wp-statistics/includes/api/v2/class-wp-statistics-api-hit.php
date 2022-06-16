@@ -35,14 +35,15 @@ class Hit extends \WP_STATISTICS\RestAPI
     public static function require_params_hit()
     {
         return array(
-            'browser',
-            'platform',
-            'version',
-            'ip',
-            'track_all',
-            'timestamp',
-            'page_uri',
-            'user_id',
+            'browser'   => array('required' => true, 'type' => 'string'),
+            'platform'  => array('required' => true, 'type' => 'string'),
+            'version'   => array('required' => true, 'type' => 'string'),
+            'ip'        => array('required' => true, 'type' => 'string', 'format' => 'ip'),
+            'track_all' => array('required' => true, 'type' => 'integer'),
+            'timestamp' => array('required' => true, 'type' => 'integer'),
+            'page_uri'  => array('required' => true, 'type' => 'string'),
+            'user_id'   => array('required' => true, 'type' => 'integer'),
+            '_wpnonce'  => array('required' => false, 'type' => 'string')
         );
     }
 
@@ -53,34 +54,13 @@ class Hit extends \WP_STATISTICS\RestAPI
      */
     public function register_routes()
     {
-
-        // Create Require Params
-        $params = array();
-        foreach (self::require_params_hit() as $p) {
-            $params[$p] = array('required' => true);
-        }
-
-        // Add X-WP-Nonce
-        $params['_wpnonce'] = array('required' => true);
-
         // Record WP-Statistics when Cache is enable
         register_rest_route(self::$namespace, '/' . self::$endpoint, array(
             array(
-                'methods' => \WP_REST_Server::READABLE,
-                'callback' => array($this, 'hit_callback'),
-                'args' => $params,
+                'methods'             => \WP_REST_Server::READABLE,
+                'callback'            => array($this, 'hit_callback'),
+                'args'                => self::require_params_hit(),
                 'permission_callback' => function (\WP_REST_Request $request) {
-                    return true;
-                }
-            )
-        ));
-
-        // Check WP-Statistics Rest API Not disabled
-        register_rest_route(self::$namespace, '/check', array(
-            array(
-                'methods' => \WP_REST_Server::READABLE,
-                'callback' => array($this, 'check_enable_callback'),
-                'permission_callback' => function () {
                     return true;
                 }
             )
@@ -96,8 +76,10 @@ class Hit extends \WP_STATISTICS\RestAPI
      */
     public function hit_callback(\WP_REST_Request $request)
     {
-        // Start Record
-        Hits::record();
+        if (!empty($_GET['_wpnonce'])) {
+            // Start Record
+            Hits::record();
+        }
 
         $response = new \WP_REST_Response(array(
             'status'  => true,
@@ -120,17 +102,6 @@ class Hit extends \WP_STATISTICS\RestAPI
 
         // Return response
         return $response;
-    }
-
-    /**
-     * Check WP-Statistics Rest API Not disabled
-     *
-     * @param \WP_REST_Request $request
-     * @return \WP_REST_Response
-     */
-    public function check_enable_callback(\WP_REST_Request $request)
-    {
-        return new \WP_REST_Response(array('status' => true, 'message' => __('WP-Statistics has no problem establishing a connection to the WordPress REST API.', 'wp-statistics')), 200);
     }
 }
 

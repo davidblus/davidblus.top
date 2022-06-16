@@ -3,7 +3,6 @@
 namespace WP_STATISTICS;
 
 use GeoIp2\Exception\AddressNotFoundException;
-use MaxMind\Db\Reader\InvalidDatabaseException;
 
 class GeoIP
 {
@@ -14,13 +13,13 @@ class GeoIP
      */
     public static $library = array(
         'country' => array(
-            'source' => 'https://raw.githubusercontent.com/wp-statistics/GeoLite2-Country/master/GeoLite2-Country.mmdb.gz',
+            'source' => 'https://cdn.jsdelivr.net/npm/geolite2-country@1.0.2/GeoLite2-Country.mmdb.gz',
             'file'   => 'GeoLite2-Country',
             'opt'    => 'geoip',
             'cache'  => 31536000 //1 Year
         ),
         'city'    => array(
-            'source' => 'https://raw.githubusercontent.com/wp-statistics/GeoLite2-City/master/GeoLite2-City.mmdb.gz',
+            'source' => 'https://cdn.jsdelivr.net/npm/geolite2-city@1.0.0/GeoLite2-City.mmdb.gz',
             'file'   => 'GeoLite2-City',
             'opt'    => 'geoip_city',
             'cache'  => 6998000 //3 Month
@@ -266,8 +265,8 @@ class GeoIP
 
         // This is the location of the file to download.
         $download_url = GeoIP::$library[$pack]['source'];
-        $response = wp_remote_get($download_url, array(
-            'timeout' => 60,
+        $response     = wp_remote_get($download_url, array(
+            'timeout'   => 60,
             'sslverify' => false
         ));
 
@@ -504,6 +503,10 @@ class GeoIP
                 //Get City
                 if ($return == "all") {
                     $location = $record->city;
+                } elseif ($return == "name") {
+                    $subdiv   = $record->mostSpecificSubdivision->name;
+                    $city     = $record->city->name;
+                    $location = ($city ? $city : "(Unknown)") . ($subdiv ? (", ") : "") . $subdiv;
                 } else {
                     $location = $record->city->{$return};
                 }
@@ -590,7 +593,8 @@ class GeoIP
      */
     public static function geoIPTools($ip)
     {
-        return "http://www.geoiptool.com/en/?IP={$ip}";
+        //return "http://www.geoiptool.com/en/?IP={$ip}";
+        return "https://redirect.li/map/?ip={$ip}";
     }
 
 }

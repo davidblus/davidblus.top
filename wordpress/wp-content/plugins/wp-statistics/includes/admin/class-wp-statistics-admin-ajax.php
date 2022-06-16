@@ -74,7 +74,7 @@ class Ajax
 
             // Update Option
             $get_opt         = get_option('wp_statistics_overview_page_ads');
-            $get_opt['view'] = $_REQUEST['ads_id'];
+            $get_opt['view'] = sanitize_text_field($_REQUEST['ads_id']);
             update_option('wp_statistics_overview_page_ads', $get_opt, 'no');
         }
         exit;
@@ -103,7 +103,7 @@ class Ajax
 
                 // Show Result
                 if ($result) {
-                    echo sprintf(__('%s agent data deleted successfully.', 'wp-statistics'), '<code>' . $agent . '</code>');
+                    echo sprintf(__('%s agent data deleted successfully.', 'wp-statistics'), '<code>' . esc_attr($agent) . '</code>');
                 } else {
                     _e('No agent data found to remove!', 'wp-statistics');
                 }
@@ -141,7 +141,7 @@ class Ajax
 
                 // Return Result
                 if ($result) {
-                    echo sprintf(__('%s platform data deleted successfully.', 'wp-statistics'), '<code>' . htmlentities($platform, ENT_QUOTES) . '</code>');
+                    echo sprintf(__('%s platform data deleted successfully.', 'wp-statistics'), '<code>' . esc_attr($platform) . '</code>');
                 } else {
                     _e('No platform data found to remove!', 'wp-statistics');
                 }
@@ -177,7 +177,7 @@ class Ajax
                 $result = $wpdb->query($wpdb->prepare("DELETE FROM " . DB::table('visitor') . " WHERE `ip` = %s", $ip_address));
 
                 if ($result) {
-                    echo sprintf(__('%s IP data deleted successfully.', 'wp-statistics'), '<code>' . htmlentities($ip_address, ENT_QUOTES) . '</code>');
+                    echo sprintf(__('%s IP data deleted successfully.', 'wp-statistics'), '<code>' . esc_attr($ip_address) . '</code>');
                 } else {
                     _e('No IP address data found to remove!', 'wp-statistics');
                 }
@@ -224,11 +224,11 @@ class Ajax
             if ($table_name == "all") {
                 $x_tbl = 1;
                 foreach ($list_db_table as $tbl_key => $tbl_name) {
-                    echo ($x_tbl > 1 ? '<br>' : '') . DB::EmptyTable($tbl_name);
+                    echo ($x_tbl > 1 ? '<br>' : '') . DB::EmptyTable($tbl_name); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                     $x_tbl++;
                 }
             } else {
-                echo DB::EmptyTable(DB::table($table_name));
+                echo DB::EmptyTable(DB::table($table_name)); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
             }
 
         } else {
@@ -252,10 +252,10 @@ class Ajax
             // Check Number Day
             $purge_days = 0;
             if (isset($_POST['purge-days'])) {
-                $purge_days = intval($_POST['purge-days']);
+                $purge_days = intval(sanitize_text_field($_POST['purge-days']));
             }
 
-            echo Purge::purge_data($purge_days);
+            echo Purge::purge_data($purge_days); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         } else {
             _e('Access denied!', 'wp-statistics');
         }
@@ -277,13 +277,13 @@ class Ajax
             // Check Number Day
             $purge_hits = 10;
             if (isset($_POST['purge-hits'])) {
-                $purge_hits = intval($_POST['purge-hits']);
+                $purge_hits = intval(sanitize_text_field($_POST['purge-hits']));
             }
 
             if ($purge_hits < 10) {
                 _e('Number of hits must be greater than or equal to 10!', 'wp-statistics');
             } else {
-                echo Purge::purge_visitor_hits($purge_hits);
+                echo Purge::purge_visitor_hits($purge_hits); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
             }
         } else {
             _e('Access denied!', 'wp-statistics');

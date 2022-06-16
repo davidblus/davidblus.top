@@ -1,5 +1,5 @@
 /*
- * WP-Statistics Add-Ons Admin page
+ * WP Statistics Add-Ons Admin page
  */
 .wp-statistics-plugins {
 
@@ -17,6 +17,10 @@
 
   .widefat .plugin-card-bottom {
     float: initial;
+
+    span.from {
+      display: none;
+    }
   }
 
   .widefat .column-downloaded p {

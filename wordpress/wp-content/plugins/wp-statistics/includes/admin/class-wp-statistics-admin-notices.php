@@ -40,28 +40,36 @@ class Admin_Notices
     {
         $plugin = Helper::is_active_cache_plugin();
         if (!Option::get('use_cache_plugin') and $plugin['status'] === true) {
-            $text = ($plugin['plugin'] == "core" ? __('WP_CACHE is enable in your WordPress', 'wp-statistics') : sprintf(__('You are using %s plugin in WordPress', 'wp-statistics'), $plugin['plugin']));
-            Helper::wp_admin_notice($text . ", " . sprintf(__('Please enable %1$sCache Settings%2$s in the WP-Statistics plugin or delete the WP_CACHE value from the wp-config.php file if you do not have any WordPress cache plugins enabled.', 'wp-statistics'), '<a href="' . Menus::admin_url('settings') . '">', '</a>'), 'warning', true);
+            $text = ($plugin['plugin'] == "core" ? __('WP-Statistics might not count the stats since <code>WP_CACHE</code> is detected in <code>wp-config.php</code>', 'wp-statistics') : sprintf(__('WP-Statistics might not count the stats due to use <b>%s</b> plugin', 'wp-statistics'), $plugin['plugin']));
+            Helper::wp_admin_notice($text . ", " . sprintf(__('To fix it, please enable the %1$sCache Compatibility%2$s option on the Settings page, otherwise, if the stats count properly, check out <a href="%3$s" target="_blank">this article</a> to disable this notice permanently.', 'wp-statistics'), '<a href="' . Menus::admin_url('settings') . '">', '</a>', 'https://wp-statistics.com/resources/how-to-disable-cache-notice-in-admin/'), 'warning', true);
         }
     }
 
     public function enable_rest_api()
     {
-
         if (Option::get('use_cache_plugin') and false === ($check_rest_api = get_transient('check-wp-statistics-rest'))) {
 
             // Check Connect To WordPress Rest API
-            $status = true;
+            $status  = false;
             $message = '';
-            $request = wp_remote_get(get_rest_url(null, RestAPI::$namespace . '/check'), array('timeout' => 30));
+
+            $params = array_merge(array(
+                '_'                  => time(),
+                '_wpnonce'           => null,
+                Hits::$rest_hits_key => 'yes',
+            ), Helper::getHitsDefaultParams());
+
+            $requestUrl = add_query_arg($params, get_rest_url(null, RestAPI::$namespace . '/' . Api\v2\Hit::$endpoint));
+            $request    = wp_remote_get($requestUrl, array('timeout' => 30, 'sslverify' => false));
+
             if (is_wp_error($request)) {
-                $status = false;
+                $status  = false;
                 $message = $request->get_error_message();
             } else {
                 $body = wp_remote_retrieve_body($request);
                 $data = json_decode($body, true);
-                if (isset($data['error'])) {
-                    $status = false;
+                if (isset($data['status']) && $data['status'] == true) {
+                    $status = true;
                 }
             }
 
@@ -89,7 +97,7 @@ class Admin_Notices
     public function donate_plugin()
     {
         if (Menus::in_page('overview') and !Option::get('disable_donation_nag', false)) {
-            Helper::wp_admin_notice(__('Have you thought about donating to WP Statistics?', 'wp-statistics') . ' <a href="http://wp-statistics.com/donate/" target="_blank">' . __('Donate Now!', 'wp-statistics') . '</a>', 'warning', true, 'wps-donate-notice');
+            Helper::wp_admin_notice(__('Have you thought about donating to WP-Statistics?', 'wp-statistics') . ' <a href="https://wp-statistics.com/donate/" target="_blank">' . __('Donate Now!', 'wp-statistics') . '</a>', 'warning', true, 'wps-donate-notice');
         }
     }
 
@@ -125,7 +133,7 @@ class Admin_Notices
     {
         $option = get_option('wp_statistics_disable_addons_notice');
         if (!empty($option) and $option == "no") {
-            Helper::wp_admin_notice(__("Your WP-Statistics's Add-On(s) are not compatible with the new version of WP-Statistics and disabled automatically, please try to update them.", "wp-statistics"), "info", true, "wp-statistics-disable-all-addons-admin-notice");
+            Helper::wp_admin_notice(__("Your WP-Statistic's Add-On(s) are not compatible with the new version of WP-Statistics and disabled automatically, please try to update them.", "wp-statistics"), "info", true, "wp-statistics-disable-all-addons-admin-notice");
             ?>
             <script>
                 jQuery(document).ready(function ($) {
@@ -137,7 +145,7 @@ class Admin_Notices
                             data: {
                                 'action': 'wp_statistics_close_notice',
                                 'notice': 'disable_all_addons',
-                                'wps_nonce': '<?php echo wp_create_nonce('wp_rest'); ?>'
+                                'wps_nonce': '<?php echo wp_create_nonce('wp_rest'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>'
                             },
                             datatype: 'json'
                         });

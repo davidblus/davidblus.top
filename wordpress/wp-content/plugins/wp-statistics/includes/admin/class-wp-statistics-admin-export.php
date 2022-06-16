@@ -38,8 +38,8 @@ class Export
 
             //Check Current User Capability
             if (User::Access('manage')) {
-                $table = $_POST['table-to-export'];
-                $type  = $_POST['export-file-type'];
+                $table = sanitize_text_field($_POST['table-to-export']);
+                $type  = sanitize_text_field($_POST['export-file-type']);
 
                 // Validate the table name the user passed to us.
                 $allow_tbl = array("useronline", "visit", "visitor", "exclusions", "pages", "search");
@@ -79,7 +79,7 @@ class Export
 
                     // If we didn't get any rows, don't output anything.
                     if (count($result) < 1) {
-                        echo "No data in table!";
+                        echo "No data in table!"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                         exit;
                     }
 

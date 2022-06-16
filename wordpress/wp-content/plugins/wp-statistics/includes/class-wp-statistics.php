@@ -4,9 +4,9 @@
 defined('ABSPATH') || exit;
 
 /**
- * Main bootstrap class for WP Statistics
+ * Main bootstrap class for WP-Statistics
  *
- * @package WP Statistics
+ * @package WP-Statistics
  */
 final class WP_Statistics
 {
@@ -112,6 +112,11 @@ final class WP_Statistics
             $this->includes();
 
             /**
+             * Display Admin Notices
+             */
+            add_action('admin_notices', array('\\WP_STATISTICS\\Helper', 'displayAdminNotices'));
+
+            /**
              * instantiate Plugin
              */
             $this->instantiate();
@@ -128,6 +133,9 @@ final class WP_Statistics
     {
         // third-party Libraries
         require_once WP_STATISTICS_DIR . 'includes/vendor/autoload.php';
+
+        // Create the plugin upload directory in advance.
+        $this->create_upload_directory();
 
         // Utility classes.
         require_once WP_STATISTICS_DIR . 'includes/class-wp-statistics-db.php';
@@ -157,11 +165,13 @@ final class WP_Statistics
         require_once WP_STATISTICS_DIR . 'includes/class-wp-statistics-exclusion.php';
         require_once WP_STATISTICS_DIR . 'includes/class-wp-statistics-hits.php';
 
+        // Ajax area
+        require_once WP_STATISTICS_DIR . 'includes/admin/class-wp-statistics-admin-template.php';
+
         // Admin classes
         if (is_admin()) {
 
             require_once WP_STATISTICS_DIR . 'includes/class-wp-statistics-install.php';
-            require_once WP_STATISTICS_DIR . 'includes/admin/class-wp-statistics-admin-template.php';
             require_once WP_STATISTICS_DIR . 'includes/admin/class-wp-statistics-admin-ajax.php';
             require_once WP_STATISTICS_DIR . 'includes/admin/class-wp-statistics-admin-dashboard.php';
             require_once WP_STATISTICS_DIR . 'includes/admin/class-wp-statistics-admin-export.php';
@@ -214,13 +224,43 @@ final class WP_Statistics
             require_once WP_STATISTICS_DIR . 'includes/class-wp-statistics-frontend.php';
         }
 
-        // WP-CLI
-        if (defined('WP_CLI') && WP_CLI && WP_STATISTICS\Option::get('wp_cli') == true) {
+        // WP-CLI Class.
+        if (defined('WP_CLI') && WP_CLI) {
             require_once WP_STATISTICS_DIR . 'includes/class-wp-statistics-cli.php';
         }
 
         // Template functions.
         include WP_STATISTICS_DIR . 'includes/template-functions.php';
+    }
+
+    private function create_upload_directory()
+    {
+        $upload_dir      = wp_upload_dir();
+        $upload_dir_name = $upload_dir['basedir'] . '/' . WP_STATISTICS_UPLOADS_DIR;
+
+        wp_mkdir_p($upload_dir_name);
+
+        /**
+         * Create .htaccess to avoid public access.
+         */
+        if (is_dir($upload_dir_name) and is_writable($upload_dir_name)) {
+            $htaccess_file = path_join($upload_dir_name, '.htaccess');
+
+            if (!file_exists($htaccess_file)
+                and $handle = @fopen($htaccess_file, 'w')) {
+                fwrite($handle, "Deny from all\n");
+                fclose($handle);
+            }
+        }
+
+        /**
+         * Backward compatibility
+         * Move the wp-statistics.log to wp-content/uploads/wp-statistics/debug.log
+         */
+        $legacy_old_log = ABSPATH . 'wp-statistics.log';
+        if (file_exists($legacy_old_log)) {
+            rename($legacy_old_log, path_join($upload_dir_name, 'debug.log'));
+        }
     }
 
     /**
@@ -270,8 +310,17 @@ final class WP_Statistics
         if (is_array($message)) {
             $message = json_encode($message);
         }
-        $file = fopen(ABSPATH . "/wp-statistics.log", "a");
-        fwrite($file, "\n" . date('Y-m-d h:i:s') . " :: " . $message);
+
+        $upload_dir      = wp_upload_dir();
+        $upload_dir_name = $upload_dir['basedir'] . '/' . WP_STATISTICS_UPLOADS_DIR;
+        $log_file        = path_join($upload_dir_name, 'debug.log');
+
+        /**
+         * Write the log file in the wp-content/uploads/wp-statistics
+         */
+        $file = fopen($log_file, "a");
+
+        fwrite($file, "\n" . date('Y-m-d h:i:s') . ": " . $message);
         fclose($file);
     }
 

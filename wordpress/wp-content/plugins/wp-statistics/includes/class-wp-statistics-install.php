@@ -313,9 +313,9 @@ class Install
         if ($file == plugin_basename(WP_STATISTICS_MAIN_FILE)) {
             $plugin_url = 'http://wordpress.org/plugins/wp-statistics/';
 
-            $links[] = '<a href="' . $plugin_url . '" target="_blank" title="' . __('Click here to visit the plugin on WordPress.org', 'wp-statistics') . '">' . __('Visit WordPress.org page', 'wp-statistics') . '</a>';
+            $links[]  = '<a href="' . $plugin_url . '" target="_blank" title="' . __('Click here to visit the plugin on WordPress.org', 'wp-statistics') . '">' . __('Visit WordPress.org page', 'wp-statistics') . '</a>';
             $rate_url = 'https://wordpress.org/support/plugin/wp-statistics/reviews/?rate=5#new-post';
-            $links[] = '<a href="' . $rate_url . '" target="_blank" title="' . __('Click here to rate and review this plugin on WordPress.org', 'wp-statistics') . '">' . __('Rate this plugin', 'wp-statistics') . '</a>';
+            $links[]  = '<a href="' . $rate_url . '" target="_blank" title="' . __('Click here to rate and review this plugin on WordPress.org', 'wp-statistics') . '">' . __('Rate this plugin', 'wp-statistics') . '</a>';
         }
 
         return $links;
@@ -335,14 +335,45 @@ class Install
         }
 
         /**
+         * Add visitor device type
+         *
+         * @version 13.2.4
+         */
+        $result = $wpdb->query("SHOW COLUMNS FROM " . DB::table('visitor') . " LIKE 'device'");
+        if ($result == 0) {
+            $wpdb->query("ALTER TABLE " . DB::table('visitor') . " ADD `device` VARCHAR(180) NULL AFTER `version`, ADD INDEX `device` (`device`);");
+        }
+
+        /**
+         * Add visitor device model
+         *
+         * @version 13.2.4
+         */
+        $result = $wpdb->query("SHOW COLUMNS FROM " . DB::table('visitor') . " LIKE 'model'");
+        if ($result == 0) {
+            $wpdb->query("ALTER TABLE " . DB::table('visitor') . " ADD `model` VARCHAR(180) NULL AFTER `device`, ADD INDEX `model` (`model`);");
+        }
+
+        /**
          * Set to BigINT Fields (AUTO_INCREMENT)
          *
          * @version 13.0.0
          */
-        $wpdb->query("ALTER TABLE `" . DB::table('visitor') . "` CHANGE `ID` `ID` BIGINT(20) NOT NULL AUTO_INCREMENT;");
-        $wpdb->query("ALTER TABLE `" . DB::table('exclusions') . "` CHANGE `ID` `ID` BIGINT(20) NOT NULL AUTO_INCREMENT;");
-        $wpdb->query("ALTER TABLE `" . DB::table('useronline') . "` CHANGE `ID` `ID` BIGINT(20) NOT NULL AUTO_INCREMENT;");
-        $wpdb->query("ALTER TABLE `" . DB::table('visit') . "` CHANGE `ID` `ID` BIGINT(20) NOT NULL AUTO_INCREMENT;");
+        if (!DB::isColumnType('visitor', 'ID', 'bigint(20)')) {
+            $wpdb->query("ALTER TABLE `" . DB::table('visitor') . "` CHANGE `ID` `ID` BIGINT(20) NOT NULL AUTO_INCREMENT;");
+        }
+
+        if (!DB::isColumnType('exclusions', 'ID', 'bigint(20)')) {
+            $wpdb->query("ALTER TABLE `" . DB::table('exclusions') . "` CHANGE `ID` `ID` BIGINT(20) NOT NULL AUTO_INCREMENT;");
+        }
+
+        if (!DB::isColumnType('useronline', 'ID', 'bigint(20)')) {
+            $wpdb->query("ALTER TABLE `" . DB::table('useronline') . "` CHANGE `ID` `ID` BIGINT(20) NOT NULL AUTO_INCREMENT;");
+        }
+
+        if (!DB::isColumnType('visit', 'ID', 'bigint(20)')) {
+            $wpdb->query("ALTER TABLE `" . DB::table('visit') . "` CHANGE `ID` `ID` BIGINT(20) NOT NULL AUTO_INCREMENT;");
+        }
 
         /**
          * Create Visitor and pages Relationship Table
@@ -379,7 +410,7 @@ class Install
          *
          * @version 12.6.1
          */
-        if(DB::ExistTable('useronline')) {
+        if (DB::ExistTable('useronline')) {
             $result = $wpdb->query("SHOW COLUMNS FROM " . DB::table('useronline') . " LIKE 'user_id'");
             if ($result == 0) {
                 $wpdb->query("ALTER TABLE `" . DB::table('useronline') . "` ADD `user_id` BIGINT(48) NOT NULL AFTER `location`, ADD `page_id` BIGINT(48) NOT NULL AFTER `user_id`, ADD `type` VARCHAR(100) NOT NULL AFTER `page_id`;");
@@ -391,7 +422,7 @@ class Install
          *
          * @version 12.5.3
          */
-        if(DB::ExistTable('pages')) {
+        if (DB::ExistTable('pages')) {
             $result = $wpdb->query("SHOW COLUMNS FROM " . DB::table('pages') . " LIKE 'page_id'");
             if ($result == 0) {
                 $wpdb->query("ALTER TABLE `" . DB::table('pages') . "` ADD `page_id` BIGINT(20) NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`page_id`);");
@@ -404,7 +435,7 @@ class Install
          *
          * @version 6.0
          */
-        if(DB::ExistTable('visitor')) {
+        if (DB::ExistTable('visitor')) {
             $result = $wpdb->query("SHOW INDEX FROM " . DB::table('visitor') . " WHERE Key_name = 'date_ip'");
             if ($result > 1) {
                 $wpdb->query("DROP INDEX `date_ip` ON " . DB::table('visitor'));
@@ -449,7 +480,7 @@ class Install
             add_action('admin_notices', function () {
                 echo '<div class="notice notice-info is-dismissible" id="wp-statistics-update-page-area" style="display: none;">';
                 echo '<p style="margin-top: 17px; float:' . (is_rtl() ? 'right' : 'left') . '">';
-                echo __('WP-Statistics database requires upgrade.', 'wp-statistics');
+                echo __('WP Statistics database requires upgrade.', 'wp-statistics');
                 echo '</p>';
                 echo '<div style="float:' . (is_rtl() ? 'left' : 'right') . '">';
                 echo '<button type="button" id="wps-upgrade-db" class="button button-primary" style="padding: 20px;line-height: 0px;box-shadow: none !important;border: 0px !important;margin: 10px 0;"/>' . __('Upgrade Database', 'wp-statistics') . '</button>';
@@ -569,7 +600,7 @@ class Install
 
                     # Check Number Process
                     $number_process = self::get_require_number_update();
-                    $i = 0;
+                    $i              = 0;
                     if ($number_process > 0) {
 
                         # Start Query
@@ -591,20 +622,23 @@ class Install
                             $i++;
                         }
 
-                        if ($_GET['number_all'] > $number_per_query) {
+                        # Sanitize the data
+                        $number_all = sanitize_text_field($_GET['number_all']);
+
+                        if ($number_all > $number_per_query) {
                             # calculate number process
-                            $return['number_process'] = $_GET['number_all'] - ($number_process - $i);
+                            $return['number_process'] = $number_all - ($number_process - $i);
 
                             # Calculate Per
-                            $return['percentage'] = round(($return['number_process'] / $_GET['number_all']) * 100);
+                            $return['percentage'] = round(($return['number_process'] / $number_all) * 100);
 
                             # Set Process
                             $return['process_status'] = 'incomplete';
 
                         } else {
 
-                            $return['number_process'] = $_GET['number_all'];
-                            $return['percentage'] = 100;
+                            $return['number_process'] = $number_all;
+                            $return['percentage']     = 100;
                             update_option('wp_statistics_update_page_type', 'yes');
                         }
                     }
