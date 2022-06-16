@@ -1,0 +1,382 @@
+# Translation of Plugins - Simple Blog Stats - Stable (latest release) in Chinese (China)
+# This file is distributed under the same license as the Plugins - Simple Blog Stats - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2020-06-24 12:23:30+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/3.0.0-alpha.2\n"
+"Language: zh_CN\n"
+"Project-Id-Version: Plugins - Simple Blog Stats - Stable (latest release)\n"
+
+#: simple-blog-stats.php:1704
+msgid "More Shortcodes"
+msgstr "更多简码"
+
+#: simple-blog-stats.php:1705
+msgid "More shortcodes can be found in the plugin documentation :)"
+msgstr "在插件文档中可以找到更多的简码:)"
+
+#: simple-blog-stats.php:1754
+msgid "leave this option unchecked to remember your settings. Or, to go ahead and restore all default options, check the box, save your settings, and then deactivate/reactivate the plugin."
+msgstr "取消选中此选项以记住您的设置。或者，要继续并恢复所有默认选项，请选中此框，保存设置，然后停用/重新激活插件。"
+
+#: simple-blog-stats.php:1668
+msgid "number of images in library"
+msgstr "库中的图像数"
+
+#: stats-functions.php:92
+msgid "Online Users"
+msgstr "在线用户"
+
+#: stats-functions.php:71
+msgid "Currently no users logged in."
+msgstr "当前没有用户登录。"
+
+#: simple-blog-stats.php:1651
+msgid "number of logged-in users"
+msgstr "登录用户数"
+
+#: simple-blog-stats.php:1034
+msgid "Homepage"
+msgstr "主页"
+
+#: simple-blog-stats.php:1695
+msgid "Enable Cache"
+msgstr "启用缓存"
+
+#: simple-blog-stats.php:1699
+msgid "Enable 12-hour caching of stats (via WP transients). NOTE: if you enable this setting, stats will update every 12 hours."
+msgstr "启用统计信息的12小时缓存（通过WP瞬态）。注意：如果启用此设置，统计信息将每12小时更新一次。"
+
+#: support-panel.php:63
+msgid "Thank you for using"
+msgstr "谢谢您的使用"
+
+#: support-panel.php:60
+msgid "plugins"
+msgstr "插件"
+
+#: support-panel.php:64
+msgid "Please show support by purchasing one of my"
+msgstr "请支持我，通过购买我的一个"
+
+#: support-panel.php:61
+msgid "donation"
+msgstr "捐献"
+
+#: support-panel.php:57
+msgid "Donate via PayPal"
+msgstr "通过PayPal捐赠"
+
+#: support-panel.php:59
+msgid "books"
+msgstr "书籍"
+
+#: support-panel.php:69
+msgid "Any size donation helps me to continue developing this free plugin and other awesome WordPress resources."
+msgstr "任何规模的捐赠都可以帮助我继续开发这个免费插件和其他很棒的WordPress资源。"
+
+#: support-panel.php:67
+msgid "and is greatly appreciated."
+msgstr "并非常感谢。"
+
+#: support-panel.php:66
+msgid "Your generous support helps to ensure future development of"
+msgstr "您的慷慨支持有助于确保未来的发展"
+
+#: support-panel.php:55
+msgid "Perishable Press Books"
+msgstr "Perishable Press Books"
+
+#: support-panel.php:56
+msgid "Plugin Planet"
+msgstr "Plugin Planet"
+
+#: simple-blog-stats.php:1634
+msgid "number of any post type"
+msgstr "任意文章类型的篇数"
+
+#: support-panel.php:65
+msgid "or"
+msgstr "或"
+
+#: simple-blog-stats.php:1329
+msgid "docs"
+msgstr "文档"
+
+#: simple-blog-stats.php:1327
+msgid "can be customized,"
+msgstr "可以自定义"
+
+#: simple-blog-stats.php:1328
+msgid "check out the"
+msgstr "查看"
+
+#. Author URI of the plugin
+msgid "https://plugin-planet.com/"
+msgstr "https://plugin-planet.com/"
+
+#. Plugin URI of the plugin
+msgid "https://perishablepress.com/simple-blog-stats/"
+msgstr "https://perishablepress.com/simple-blog-stats/"
+
+#: simple-blog-stats.php:1711 simple-blog-stats.php:1757
+msgid "Save Settings"
+msgstr "保存设置"
+
+#: simple-blog-stats.php:1020
+msgid "Settings"
+msgstr "设置"
+
+#: simple-blog-stats.php:1745
+msgid "Restore Defaults"
+msgstr "恢复默认值"
+
+#: simple-blog-stats.php:76
+msgid "to upgrade WordPress and try again."
+msgstr "升级WordPress，然后重试。"
+
+#: simple-blog-stats.php:1753
+msgid "Tip:"
+msgstr "提示:"
+
+#: simple-blog-stats.php:1719
+msgid "These template tags are based on the SBS shortcodes, so check out the Shortcodes panel to customize as desired."
+msgstr "这些模板标签基于SBS简码（👆），因此请查看“简码”面板以根据需要进行自定义。"
+
+#: simple-blog-stats.php:1039 simple-blog-stats.php:1297
+msgid "THANK YOU for your support!"
+msgstr "谢谢您的支持！"
+
+#: simple-blog-stats.php:1292 simple-blog-stats.php:1717
+msgid "Template Tags"
+msgstr "模板标签"
+
+#: simple-blog-stats.php:988
+msgid "tags"
+msgstr "标签"
+
+#: simple-blog-stats.php:1291 simple-blog-stats.php:1304
+msgid "Shortcodes"
+msgstr "简码"
+
+#: simple-blog-stats.php:1312
+msgid "Shortcode / Options"
+msgstr "简码/选项"
+
+#: simple-blog-stats.php:1749
+msgid "Restore default options upon plugin deactivation/reactivation."
+msgstr "停用/重新激活插件后恢复默认选项。"
+
+#: simple-blog-stats.php:74
+msgid "requires WordPress "
+msgstr "需要WordPress"
+
+#: simple-blog-stats.php:986
+msgid "registered users"
+msgstr "注册用户"
+
+#: simple-blog-stats.php:1040
+msgid "Rate this plugin"
+msgstr "评价这个插件"
+
+#. Description of the plugin
+msgid "Provides shortcodes and template tags to display a variety of statistics about your site."
+msgstr "提供简码和模板标签，以显示有关您网站的各种统计信息。"
+
+#: simple-blog-stats.php:1287
+msgid "provides a bunch of shortcodes and template tags to display a variety of statistics about your site."
+msgstr "提供了一堆简码和模板标签，以显示有关您网站的各种统计信息。"
+
+#: simple-blog-stats.php:979
+msgid "posts"
+msgstr "文章"
+
+#: simple-blog-stats.php:1033 simple-blog-stats.php:1293
+#: simple-blog-stats.php:1772
+msgid "Plugin Homepage"
+msgstr "插件主页"
+
+#: simple-blog-stats.php:980
+msgid "pages"
+msgstr "页面"
+
+#. Author of the plugin
+msgid "Jeff Starr"
+msgstr "Jeff Starr"
+
+#: simple-blog-stats.php:1773
+msgid "Jeff Starr on Twitter"
+msgstr "Jeff Starr在Twitter上"
+
+#: simple-blog-stats.php:1296
+msgid "If you like this plugin, please"
+msgstr "如果您喜欢这个插件，请"
+
+#: simple-blog-stats.php:981
+msgid "drafts"
+msgstr "草稿"
+
+#: simple-blog-stats.php:1550
+msgid "displays recent posts"
+msgstr "显示最近的文章"
+
+#: simple-blog-stats.php:1575
+msgid "displays recent comments"
+msgstr "显示最近的评论"
+
+#: simple-blog-stats.php:1311
+msgid "Display before shortcode"
+msgstr "在简码前显示"
+
+#: simple-blog-stats.php:1314
+msgid "Display after shortcode"
+msgstr "在简码后显示"
+
+#: simple-blog-stats.php:1804
+msgid "Are you sure you want to restore all default options? (this action cannot be undone)"
+msgstr "您确定要还原所有默认选项吗？ （此操作无法撤消）"
+
+#: simple-blog-stats.php:1414
+msgid "approved comments"
+msgstr "批准的评论"
+
+#: simple-blog-stats.php:74
+msgid " or higher, and has been deactivated!"
+msgstr "或更高版本，并且已被停用！"
+
+#: simple-blog-stats.php:1297
+msgid "give it a 5-star rating"
+msgstr "给五星好评"
+
+#: simple-blog-stats.php:1431
+msgid "number of users"
+msgstr "用户数"
+
+#: simple-blog-stats.php:1465
+msgid "number of tags"
+msgstr "标签数量"
+
+#: simple-blog-stats.php:1552
+msgid "Number of posts:"
+msgstr "文章数:"
+
+#: simple-blog-stats.php:1326
+msgid "number of posts"
+msgstr "文章数"
+
+#: simple-blog-stats.php:1346
+msgid "number of pages"
+msgstr "页面数"
+
+#: simple-blog-stats.php:1363
+msgid "number of drafts"
+msgstr "草稿数量"
+
+#: simple-blog-stats.php:1577
+msgid "Number of comments:"
+msgstr "评论数："
+
+#: simple-blog-stats.php:1380
+msgid "number of comments"
+msgstr "评论数量"
+
+#: simple-blog-stats.php:1283
+msgid "Overview"
+msgstr "概述"
+
+#: simple-blog-stats.php:1010
+msgid "Site Statistics"
+msgstr "网站统计"
+
+#: simple-blog-stats.php:1533
+msgid "site last updated"
+msgstr "网站上次更新"
+
+#: simple-blog-stats.php:1499
+msgid "number of words in post 1"
+msgstr "第1篇文章中的字数"
+
+#: simple-blog-stats.php:1516
+msgid "number of words in all posts"
+msgstr "所有文章中的字数"
+
+#: simple-blog-stats.php:1397
+msgid "moderated comments"
+msgstr "审核的评论"
+
+#: simple-blog-stats.php:1774
+msgid "Obsessive Web Design &amp; Development"
+msgstr "Obsessive Web Design &amp; Development"
+
+#: simple-blog-stats.php:1313
+msgid "Output"
+msgstr "输出"
+
+#: simple-blog-stats.php:1600
+msgid "number of users per role"
+msgstr "每个角色的用户数"
+
+#: simple-blog-stats.php:1306
+msgid "Here you&rsquo;ll find your shortcodes along with options to customize the corresponding text and/or markup. Leave the before/after fields blank to disable."
+msgstr "在这里，您可以找到您的简码以及用于自定义相应文本和/或标记的选项。将之前/之后字段保留为空白以禁用。"
+
+#: simple-blog-stats.php:1685
+msgid "displays all blog stats"
+msgstr "显示博客所有统计信息"
+
+#: simple-blog-stats.php:985
+msgid "comments approved"
+msgstr "评论已批准"
+
+#: simple-blog-stats.php:1274
+msgid "Toggle all panels"
+msgstr "切换所有面板"
+
+#: simple-blog-stats.php:983
+msgid "total comments"
+msgstr "总评论数"
+
+#: simple-blog-stats.php:984
+msgid "comments in queue"
+msgstr "队列中的评论"
+
+#: simple-blog-stats.php:447 simple-blog-stats.php:467
+msgid "s"
+msgstr "s"
+
+#: simple-blog-stats.php:987
+msgid "categories"
+msgstr "分类"
+
+#: simple-blog-stats.php:1556
+msgid "Length of posts:"
+msgstr "文章长度:"
+
+#: simple-blog-stats.php:1581
+msgid "Length of comments:"
+msgstr "评论长度:"
+
+#: simple-blog-stats.php:1448
+msgid "number of categories"
+msgstr "分类数"
+
+#: simple-blog-stats.php:76
+msgid "Please return to the"
+msgstr "请返回"
+
+#: simple-blog-stats.php:1288
+msgid "Use the shortcodes to display various stats on any WP Post or Page. Use the template tags to display stats anywhere in your theme template."
+msgstr "使用简码可在任何WP文章或页面上显示各种统计信息。使用模板标签可以在主题模板中的任何位置显示统计信息。"
+
+#: simple-blog-stats.php:1762
+msgid "Show Support"
+msgstr "显示支持"
+
+#. Plugin Name of the plugin
+#: simple-blog-stats.php:44 simple-blog-stats.php:1273 support-panel.php:5
+msgid "Simple Blog Stats"
+msgstr "Simple Blog Stats"
