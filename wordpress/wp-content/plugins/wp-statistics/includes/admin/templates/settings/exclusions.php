@@ -6,8 +6,7 @@
         </tr>
 
         <tr valign="top">
-            <th scope="row"><label for="wps-exclusions"><?php _e('Record Exclusions:', 'wp-statistics'); ?></label>
-            </th>
+            <th scope="row"><label for="wps-exclusions"><?php _e('Record Exclusions:', 'wp-statistics'); ?></label></th>
             <td>
                 <input id="wps-exclusions" type="checkbox" value="1" name="wps_record_exclusions" <?php echo WP_STATISTICS\Option::get('record_exclusions') == true ? "checked='checked'" : ''; ?>><label for="wps-exclusions"><?php _e('Enable', 'wp-statistics'); ?></label>
                 <p class="description"><?php echo __('This option will record all the excluded hits in a separate table with the reasons for excluding (but no other information).', 'wp-statistics') . ' ' . __('It generates a lot of data, not only actual user visits but also shows the total number of your site’s hits.', 'wp-statistics'); ?></p>
@@ -74,7 +73,7 @@
             </th>
             <td>
                 <input id="force_robot_update" type="checkbox" value="1" name="wps_force_robot_update" <?php echo WP_STATISTICS\Option::get('force_robot_update') == true ? "checked='checked'" : ''; ?>><label for="force_robot_update"><?php _e('Enable', 'wp-statistics'); ?></label>
-                <p class="description"><?php echo sprintf(__('Force the robot list to reset itself to the default after WP-Statistics updated. Note that any custom robots added to the list will be lost if this option is enabled.', 'wp-statistics'), $role); ?></p>
+                <p class="description"><?php echo sprintf(__('Force the robot list to reset itself to the default after WP Statistics updated. Note that any custom robots added to the list will be lost if this option is enabled.', 'wp-statistics'), $role); ?></p>
             </td>
         </tr>
 
@@ -145,7 +144,7 @@
             <th scope="row"><?php _e('Excluded Countries:', 'wp-statistics'); ?></th>
             <td>
                 <textarea id="wps_excluded_countries" name="wps_excluded_countries" rows="5" cols="50" class="code" dir="ltr"><?php echo esc_textarea(WP_STATISTICS\Option::get('excluded_countries')); ?></textarea>
-                <p class="description"><?php echo __('Add the country codes (one per line, two letters each) to exclude them from statistics collection.', 'wp-statistics') . ' ' . __('Use "000" (three zeros) to exclude unknown countries.', 'wp-statistics') . ' ' . sprintf(__('(%1$sISO 3166 Country Codes%2$s)', 'wp-statistics'), '<a href="' . esc_url('https://dev.maxmind.com/geoip/legacy/codes/iso3166/') . '" target="_blank">', '</a>'); ?></p>
+                <p class="description"><?php echo __('Add the country codes (one per line, two letters each) to exclude them from statistics collection.', 'wp-statistics') . ' ' . __('Use "000" (three zeros) to exclude unknown countries.', 'wp-statistics') . ' ' . sprintf(__('(%1$sISO 3166 Country Codes%2$s)', 'wp-statistics'), '<a href="' . esc_url('https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes') . '" target="_blank">', '</a>'); ?></p>
             </td>
         </tr>
 
@@ -153,7 +152,7 @@
             <th scope="row"><?php _e('Included Countries:', 'wp-statistics'); ?></th>
             <td>
                 <textarea id="wps_included_countries" name="wps_included_countries" rows="5" cols="50" class="code" dir="ltr"><?php echo esc_textarea(WP_STATISTICS\Option::get('included_countries')); ?></textarea>
-                <p class="description"><?php echo __('Add the country codes (one per line, two letters each) to include them in statistics collection.', 'wp-statistics') . ' ' . __('Use "000" (three zeros) to exclude unknown countries.', 'wp-statistics') . ' ' . sprintf(__('(%1$sISO 3166 Country Codes%2$s)', 'wp-statistics'), '<a href="' . esc_url('https://dev.maxmind.com/geoip/legacy/codes/iso3166/') . '" target="_blank">', '</a>'); ?></p>
+                <p class="description"><?php echo __('Add the country codes (one per line, two letters each) to include them in statistics collection.', 'wp-statistics') . ' ' . __('Use "000" (three zeros) to exclude unknown countries.', 'wp-statistics') . ' ' . sprintf(__('(%1$sISO 3166 Country Codes%2$s)', 'wp-statistics'), '<a href="' . esc_url('https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes') . '" target="_blank">', '</a>'); ?></p>
             </td>
         </tr>
         </tbody>

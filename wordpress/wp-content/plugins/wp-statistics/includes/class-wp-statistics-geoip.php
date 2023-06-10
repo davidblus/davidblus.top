@@ -212,8 +212,11 @@ class GeoIP
     public static function getUserCountryFromDB($ip)
     {
         global $wpdb;
+
         $date = date('Y-m-d', current_time('timestamp') - self::$library['country']['cache']);
-        $user = $wpdb->get_row("SELECT `location` FROM " . DB::table('visitor') . " WHERE `ip` = '{$ip}' and `last_counter` >= '{$date}' ORDER BY `ID` DESC LIMIT 1");
+        $sql  = $wpdb->prepare("SELECT `location` FROM " . DB::table('visitor') . " WHERE `ip` = %s and `last_counter` >= %s ORDER BY `ID` DESC LIMIT 1", $ip, $date);
+        $user = $wpdb->get_row($sql);
+
         if (null !== $user) {
             return $user->location;
         }
@@ -264,7 +267,7 @@ class GeoIP
         }
 
         // This is the location of the file to download.
-        $download_url = GeoIP::$library[$pack]['source'];
+        $download_url = apply_filters('wp_statistics_geo_ip_download_url', GeoIP::$library[$pack]['source'], $pack);
         $response     = wp_remote_get($download_url, array(
             'timeout'   => 60,
             'sslverify' => false
@@ -370,7 +373,9 @@ class GeoIP
 
         // Send Email
         if (Option::get('geoip_report') == true) {
-            Helper::send_mail(Option::getEmailNotification(), __('GeoIP update on', 'wp-statistics') . ' ' . get_bloginfo('name'), $result['notice']);
+
+            Helper::send_mail(Option::getEmailNotification(), __('GeoIP update on', 'wp-statistics') . ' ' . get_bloginfo('name'), $result['notice'], true,
+                array("email_title" => __('GeoIP update on', 'wp-statistics') . ' <a href="' . get_bloginfo('url') . '" target="_blank" style="text-decoration: underline; color: #999999; font-family: Nunito; font-size: 13px; font-weight: 400; line-height: 150%;">' . get_bloginfo('name') . '</a>'));
         }
 
         return $result;
@@ -506,7 +511,7 @@ class GeoIP
                 } elseif ($return == "name") {
                     $subdiv   = $record->mostSpecificSubdivision->name;
                     $city     = $record->city->name;
-                    $location = ($city ? $city : "(Unknown)") . ($subdiv ? (", ") : "") . $subdiv;
+                    $location = (!empty($city) ? $city : $default_city) . ($subdiv ? (", ") : "") . $subdiv;
                 } else {
                     $location = $record->city->{$return};
                 }

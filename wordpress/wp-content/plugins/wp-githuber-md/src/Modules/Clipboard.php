@@ -13,6 +13,9 @@
 
 namespace Githuber\Module;
 
+/**
+ * Class Clipboard
+ */
 class Clipboard extends ModuleAbstract {
 
 	/**
@@ -20,7 +23,7 @@ class Clipboard extends ModuleAbstract {
 	 *
 	 * @var string
 	 */
-    public $clipboard_version = '2.0.4';
+	public $clipboard_version = '2.0.4';
 
 	/**
 	 * Constructer.
@@ -38,29 +41,28 @@ class Clipboard extends ModuleAbstract {
 		add_action( 'wp_enqueue_scripts', array( $this, 'front_enqueue_scripts' ) );
 		add_action( 'wp_print_footer_scripts', array( $this, 'front_print_footer_scripts' ) );
 	}
- 
+
 	/**
 	 * Register JS files for frontend use.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function front_enqueue_scripts() {
-	
-        $clipboard_src = githuber_get_option( 'clipboard_src', 'githuber_modules' );
+		$clipboard_src = githuber_get_option( 'clipboard_src', 'githuber_modules' );
 
-        switch ( $clipboard_src ) {
-            case 'cloudflare':
-                $script_url = 'https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/' . $this->clipboard_version . '/clipboard.min.js';
-                break;
+		switch ( $clipboard_src ) {
+			case 'cloudflare':
+				$script_url = 'https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/' . $this->clipboard_version . '/clipboard.min.js';
+				break;
 
-            case 'jsdelivr':
-                $script_url = 'https://cdn.jsdelivr.net/npm/clipboard@' . $this->clipboard_version . '/dist/clipboard.min.js';
-                break;
+			case 'jsdelivr':
+				$script_url = 'https://cdn.jsdelivr.net/npm/clipboard@' . $this->clipboard_version . '/dist/clipboard.min.js';
+				break;
 
-            default:
-                $script_url = $this->githuber_plugin_url . 'assets/vendor/clipboard/clipboard.min.js';
-                break;
-        } 
+			default:
+				$script_url = $this->githuber_plugin_url . 'assets/vendor/clipboard/clipboard.min.js';
+				break;
+		}
 
 		wp_enqueue_script( 'clipboard', $script_url, array(), $this->clipboard_version, true );
 	}
@@ -107,11 +109,20 @@ class Clipboard extends ModuleAbstract {
 							}
 		
 							if (isLanguage !== -1) {
+								var current_pre = pre[i];
+								var parent = current_pre.parentNode;
+								var div = document.createElement("div");
+								div.style[\'position\'] = \'relative\';
+
+								parent.replaceChild(div, current_pre);
+
 								var button = document.createElement("button");
 								button.className = "copy-button";
 								button.textContent = "Copy";
-			
-								pre[i].appendChild(button);
+
+								div.appendChild(current_pre);
+								div.appendChild(button);
+
 								hasLanguage = true;
 							}
 						};

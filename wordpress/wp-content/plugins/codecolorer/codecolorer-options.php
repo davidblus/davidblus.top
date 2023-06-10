@@ -72,7 +72,7 @@ class CodeColorerOptions
 
         $options = self::populateDefaultValues($options);
 
-        @list($modes, $lang) = explode('_', $suffix, 2);
+        list($modes, $lang) = array_pad(explode('_', $suffix, 2), 2, null);
         if (null !== ($mode = self::parseMode($modes, 'i'))) {
             $options['inline'] = $mode;
         }
@@ -278,7 +278,7 @@ class CodeColorerOptions
      */
     protected static function wpOption($name)
     {
-        return get_option($name);
+        return wp_strip_all_tags(get_option($name));
     }
 
     public static function feedOverallStyle()

@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Simple Blog Stats\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-08 21:58+0000\n"
+"POT-Creation-Date: 2022-09-28 21:45+0000\n"
 "POT-Revision-Date: Sat Aug 13 2016 15:37:11 GMT-0700 (PDT)\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: \n"
@@ -23,404 +23,311 @@ msgstr ""
 "esc_html_x:1,2c;comments_number_link:2,3;t:1;st:1;trans:1;transChoice:1,2\n"
 "X-Generator: Loco https://localise.biz/"
 
-#: stats-functions.php:71
-msgid "Currently no users logged in."
+#: simple-blog-stats.php:896
+msgid " minute"
 msgstr ""
 
-#: stats-functions.php:92
-msgid "Online Users"
-msgstr ""
-
-#. Name of the plugin
-#: simple-blog-stats.php:44 simple-blog-stats.php:1272 support-panel.php:5
-msgid "Simple Blog Stats"
-msgstr ""
-
-#: simple-blog-stats.php:74
-msgid "requires WordPress "
+#: simple-blog-stats.php:896
+msgid " minutes"
 msgstr ""
 
 #: simple-blog-stats.php:74
 msgid " or higher, and has been deactivated!"
 msgstr ""
 
-#: simple-blog-stats.php:76
-msgid "Please return to the"
+#: support-panel.php:61
+msgid "and is greatly appreciated."
 msgstr ""
 
-#: simple-blog-stats.php:76
-msgid "WordPress Admin area"
+#: support-panel.php:63
+msgid ""
+"Any size donation helps me to continue developing this free plugin and other "
+"awesome WordPress resources."
 msgstr ""
 
-#: simple-blog-stats.php:76
-msgid "to upgrade WordPress and try again."
+#: simple-blog-stats.php:1550
+msgid "approved comments"
 msgstr ""
 
-#: simple-blog-stats.php:447 simple-blog-stats.php:467
-msgid "s"
+#: simple-blog-stats.php:1940
+msgid ""
+"Are you sure you want to restore all default options? (this action cannot be "
+"undone)"
 msgstr ""
 
-#: simple-blog-stats.php:978
-msgid "posts"
+#: support-panel.php:53
+msgid "books"
 msgstr ""
 
-#: simple-blog-stats.php:979
-msgid "pages"
+#: simple-blog-stats.php:1908
+msgid "by"
 msgstr ""
 
-#: simple-blog-stats.php:980
-msgid "drafts"
+#: simple-blog-stats.php:1463
+msgid "can be customized,"
 msgstr ""
 
-#: simple-blog-stats.php:981
-msgid "words"
-msgstr ""
-
-#: simple-blog-stats.php:982
-msgid "total comments"
-msgstr ""
-
-#: simple-blog-stats.php:983
-msgid "comments in queue"
-msgstr ""
-
-#: simple-blog-stats.php:984
-msgid "comments approved"
-msgstr ""
-
-#: simple-blog-stats.php:985
-msgid "registered users"
-msgstr ""
-
-#: simple-blog-stats.php:986
+#: simple-blog-stats.php:1123
 msgid "categories"
 msgstr ""
 
-#: simple-blog-stats.php:987
-msgid "tags"
+#: simple-blog-stats.php:1464
+msgid "check out the"
 msgstr ""
 
-#: simple-blog-stats.php:1000
-msgid "Statistics for "
+#: simple-blog-stats.php:1121
+msgid "comments approved"
 msgstr ""
 
-#: simple-blog-stats.php:1009
-msgid "Site Statistics"
+#: simple-blog-stats.php:1120
+msgid "comments in queue"
 msgstr ""
 
-#: simple-blog-stats.php:1019
-msgid "Settings"
+#: stats-functions.php:71
+msgid "Currently no users logged in."
 msgstr ""
 
-#: simple-blog-stats.php:1032 simple-blog-stats.php:1292 
-#: simple-blog-stats.php:1771
-msgid "Plugin Homepage"
+#: simple-blog-stats.php:1450
+msgid "Display after shortcode"
 msgstr ""
 
-#: simple-blog-stats.php:1033
-msgid "Homepage"
+#: simple-blog-stats.php:1447
+msgid "Display before shortcode"
 msgstr ""
 
-#: simple-blog-stats.php:1038 simple-blog-stats.php:1296
-msgid "THANK YOU for your support!"
+#: simple-blog-stats.php:1821
+msgid "displays all blog stats"
 msgstr ""
 
-#: simple-blog-stats.php:1039
-msgid "Rate this plugin"
+#: simple-blog-stats.php:1711
+msgid "displays recent comments"
 msgstr ""
 
-#: simple-blog-stats.php:1273
-msgid "Toggle all panels"
+#: simple-blog-stats.php:1686
+msgid "displays recent posts"
 msgstr ""
 
-#: simple-blog-stats.php:1282
-msgid "Overview"
+#: simple-blog-stats.php:1465
+msgid "docs"
 msgstr ""
 
-#: simple-blog-stats.php:1286
+#: support-panel.php:51
+msgid "Donate via PayPal"
+msgstr ""
+
+#: support-panel.php:55
+msgid "donation"
+msgstr ""
+
+#: simple-blog-stats.php:1117
+msgid "drafts"
+msgstr ""
+
+#: simple-blog-stats.php:1835
 msgid ""
-"provides a bunch of shortcodes and template tags to display a variety of "
-"statistics about your site."
+"Enable 12-hour caching of stats (via WP transients). NOTE: if you enable "
+"this setting, stats will update every 12 hours."
 msgstr ""
 
-#: simple-blog-stats.php:1287
-msgid ""
-"Use the shortcodes to display various stats on any WP Post or Page. Use the "
-"template tags to display stats anywhere in your theme template."
+#: simple-blog-stats.php:1831
+msgid "Enable Cache"
 msgstr ""
 
-#: simple-blog-stats.php:1290 simple-blog-stats.php:1303
-msgid "Shortcodes"
-msgstr ""
-
-#: simple-blog-stats.php:1291 simple-blog-stats.php:1716
-msgid "Template Tags"
-msgstr ""
-
-#: simple-blog-stats.php:1295
-msgid "If you like this plugin, please"
-msgstr ""
-
-#: simple-blog-stats.php:1296
+#: simple-blog-stats.php:1433
 msgid "give it a 5-star rating"
 msgstr ""
 
-#: simple-blog-stats.php:1305
+#: simple-blog-stats.php:1442
 msgid ""
 "Here you&rsquo;ll find your shortcodes along with options to customize the "
 "corresponding text and/or markup. Leave the before/after fields blank to "
 "disable."
 msgstr ""
 
-#: simple-blog-stats.php:1310
-msgid "Display before shortcode"
+#: simple-blog-stats.php:1170
+msgid "Homepage"
 msgstr ""
 
-#: simple-blog-stats.php:1311
-msgid "Shortcode / Options"
+#. URI of the plugin
+msgid "https://perishablepress.com/simple-blog-stats/"
 msgstr ""
 
-#: simple-blog-stats.php:1312
-msgid "Output"
+#. Author URI of the plugin
+msgid "https://plugin-planet.com/"
 msgstr ""
 
-#: simple-blog-stats.php:1313
-msgid "Display after shortcode"
+#: simple-blog-stats.php:1432
+msgid "If you like this plugin, please"
 msgstr ""
 
-#: simple-blog-stats.php:1325
-msgid "number of posts"
+#. Author of the plugin
+msgid "Jeff Starr"
 msgstr ""
 
-#: simple-blog-stats.php:1326
-msgid "can be customized,"
+#: simple-blog-stats.php:1909
+msgid "Jeff Starr on Twitter"
 msgstr ""
 
-#: simple-blog-stats.php:1327
-msgid "check out the"
-msgstr ""
-
-#: simple-blog-stats.php:1328
-msgid "docs"
-msgstr ""
-
-#: simple-blog-stats.php:1345
-msgid "number of pages"
-msgstr ""
-
-#: simple-blog-stats.php:1362
-msgid "number of drafts"
-msgstr ""
-
-#: simple-blog-stats.php:1379
-msgid "number of comments"
-msgstr ""
-
-#: simple-blog-stats.php:1396
-msgid "moderated comments"
-msgstr ""
-
-#: simple-blog-stats.php:1413
-msgid "approved comments"
-msgstr ""
-
-#: simple-blog-stats.php:1430
-msgid "number of users"
-msgstr ""
-
-#: simple-blog-stats.php:1447
-msgid "number of categories"
-msgstr ""
-
-#: simple-blog-stats.php:1464
-msgid "number of tags"
-msgstr ""
-
-#: simple-blog-stats.php:1481
-msgid "number of taxonomy terms"
-msgstr ""
-
-#: simple-blog-stats.php:1498
-msgid "number of words in post 1"
-msgstr ""
-
-#: simple-blog-stats.php:1515
-msgid "number of words in all posts"
-msgstr ""
-
-#: simple-blog-stats.php:1532
-msgid "site last updated"
-msgstr ""
-
-#: simple-blog-stats.php:1549
-msgid "displays recent posts"
-msgstr ""
-
-#: simple-blog-stats.php:1551
-msgid "Number of posts:"
-msgstr ""
-
-#: simple-blog-stats.php:1555
-msgid "Length of posts:"
-msgstr ""
-
-#: simple-blog-stats.php:1574
-msgid "displays recent comments"
-msgstr ""
-
-#: simple-blog-stats.php:1576
-msgid "Number of comments:"
-msgstr ""
-
-#: simple-blog-stats.php:1580
-msgid "Length of comments:"
-msgstr ""
-
-#: simple-blog-stats.php:1599
-msgid "number of users per role"
-msgstr ""
-
-#: simple-blog-stats.php:1616
-msgid "list of CPT counts"
-msgstr ""
-
-#: simple-blog-stats.php:1633
-msgid "number of any post type"
-msgstr ""
-
-#: simple-blog-stats.php:1650
-msgid "number of logged-in users"
-msgstr ""
-
-#: simple-blog-stats.php:1667
-msgid "number of images in library"
-msgstr ""
-
-#: simple-blog-stats.php:1684
-msgid "displays all blog stats"
-msgstr ""
-
-#: simple-blog-stats.php:1694
-msgid "Enable Cache"
-msgstr ""
-
-#: simple-blog-stats.php:1698
-msgid ""
-"Enable 12-hour caching of stats (via WP transients). NOTE: if you enable "
-"this setting, stats will update every 12 hours."
-msgstr ""
-
-#: simple-blog-stats.php:1703
-msgid "More Shortcodes"
-msgstr ""
-
-#: simple-blog-stats.php:1704
-msgid "More shortcodes can be found in the plugin documentation :)"
-msgstr ""
-
-#: simple-blog-stats.php:1710 simple-blog-stats.php:1756
-msgid "Save Settings"
-msgstr ""
-
-#: simple-blog-stats.php:1718
-msgid ""
-"These template tags are based on the SBS shortcodes, so check out the "
-"Shortcodes panel to customize as desired."
-msgstr ""
-
-#: simple-blog-stats.php:1744
-msgid "Restore Defaults"
-msgstr ""
-
-#: simple-blog-stats.php:1748
-msgid "Restore default options upon plugin deactivation/reactivation."
-msgstr ""
-
-#: simple-blog-stats.php:1752
-msgid "Tip:"
-msgstr ""
-
-#: simple-blog-stats.php:1753
+#: simple-blog-stats.php:1890
 msgid ""
 "leave this option unchecked to remember your settings. Or, to go ahead and "
 "restore all default options, check the box, save your settings, and then "
 "deactivate/reactivate the plugin."
 msgstr ""
 
-#: simple-blog-stats.php:1761
-msgid "Show Support"
+#: simple-blog-stats.php:1717
+msgid "Length of comments:"
 msgstr ""
 
-#: simple-blog-stats.php:1771
-msgid "by"
+#: simple-blog-stats.php:1692
+msgid "Length of posts:"
 msgstr ""
 
-#: simple-blog-stats.php:1772
-msgid "Jeff Starr on Twitter"
+#: simple-blog-stats.php:101
+msgid "Like this plugin? Give it a"
 msgstr ""
 
-#: simple-blog-stats.php:1773
+#: simple-blog-stats.php:1753
+msgid "list of CPT counts"
+msgstr ""
+
+#: simple-blog-stats.php:1533
+msgid "moderated comments"
+msgstr ""
+
+#: simple-blog-stats.php:1840
+msgid "More Shortcodes"
+msgstr ""
+
+#: simple-blog-stats.php:1841
+msgid "More shortcodes can be found in the plugin documentation :)"
+msgstr ""
+
+#: simple-blog-stats.php:1770
+msgid "number of any post type"
+msgstr ""
+
+#: simple-blog-stats.php:1584
+msgid "number of categories"
+msgstr ""
+
+#: simple-blog-stats.php:1516
+msgid "number of comments"
+msgstr ""
+
+#: simple-blog-stats.php:1713
+msgid "Number of comments:"
+msgstr ""
+
+#: simple-blog-stats.php:1499
+msgid "number of drafts"
+msgstr ""
+
+#: simple-blog-stats.php:1804
+msgid "number of images in library"
+msgstr ""
+
+#: simple-blog-stats.php:1787
+msgid "number of logged-in users"
+msgstr ""
+
+#: simple-blog-stats.php:1482
+msgid "number of pages"
+msgstr ""
+
+#: simple-blog-stats.php:1462
+msgid "number of posts"
+msgstr ""
+
+#: simple-blog-stats.php:1688
+msgid "Number of posts:"
+msgstr ""
+
+#: simple-blog-stats.php:1601
+msgid "number of tags"
+msgstr ""
+
+#: simple-blog-stats.php:1618
+msgid "number of taxonomy terms"
+msgstr ""
+
+#: simple-blog-stats.php:1567
+msgid "number of users"
+msgstr ""
+
+#: simple-blog-stats.php:1736
+msgid "number of users per role"
+msgstr ""
+
+#: simple-blog-stats.php:1652
+msgid "number of words in all posts"
+msgstr ""
+
+#: simple-blog-stats.php:1635
+msgid "number of words in post 1"
+msgstr ""
+
+#: simple-blog-stats.php:1910
 msgid "Obsessive Web Design &amp; Development"
 msgstr ""
 
-#: simple-blog-stats.php:1803
-msgid ""
-"Are you sure you want to restore all default options? (this action cannot be "
-"undone)"
-msgstr ""
-
-#: support-panel.php:55
-msgid "Perishable Press Books"
-msgstr ""
-
-#: support-panel.php:56
-msgid "Plugin Planet"
-msgstr ""
-
-#: support-panel.php:57
-msgid "Donate via PayPal"
+#: stats-functions.php:92
+msgid "Online Users"
 msgstr ""
 
 #: support-panel.php:59
-msgid "books"
-msgstr ""
-
-#: support-panel.php:60
-msgid "plugins"
-msgstr ""
-
-#: support-panel.php:61
-msgid "donation"
-msgstr ""
-
-#: support-panel.php:63
-msgid "Thank you for using"
-msgstr ""
-
-#: support-panel.php:64
-msgid "Please show support by purchasing one of my"
-msgstr ""
-
-#: support-panel.php:65
 msgid "or"
 msgstr ""
 
-#: support-panel.php:65
+#: support-panel.php:59
 msgid "or by making a"
 msgstr ""
 
-#: support-panel.php:66
-msgid "Your generous support helps to ensure future development of"
+#: simple-blog-stats.php:1449
+msgid "Output"
 msgstr ""
 
-#: support-panel.php:67
-msgid "and is greatly appreciated."
+#: simple-blog-stats.php:1419
+msgid "Overview"
 msgstr ""
 
-#: support-panel.php:69
+#: simple-blog-stats.php:1116
+msgid "pages"
+msgstr ""
+
+#: support-panel.php:49
+msgid "Perishable Press Books"
+msgstr ""
+
+#: simple-blog-stats.php:76
+msgid "Please return to the"
+msgstr ""
+
+#: support-panel.php:58
+msgid "Please show support by purchasing one of my"
+msgstr ""
+
+#: simple-blog-stats.php:1169 simple-blog-stats.php:1429 
+#: simple-blog-stats.php:1908
+msgid "Plugin Homepage"
+msgstr ""
+
+#: support-panel.php:50
+msgid "Plugin Planet"
+msgstr ""
+
+#: support-panel.php:54
+msgid "plugins"
+msgstr ""
+
+#: simple-blog-stats.php:1115
+msgid "posts"
+msgstr ""
+
+#: simple-blog-stats.php:1423
 msgid ""
-"Any size donation helps me to continue developing this free plugin and other "
-"awesome WordPress resources."
+"provides a bunch of shortcodes and template tags to display a variety of "
+"statistics about your site."
 msgstr ""
 
 #. Description of the plugin
@@ -429,14 +336,123 @@ msgid ""
 "about your site."
 msgstr ""
 
-#. URI of the plugin
-msgid "https://perishablepress.com/simple-blog-stats/"
+#: simple-blog-stats.php:1176
+msgid "Rate this plugin"
 msgstr ""
 
-#. Author of the plugin
-msgid "Jeff Starr"
+#: simple-blog-stats.php:1122
+msgid "registered users"
 msgstr ""
 
-#. Author URI of the plugin
-msgid "https://plugin-planet.com/"
+#: simple-blog-stats.php:74
+msgid "requires WordPress "
+msgstr ""
+
+#: simple-blog-stats.php:1885
+msgid "Restore default options upon plugin deactivation/reactivation."
+msgstr ""
+
+#: simple-blog-stats.php:1881
+msgid "Restore Defaults"
+msgstr ""
+
+#: simple-blog-stats.php:485 simple-blog-stats.php:505
+msgid "s"
+msgstr ""
+
+#: simple-blog-stats.php:1847 simple-blog-stats.php:1893
+msgid "Save Settings"
+msgstr ""
+
+#: simple-blog-stats.php:1156
+msgid "Settings"
+msgstr ""
+
+#: simple-blog-stats.php:1448
+msgid "Shortcode / Options"
+msgstr ""
+
+#: simple-blog-stats.php:1427 simple-blog-stats.php:1440
+msgid "Shortcodes"
+msgstr ""
+
+#: simple-blog-stats.php:1898
+msgid "Show Support"
+msgstr ""
+
+#. Name of the plugin
+#: support-panel.php:5 simple-blog-stats.php:44 simple-blog-stats.php:1409
+msgid "Simple Blog Stats"
+msgstr ""
+
+#: simple-blog-stats.php:1669
+msgid "site last updated"
+msgstr ""
+
+#: simple-blog-stats.php:1146
+msgid "Site Statistics"
+msgstr ""
+
+#: simple-blog-stats.php:1137
+msgid "Statistics for "
+msgstr ""
+
+#: simple-blog-stats.php:1124
+msgid "tags"
+msgstr ""
+
+#: simple-blog-stats.php:1428 simple-blog-stats.php:1853
+msgid "Template Tags"
+msgstr ""
+
+#: support-panel.php:57
+msgid "Thank you for using"
+msgstr ""
+
+#: simple-blog-stats.php:1175 simple-blog-stats.php:1433
+msgid "THANK YOU for your support!"
+msgstr ""
+
+#: simple-blog-stats.php:1855
+msgid ""
+"These template tags are based on the SBS shortcodes, so check out the "
+"Shortcodes panel to customize as desired."
+msgstr ""
+
+#: simple-blog-stats.php:1889
+msgid "Tip:"
+msgstr ""
+
+#: simple-blog-stats.php:76
+msgid "to upgrade WordPress and try again."
+msgstr ""
+
+#: simple-blog-stats.php:1410
+msgid "Toggle all panels"
+msgstr ""
+
+#: simple-blog-stats.php:1119
+msgid "total comments"
+msgstr ""
+
+#: simple-blog-stats.php:1424
+msgid ""
+"Use the shortcodes to display various stats on any WP Post or Page. Use the "
+"template tags to display stats anywhere in your theme template."
+msgstr ""
+
+#: simple-blog-stats.php:76
+msgid "WordPress Admin area"
+msgstr ""
+
+#: simple-blog-stats.php:1118
+msgid "words"
+msgstr ""
+
+#: support-panel.php:60
+msgid "Your generous support helps to ensure future development of"
+msgstr ""
+
+#: simple-blog-stats.php:105
+msgid "★★★★★ rating&nbsp;&raquo;"
 msgstr ""

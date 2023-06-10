@@ -1,10 +1,10 @@
 === WP Statistics ===
-Contributors: mostafa.s1990, kashani, veronalabs, mehrshaddarzi, GregRoss
+Contributors: mostafa.s1990, kashani, veronalabs, GregRoss
 Donate link: https://wp-statistics.com/donate/
 Tags: analytics, wordpress analytics, stats, statistics, visit, visitors, hits, chart, browser, today, yesterday, week, month, year, total, post, page, sidebar, google, live visit, search word, agent, google analytics, webmasters, google webmasters, geoip, location
 Requires at least: 4.4
-Tested up to: 6.0
-Stable tag: 13.2.4
+Tested up to: 6.2
+Stable tag: 14.1.2
 Requires PHP: 5.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,6 +32,7 @@ All these data are recorded in your server, and YES! WP Statistics is [GDPR comp
 * Widget Support for showing Statistics
 * Data Export in TSV, XML, and CSV formats
 * Statistical Reporting Emails
+* Statistical of pages with query strings and UTM parameters
 * [Premium] [Real-time stats](http://bit.ly/2Mj4Nss)
 * [Premium] [More Advanced reporting](http://bit.ly/2MjZE3l)
 * And much more information represented in graphs & charts along with data filtering
@@ -90,6 +91,9 @@ Services that use centralized databases for spam and robot detections , such as 
 = Not all referrals are showing up in the search words list, why? =
 Search Engine Referrals and Words are highly dependent on the search engines providing the information to us. Unfortunately, we can’t do anything about it; we report everything we receive.
 
+= Does WP Statistics support the UTM parameters? =
+Yes, It does! WP Statistics logs all query strings in the URL such as UTM parameters.
+
 = PHP 7 Support? =
 WP Statistics is PHP 7 compliant; however, some versions of PHP 7 have bugs that can cause issues. One known issue is that PHP 7.0.4 cause memory exhaustion errors. Newer versions of PHP 7 do not have this issue.
 At this time (September 2018) WP Statistics seems to run fine with PHP 7.2.6. But  you may experience issues that we haven’t found yet. If you do, feel free to report it after you make sure it is not a problem with PHP.
@@ -119,18 +123,137 @@ Referrer spam blacklist is provided by Matomo, available from https://github.com
 8. Last Search Words
 9. Dashboard widgets
 10. Theme widget
+11. Page Statistics Overview
 
 == Upgrade Notice ==
-
-= 13.0 =
+= 14.0 =
 **IMPORTANT NOTE**
-Welcome to WP Statistics v13.0, our biggest update!
-Thank you for being part of our community. We’ve been working hard for one year to develop this version and make WP Statistics better for you.
-Before updating, make sure you disabled all your add-ons, then after that, try to update add-ons.
+Welcome to WP Statistics v14.0, our biggest update!
+Thank you for being part of our community. We’ve been working hard for one year to develop this version and make WP Statistics better for you. after updating, please update all Add-Ons to tha latest version as well.
 
 If you encounter any bug, please create an issue on [GitHub](https://github.com/wp-statistics/wp-statistics/issues/new) where we can act upon them more efficiently. Since [GitHub](https://github.com/wp-statistics/wp-statistics) is not a support forum, just bugs are welcomed, and any other request will be closed.
 
 == Changelog ==
+= v14.1.2 - 23.05.2023 =
+* Improvement: Fix showing actual page name in post types hit meta boxes
+* Improvement: Fix a bug when date filter doesn't affect referring widget data
+* Improvement: Fix showing actual page name in post types hit meta boxes header
+* Improvement: Add filter `wp_statistics_geo_ip_download_url`
+
+= v14.1.1 - 20.05.2023 =
+* Feature: Add `/wp-json/wp-statistics/v2/online` endpoint to maintain real-time user presence on the page.
+* Improvement: Enhance `tracker.js` and implement minor optimizations.
+* Improvement: Upgrade email template and enhance email functionalities.
+* Improvement: Ensure compatibility with PHP v5.6, although we highly recommend upgrading your PHP version for better performance and security.
+
+= v14.1 - 02.05.2023 =
+* Improvement: Compatibility with WordPress v6.2
+* Improvement: Update ChartJs to the latest version, v4.2.1
+* Improvement: Avoid to return cache status before filter statement
+* Improvement: Implement post types section
+* Improvement: Categorize page hits by query strings in single view statistics for improved tracking
+* Bugfix: Fix a bug related to displaying rest API error messages in the meta box AJAX.
+
+= v14.0.2 - 09.03.2023 =
+* Bugfix: Compatibility with PHP v7.0
+* Bugfix: Fix some Javascript errors that caused to not showing-up the charts.
+* Bugfix: Fix search chart height issue
+* Update: Updating all screenshots
+* Update: Add total visitors and total visits on Summary
+* Improvement: Set top pages to 25 per page
+* Improvement: Add all data points on the x-axis of charts
+* Improvement: Support IPv6 in Settings -> IP configuration by SeeIP.org
+
+= v14.0 - 26.02.2023
+
+**New Feature**
+
+* **Time-Frame Filter:** All widgets now support custom date ranges, giving you greater flexibility in your data analysis.
+* **Statistics Hit Link:** A new feature that adds a link to the detailed statistics page in all widgets, making it easier to see the complete data behind your website's traffic.
+
+**Improvements**
+
+* **Widget Admin UI & UX:** We've completely redesigned the widget interface to improve the overall user experience, making it more intuitive and easy to use.
+* **Category and Tags Statistical Merge:** We've merged the Category and Tags Statistical into Taxonomy to make it more user-friendly and easier to understand.
+* **Assets and Icons Update:** All assets and icons have been updated to enhance the overall look and feel of the plugin.
+* **Update License Functionality:** We've made it easier to manage your license under the Add-Ons, so you can keep your plugin up-to-date and running smoothly.
+* **Admin Styles & Settings Page:** We've made some updates to the admin styles and settings page to improve the overall usability and functionality of the plugin.
+* **Many other improvements:** We've made numerous other improvements to enhance the overall performance and functionality of WP Statistics.
+
+**Add-Ons**
+
+* **Data Plus Add-On:** We recently launched a new Add-On called [Data Plus](https://wp-statistics.com/product/data-plus/) that unlocks advanced analytics features for WP Statistics. [click here](https://wp-statistics.com/2023/01/01/unlock-advanced-analytics-with-data-plus-for-wp-statistics) to get the limited-time offer!
+
+For more information about this update, please [visit our blog post](https://wp-statistics.com/2023/02/26/wp-statistics-gets-a-major-update-version-14-0-breakdown/).
+
+= v13.2.16 - 03.02.2023 =
+* Bugfix: The exclusion cache issue
+* Improvement: Populate post type title for archive pages
+
+= v13.2.15 - 13.01.2023 =
+* Bugfix: The exclusion issue when user is logged-in
+* Bugfix: The issue the API request to hit endpoint when permalink is default
+
+= v13.2.14 - 10.01.2023 =
+* Improvement: Compatibility with WordPress < 5.0
+
+= v13.2.13 - 09.01.2023 =
+* Bugfix: Fix recent, Top Visitor and Visitor page timeout & querying issue
+
+= v13.2.12 - 08.01.2023 =
+* Bugfix: Get top 10 visitor issue has been fixed
+* Bugfix: Changing the current language in admin has been fixed
+
+= v13.2.11 - 01.01.2023 =
+* Feature: A privacy setting has been added that allows customers to enable Do Not Track mode.
+* Improvement: Hardened plugin security and improvement
+
+= v13.2.10 - 24.12.2022 =
+* Bugfix: Logs the pages with query strings and UTM parameters
+
+= v13.2.9 - 17.12.2022 =
+* Bugfix: The include issue in CLI mode
+* Improvement: Error handler for referred that doesn't have any URL
+* Improvement: Hardened plugin security and improvement
+* Enhancement: Minor Improvements
+
+= v13.2.8 - 03.12.2022 =
+* Feature: Respect and compatibility with [Do Not Track](https://en.wikipedia.org/wiki/Do_Not_Track) browsers setting.
+* Feature: Add filter `wp_statistics_top_pages_arguments` to change the arguments of top pages.
+* Bugfix: Fix the Add-On notice constraint issue.
+* Bugfix: Sanitize the input of the URLs in the pages list
+* Improvement: Dynamic sending referred in the frontend by JavaScript while Cache is enabled.
+* Improvement: Remove `time` and `_nonce` parameters from the URL of the frontend while Cache is enabled.
+* Improvement: Compatibility with PHP v8.1
+* Improvement: Support method `Helper::get_pages_by_visitor_id()` to get pages by visitor id.
+
+= v13.2.7 - 23.10.2022 =
+* Bugfix: The error message while purging all databases
+* Update: The ChartJs library updated to v3.9.1
+* Improvement: Compatibility with PHP v8.0
+* Improvement: Add index for user online & visitor tables
+* Improvement: Make anonymous the browser version
+* Improvement: Enable Hash & Anonymous IP by default and make anonymize it before hashing
+
+= v13.2.6 - 07.09.2022 =
+* Improvement: Compatibility with Apache `security_mode`
+* Improvement: Remove coefficient per visitor field from general/visitors settings
+* Improvement: Hardened plugin security and improvement
+* Improvement: Avoid printing visitor data to the page while caching compatibility
+
+= v13.2.5 - 27.07.2022 =
+* Feature: Support plugin in the Privacy Policy content
+* Feature: Support plugin in Data Privacy Exporter and Data Eraser
+* Bugfix: The Top 5 Trending Pages Error has been fixed
+* Bugfix: The URL parameter issue in platform and browsers pages has been fixed
+* Bugfix: Total referrers issue has been fixed
+* Improvement: Crawler-Detect library has been updated to v1.2.111
+* Improvement: Compatibility with PHP v8.0, minor bugfix, and improvement
+* Improvement: Prevent showing Unknown entities
+
+= v13.2.4.1 - 25.06.2022 =
+* Bugfix: An issue to modify the visitors' table to add type and device model has been fixed
+
 = v13.2.4 - 11.06.2022 =
 * Feature: The new device type & device model meta boxes has been added in Overview!
 * Bugfix: Enhancements and CSRF protection added to the settings and optimization pages

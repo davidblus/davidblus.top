@@ -2,8 +2,8 @@
 Contributors: terrylin
 Tags: markdown, markdown editor, katex, mermaid, flow chart, github
 Requires at least: 4.0
-Tested up to: 5.8.1
-Stable tag: 1.16.1
+Tested up to: 6.2.2
+Stable tag: 1.16.2
 Requires PHP: 5.3.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl.html
@@ -77,6 +77,7 @@ You'll find answers to many of your questions on [Report issues](https://github.
 
 == Translations ==
 
+English (en_US) by [Colocal](https://colocal.com/).
 Traditional Chinese (zh_TW) by [Alex Lion](https://www.alexclassroom.com/).
 Simplified Chinese (zh_CN) by [Terry Lin](https://terryl.in/zh/).
 
@@ -248,7 +249,7 @@ GNU General Public License for more details.
 
 = 1.9.0
 
-* Add feature: TOC (Table of content) module.
+* Add feature: TOC (Table of contents) module.
 * Add feature: Transform `&amp;` to `&` in URLs.
 
 = 1.9.1
@@ -384,6 +385,12 @@ GNU General Public License for more details.
 - Fix issue #230 - jsdeliver url by Bronya0
 - Test up to WordPress 5.8.1
 - Test up to PHP 8.0
+
+= 1.16.2
+
+- Test for compatibility with WordPress 6.2.2 and PHP 8.2.5 (No new updates for this version, just testing for compatibility)
+- Fix coding style.
+- Mermaid.js has been updated to 9.4.3
 
 == Upgrade Notice ==
 

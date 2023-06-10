@@ -33,7 +33,6 @@ class Menus
         'optimization' => 'optimization',
         'settings'     => 'settings',
         'plugins'      => 'plugins',
-        'donate'       => 'donate',
     );
 
     /**
@@ -56,13 +55,6 @@ class Menus
      * @var string
      */
     public static $load_admin_submenu_slug = 'statistics_page_[slug]';
-
-    /**
-     * Wp-Statistics donate link
-     *
-     * @var string
-     */
-    public static $donate = 'http://wp-statistics.com/donate';
 
     /**
      * Get List Admin Pages
@@ -91,7 +83,7 @@ class Menus
     }
 
     /**
-     * Check if User in WP-Statistics Plugin Admin Page
+     * Check if User in WP Statistics Plugin Admin Page
      */
     public static function in_plugin_page()
     {
@@ -145,10 +137,10 @@ class Menus
     {
 
         // Get the read/write capabilities.
-        $manage_cap = User::ExistCapability(Option::get('manage_capability', 'manage_options'));
+        $manage_cap     = User::ExistCapability(Option::get('manage_capability', 'manage_options'));
 
         /**
-         * List of WP-Statistics Admin Menu
+         * List of WP Statistics Admin Menu
          *
          * --- Array Arg -----
          * name       : Menu name
@@ -216,13 +208,6 @@ class Menus
                 'page_url' => 'searches',
                 'method'   => 'searches',
             ),
-            'pages'        => array(
-                'require'  => array('pages' => true),
-                'sub'      => 'overview',
-                'title'    => __('Pages', 'wp-statistics'),
-                'page_url' => 'pages',
-                'method'   => 'pages',
-            ),
             'countries'    => array(
                 'require'  => array('geoip' => true, 'visitors' => true),
                 'sub'      => 'overview',
@@ -230,19 +215,19 @@ class Menus
                 'page_url' => 'countries',
                 'method'   => 'country'
             ),
-            'categories'   => array(
+            'pages'        => array(
                 'require'  => array('pages' => true),
                 'sub'      => 'overview',
-                'title'    => __('Categories', 'wp-statistics'),
-                'page_url' => 'categories',
-                'method'   => 'category',
+                'title'    => __('Post Types', 'wp-statistics'),
+                'page_url' => 'pages',
+                'method'   => 'pages',
             ),
-            'tags'         => array(
+            'taxonomies'   => array(
                 'require'  => array('pages' => true),
                 'sub'      => 'overview',
-                'title'    => __('Tags', 'wp-statistics'),
-                'page_url' => 'tags',
-                'method'   => 'tags',
+                'title'    => __('Taxonomies', 'wp-statistics'),
+                'page_url' => 'taxonomies',
+                'method'   => 'taxonomies',
             ),
             'authors'      => array(
                 'require'  => array('pages' => true),
@@ -265,7 +250,7 @@ class Menus
                 'page_url' => 'platform',
                 'method'   => 'platform'
             ),
-            'top.visotors' => array(
+            'top.visitors' => array(
                 'require'  => array('visitors' => true),
                 'sub'      => 'overview',
                 'title'    => __('Top Visitors Today', 'wp-statistics'),
@@ -301,17 +286,10 @@ class Menus
                 'page_url' => 'plugins',
                 'method'   => 'plugins'
             ),
-            'donate'       => array(
-                'sub'      => 'overview',
-                'title'    => __('Donate', 'wp-statistics'),
-                'name'     => '<span class="wps-text-success">' . __('Donate', 'wp-statistics') . '</span>',
-                'page_url' => 'donate',
-                'method'   => 'donate'
-            )
         );
 
         /**
-         * WP-Statistics Admin Page List
+         * WP Statistics Admin Page List
          *
          * @example add_filter('wp_statistics_admin_menu_list', function( $list ){ unset( $list['plugins'] ); return $list; });
          */
@@ -346,11 +324,8 @@ class Menus
     public function __construct()
     {
 
-        # Load WP-Statistics Admin Menu
+        # Load WP Statistics Admin Menu
         add_action('admin_menu', array($this, 'wp_admin_menu'));
-
-        # Filter Donate Link
-        add_action("admin_init", array($this, 'donate'));
     }
 
     /**
@@ -396,18 +371,6 @@ class Menus
             }
         }
 
-    }
-
-    /**
-     * WP-Statistics Donate Page
-     */
-    public function donate()
-    {
-        global $pagenow;
-        if ($pagenow == "admin.php" and isset($_GET['page']) and $_GET['page'] == self::get_page_slug('donate')) {
-            wp_redirect(self::$donate);
-            exit;
-        }
     }
 
 }

@@ -41,6 +41,10 @@ class Referred
      */
     public static function getRefererURL()
     {
+        if (Helper::is_rest_request() && isset($_REQUEST['referred'])) {
+            return sanitize_url(wp_unslash($_REQUEST['referred']));
+        }
+
         return (isset($_SERVER['HTTP_REFERER']) ? sanitize_url(wp_unslash($_SERVER['HTTP_REFERER'])) : '');
     }
 
@@ -94,7 +98,7 @@ class Referred
      * @param string $referrer
      * @param string $title
      * @param bool $is_blank
-     * @return string
+     * @return string | void
      */
     public static function get_referrer_link($referrer, $title = '', $is_blank = false)
     {
@@ -115,8 +119,10 @@ class Referred
         // Get Page title
         $title = (trim($title) == "" ? $html_referrer : $title);
 
-        // Get Html Link
-        return "<a href='{$html_referrer}' title='{$title}'" . ($is_blank === true ? ' target="_blank"' : '') . ">{$base_url['host']}</a>";
+        if (isset($base_url['host'])) {
+            // Get Html Link
+            return "<a href='{$html_referrer}' title='{$title}'" . ($is_blank === true ? ' target="_blank"' : '') . ">{$base_url['host']}</a>";
+        }
     }
 
     /**
@@ -246,7 +252,9 @@ class Referred
         //Get Top Referring
         if (false === ($get_urls = get_transient(self::$top_referring_transient))) {
 
-            $result = $wpdb->get_results(self::GenerateReferSQL("ORDER BY `number` DESC LIMIT $number", ''));
+            $sql = $wpdb->prepare("ORDER BY `number` DESC LIMIT %d", $number);
+
+            $result = $wpdb->get_results(self::GenerateReferSQL($sql, ''));
             foreach ($result as $items) {
                 $get_urls[$items->domain] = self::get_referer_from_domain($items->domain);
             }

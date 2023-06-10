@@ -39,7 +39,8 @@ class Option
 
         $options = array(
             'robotlist'             => Helper::get_robots_list(),
-            'anonymize_ips'         => false,
+            'anonymize_ips'         => true,
+            'hash_ips'              => true,
             'geoip'                 => false,
             'useronline'            => true,
             'visits'                => true,
@@ -47,13 +48,14 @@ class Option
             'pages'                 => true,
             'check_online'          => UserOnline::$reset_user_time,
             'menu_bar'              => false,
-            'coefficient'           => Visitor::$coefficient,
-            'stats_report'          => false,
-            'time_report'           => 'daily',
+            'coefficient'           => Visitor::getCoefficient(),
+            'stats_report'          => true,
+            'time_report'           => 'weekly',
             'send_report'           => 'mail',
-            'content_report'        => '',
+            'content_report'        => Admin_Template::get_template('emails/default', array(), true),
             'update_geoip'          => true,
             'store_ua'              => false,
+            'do_not_track'          => true,
             'exclude_administrator' => true,
             'disable_se_clearch'    => true,
             'disable_se_qwant'      => true,
@@ -71,7 +73,7 @@ class Option
     }
 
     /**
-     * Get WP-Statistics All Options
+     * Get WP Statistics All Options
      *
      * @return mixed
      */
@@ -118,7 +120,7 @@ class Option
         }
 
         /**
-         * Filters a For Return WP-Statistics Option
+         * Filters a For Return WP Statistics Option
          *
          * @param string $option Option name.
          * @param string $value Option Value.
@@ -147,7 +149,7 @@ class Option
     }
 
     /**
-     * Get WP-Statistics User Meta
+     * Get WP Statistics User Meta
      *
      * @param      $option
      * @param null $default

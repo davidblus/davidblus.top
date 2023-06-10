@@ -9,9 +9,9 @@ Author URI: https://plugin-planet.com/
 Donate link: https://monzillamedia.com/donate.html
 Contributors: specialk
 Requires at least: 4.6
-Tested up to: 6.0
-Stable tag: 20220516
-Version:    20220516
+Tested up to: 6.2
+Stable tag: 20230228
+Version:    20230228
 Requires PHP: 5.6.20
 Text Domain: simple-blog-stats
 Domain Path: /languages
@@ -79,6 +79,30 @@ __NEW!__ Display number of words in any custom field
 
 This plugin does not collect or store any user data. It does not set any cookies, and it does not connect to any third-party locations. Thus, this plugin does not affect user privacy in any way.
 
+Simple Blog Stats is developed and maintained by [Jeff Starr](https://twitter.com/perishable), 15-year [WordPress developer](https://plugin-planet.com/) and [book author](https://books.perishablepress.com/).
+
+
+**Support development**
+
+I develop and maintain this free plugin with love for the WordPress community. To show support, you can [make a donation](https://monzillamedia.com/donate.html) or purchase one of my books: 
+
+* [The Tao of WordPress](https://wp-tao.com/)
+* [Digging into WordPress](https://digwp.com/)
+* [.htaccess made easy](https://htaccessbook.com/)
+* [WordPress Themes In Depth](https://wp-tao.com/wordpress-themes-book/)
+* [Wizard's SQL Recipes for WordPress](https://books.perishablepress.com/downloads/wizards-collection-sql-recipes-wordpress/)
+
+And/or purchase one of my premium WordPress plugins:
+
+* [BBQ Pro](https://plugin-planet.com/bbq-pro/) - Super fast WordPress firewall
+* [Blackhole Pro](https://plugin-planet.com/blackhole-pro/) - Automatically block bad bots
+* [Banhammer Pro](https://plugin-planet.com/banhammer-pro/) - Monitor traffic and ban the bad guys
+* [GA Google Analytics Pro](https://plugin-planet.com/ga-google-analytics-pro/) - Connect WordPress to Google Analytics
+* [Simple Ajax Chat Pro](https://plugin-planet.com/simple-ajax-chat-pro/) - Unlimited chat rooms
+* [USP Pro](https://plugin-planet.com/usp-pro/) - Unlimited front-end forms
+
+Links, tweets and likes also appreciated. Thank you! :)
+
 
 
 == Installation ==
@@ -135,11 +159,13 @@ Visit the plugin settings page for a complete list of shortcodes. There you may 
 
 The `[sbs_posts]` shortcode accepts several attributes that can be used to customize your post stats:
 
-	cat     - limit by category    (default: empty = all cats)
-	tag     - limit by tag         (default: empty = all tags)
-	type    - limit by post type   (default: empty = post)
-	status  - limit by post status (default: empty = publish)
-	exclude - exclude post IDs     (comma separated list)
+	cat           - limit by category    (default: empty = all cats)
+	tag           - limit by tag         (default: empty = all tags)
+	type          - limit by post type   (default: empty = post)
+	status        - limit by post status (default: empty = publish)
+	exclude       - exclude post IDs     (comma separated list of post IDs)
+	exclude_cat   - exclude categories   (comma separated list of category IDs)
+	number_format - thousands separator  (default: comma, like 1,234)
 
 So by default, `[sbs_posts]` with no attributes will display the total number of published posts in any category or tag. 
 
@@ -378,12 +404,12 @@ add_filter('sbs_word_count_all_disable', 'sbs_word_count_all_disable');`
 
 By default, the shortcode `[sbs_word_count_all]` counts words in posts from any/all post types. To customize the post type, add the following code to your theme functions.php, or add via [custom plugin](https://digwp.com/2022/02/custom-code-wordpress/):
 
-`function sbs_word_count_all_post_type($type) {
+function sbs_word_count_all_post_type($type) {
 	
 	return array('post', 'page', 'movie', 'book'); // whatever post types
 	
 }
-add_filter('sbs_word_count_all_post_type', 'sbs_word_count_all_post_type');`
+add_filter('sbs_word_count_all_post_type', 'sbs_word_count_all_post_type');
 
 You can customize the post types in the array as desired.
 
@@ -394,32 +420,32 @@ Send any questions or feedback via my [contact form](https://plugin-planet.com/s
 
 
 
-== Support development of this plugin ==
-
-I develop and maintain this free plugin with love for the WordPress community. To show support, you can [make a donation](https://monzillamedia.com/donate.html) or purchase one of my books: 
-
-* [The Tao of WordPress](https://wp-tao.com/)
-* [Digging into WordPress](https://digwp.com/)
-* [.htaccess made easy](https://htaccessbook.com/)
-* [WordPress Themes In Depth](https://wp-tao.com/wordpress-themes-book/)
-* [Wizard's SQL Recipes for WordPress](https://books.perishablepress.com/downloads/wizards-collection-sql-recipes-wordpress/)
-
-And/or purchase one of my premium WordPress plugins:
-
-* [BBQ Pro](https://plugin-planet.com/bbq-pro/) - Super fast WordPress firewall
-* [Blackhole Pro](https://plugin-planet.com/blackhole-pro/) - Automatically block bad bots
-* [Banhammer Pro](https://plugin-planet.com/banhammer-pro/) - Monitor traffic and ban the bad guys
-* [GA Google Analytics Pro](https://plugin-planet.com/ga-google-analytics-pro/) - Connect WordPress to Google Analytics
-* [USP Pro](https://plugin-planet.com/usp-pro/) - Unlimited front-end forms
-
-Links, tweets and likes also appreciated. Thanks! :)
-
-
-
 == Changelog ==
 
 If you like Simple Blog Stats, please take a moment to [give a 5-star rating](https://wordpress.org/support/plugin/simple-blog-stats/reviews/?rate=5#new-post). It helps to keep development and support going strong. Thank you!
 
+
+**20230228**
+
+* Improves responsive styles
+* Improves logic for `simple_blog_stats_count_logged()`
+* Improves logic when calling `get_current_screen()`
+* Moves WP Resources panel to its own function
+* Removes SES Pro from WP Resources panel
+* Tests on WordPress 6.1 + 6.2 (beta)
+* Tests on PHP 8.1 and 8.2
+
+**20220928**
+
+* Adds filter hook `sbs_posts_args`
+* Adds `number_format` for `[sbs_posts]`
+* Adds `exclude_cat` to exclude categories with `[sbs_posts]`
+* Fixes bug with "call to undefined function ngettext()"
+* Adds custom footer text to plugin settings
+* Improves plugin documentation
+* Updates "Show Support" panel
+* Updates translation template
+* Tests on WordPress 6.1
 
 **20220516**
 

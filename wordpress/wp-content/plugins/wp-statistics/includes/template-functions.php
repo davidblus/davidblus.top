@@ -159,7 +159,7 @@ function wp_statistics_useronline($options = array())
     $sql          = "SELECT {$type_request} FROM " . WP_STATISTICS\DB::table('useronline');
 
     //Check Where Condition
-    $where = false;
+    $where = [];
 
     //Check Type of Page
     if ($arg['type'] != "all") {
@@ -346,7 +346,7 @@ function wp_statistics_visitor($time, $daily = null, $count_only = false, $optio
     }
 
     //Check Where Condition
-    $where = false;
+    $where = [];
 
     //Check Type of Page
     if ($arg['type'] != "all" and WP_STATISTICS\Option::get('visitors_log') == true) {
@@ -434,11 +434,22 @@ function wp_statistics_pages($time, $page_uri = '', $id = -1, $rangestartdate = 
     $history     = 0;
 
     //Check Where Condition
-    $where = false;
+    $where = [];
 
     //Check Query By Page ID or Page Url
     if ($type != false) {
-        $where[] = "`type`='" . $type . "'" . ($id != -1 ? ' AND `id` = ' . $id : '');
+        $query = $wpdb->prepare("`type` = %s", $type);
+
+        if ($id != -1) {
+            $query .= $wpdb->prepare(" AND `id` = %d", $id);
+        }
+
+        if ($page_uri != '') {
+            $page_uri_sql = esc_sql($page_uri);
+            $query        .= $wpdb->prepare(" AND `URI` = %s", $page_uri_sql);
+        }
+
+        $where[] = apply_filters('wp_statistics_pages_where_type_query', $query, $id, $type);
     } else {
 
         // If no page URI has been passed in, get the current page URI.
@@ -508,11 +519,20 @@ function wp_statistics_get_top_pages($rangestartdate = null, $rangeenddate = nul
 {
     global $wpdb;
 
+    $spliceLimit = ($limit != null ? $limit : 5);
+    $limit       = null;
+
     // Get every unique URI from the pages database.
     if ($rangestartdate != null && $rangeenddate != null) {
-        $result = $wpdb->get_results($wpdb->prepare("SELECT `uri`,`id`,`type` FROM " . \WP_STATISTICS\DB::table('pages') . " WHERE `date` BETWEEN %s AND %s GROUP BY `uri`" . ($limit != null ? ' LIMIT ' . $limit : ''), $rangestartdate, $rangeenddate), ARRAY_N);
+        $whereType = ($post_type != null ? $wpdb->prepare(" AND `type`=%s", $post_type) : '');
+        $result    = $wpdb->get_results($wpdb->prepare("SELECT `uri`,`id`,`type` FROM " . \WP_STATISTICS\DB::table('pages') . " WHERE `date` BETWEEN %s AND %s {$whereType} GROUP BY `id`" . ($limit != null ? ' LIMIT ' . $limit : ''), $rangestartdate, $rangeenddate), ARRAY_N);
     } else {
-        $result = $wpdb->get_results("SELECT `uri`,`id`,`type` FROM " . \WP_STATISTICS\DB::table('pages') . " GROUP BY `uri`" . ($limit != null ? ' LIMIT ' . $limit : ''), ARRAY_N);
+        $limitQuery = '';
+        if ($limit) {
+            $limitQuery = $wpdb->prepare(" LIMIT %d", $limit);
+        }
+        $whereType = ($post_type != null ? $wpdb->prepare(" WHERE `type`=%s", $post_type) : '');
+        $result    = $wpdb->get_results("SELECT `uri`, `id`, `type` FROM " . \WP_STATISTICS\DB::table('pages') . " {$whereType} GROUP BY `id` {$limitQuery}", ARRAY_N);
     }
 
     $total = 0;
@@ -524,7 +544,7 @@ function wp_statistics_get_top_pages($rangestartdate = null, $rangeenddate = nul
         list($url, $page_id, $page_type) = $out;
 
         // Check if item is of specific post type (string or part of an array) or if post type is set to null
-        if (is_null($post_type) || get_post_type($page_id) == $post_type || (is_array($post_type) && in_array(get_post_type($page_id), $post_type))) {
+        if (is_null($post_type) || $page_type == $post_type || (is_array($post_type) && in_array($page_type, $post_type))) {
             // Increment the total number of results.
             $total++;
 
@@ -558,13 +578,19 @@ function wp_statistics_get_top_pages($rangestartdate = null, $rangeenddate = nul
             if ($rangestartdate != null && $rangeenddate != null) {
                 $uris[] = array(
                     urldecode_deep($out[0]),
-                    wp_statistics_pages('range', $out[0], -1, $rangestartdate, $rangeenddate),
+                    wp_statistics_pages('range', $out[0], -1, $rangestartdate, $rangeenddate, $post_type),
                     $page_id,
                     $title,
                     $page_url,
                 );
             } else {
-                $uris[] = array(urldecode_deep($out[0]), wp_statistics_pages('total', $out[0]), $page_id, $title, $page_url);
+                $uris[] = array(
+                    urldecode_deep($out[0]),
+                    wp_statistics_pages('total', $out[0], -1, $rangestartdate, $rangeenddate, $post_type),
+                    $page_id,
+                    $title,
+                    $page_url
+                );
             }
         }
     }
@@ -574,7 +600,10 @@ function wp_statistics_get_top_pages($rangestartdate = null, $rangeenddate = nul
         usort($uris, array('\WP_STATISTICS\Helper', 'compare_uri_hits'));
     }
 
-    return array($total, $uris);
+    array_splice($uris, $spliceLimit);
+
+    return array($spliceLimit, $uris);
+    // return array($total, $uris);
 }
 
 /**
@@ -743,6 +772,7 @@ function wp_statistics_agent_version($agent, $version, $rangestartdate = null, $
  */
 function wp_statistics_searchword_query($search_engine = 'all')
 {
+    global $wpdb;
 
     // Get a complete list of search engines
     $search_engine_list = WP_STATISTICS\SearchEngine::getList();
@@ -752,13 +782,13 @@ function wp_statistics_searchword_query($search_engine = 'all')
     if (strtolower($search_engine) == 'all') {
         // For all of them?  Ok, look through the search engine list and create a SQL query string to get them all from the database.
         foreach ($search_engine_list as $key => $se) {
-            $search_query .= "( `engine` = '{$key}' AND `words` <> '' ) OR ";
+            $search_query .= $wpdb->prepare("( `engine` = %s AND `words` <> '' ) OR ", $key);
         }
 
         // Trim off the last ' OR ' for the loop above.
         $search_query = substr($search_query, 0, strlen($search_query) - 4);
     } else {
-        $search_query .= "`engine` = '{$search_engine}' AND `words` <> ''";
+        $search_query .= $wpdb->prepare("`engine` = %s AND `words` <> ''", $search_engine);
     }
 
     return $search_query;
@@ -772,6 +802,7 @@ function wp_statistics_searchword_query($search_engine = 'all')
  */
 function wp_statistics_searchengine_query($search_engine = 'all')
 {
+    global $wpdb;
 
     // Get a complete list of search engines
     $searchengine_list = WP_STATISTICS\SearchEngine::getList();
@@ -781,17 +812,14 @@ function wp_statistics_searchengine_query($search_engine = 'all')
     if (strtolower($search_engine) == 'all') {
         // For all of them?  Ok, look through the search engine list and create a SQL query string to get them all from the database.
         foreach ($searchengine_list as $key => $se) {
-            $key          = esc_sql($key);
-            $search_query .= "`engine` = '{$key}' OR ";
+            $search_query .= $wpdb->prepare("`engine` = %s OR ", $key);
         }
 
         // Trim off the last ' OR ' for the loop above.
         $search_query = substr($search_query, 0, strlen($search_query) - 4);
     } else {
-        $search_engine = esc_sql($search_engine);
-        $search_query  .= "`engine` = '{$search_engine}'";
+        $search_query .= $wpdb->prepare("`engine` = %s", $search_engine);
     }
-
 
     return $search_query;
 }

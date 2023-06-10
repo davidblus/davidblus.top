@@ -9,9 +9,9 @@
 	Donate link: https://monzillamedia.com/donate.html
 	Contributors: specialk
 	Requires at least: 4.6
-	Tested up to: 6.0
-	Stable tag: 20220516
-	Version:    20220516
+	Tested up to: 6.2
+	Stable tag: 20230228
+	Version:    20230228
 	Requires PHP: 5.6.20
 	Text Domain: simple-blog-stats
 	Domain Path: /languages
@@ -32,7 +32,7 @@
 	You should have received a copy of the GNU General Public License
 	with this program. If not, visit: https://www.gnu.org/licenses/
 	
-	Copyright 2022 Monzilla Media. All rights reserved.
+	Copyright 2023 Monzilla Media. All rights reserved.
 */
 
 if (!defined('ABSPATH')) die();
@@ -40,7 +40,7 @@ if (!defined('ABSPATH')) die();
 
 
 $sbs_wp_vers = '4.6';
-$sbs_version = '20220516';
+$sbs_version = '20230228';
 $sbs_plugin  = esc_html__('Simple Blog Stats', 'simple-blog-stats');
 $sbs_options = get_option('sbs_options');
 $sbs_path    = plugin_basename(__FILE__); // 'simple-blog-stats/simple-blog-stats.php';
@@ -87,6 +87,40 @@ function sbs_require_wp_version() {
 add_action('admin_init', 'sbs_require_wp_version');
 
 
+function sbs_admin_footer_text($text) {
+	
+	$screen_id = sbs_get_current_screen_id();
+	
+	$ids = array('settings_page_simple-blog-stats/simple-blog-stats');
+	
+	if ($screen_id && apply_filters('sbs_admin_footer_text', in_array($screen_id, $ids))) {
+		
+		$text = __('Like this plugin? Give it a', 'simple-blog-stats');
+		
+		$text .= ' <a target="_blank" rel="noopener noreferrer" href="https://wordpress.org/support/plugin/simple-blog-stats/reviews/?rate=5#new-post">';
+		
+		$text .= __('★★★★★ rating&nbsp;&raquo;', 'simple-blog-stats') .'</a>';
+		
+	}
+	
+	return $text;
+	
+}
+add_filter('admin_footer_text', 'sbs_admin_footer_text', 10, 1);
+
+
+function sbs_get_current_screen_id() {
+	
+	if (!function_exists('get_current_screen')) require_once ABSPATH .'/wp-admin/includes/screen.php';
+	
+	$screen = get_current_screen();
+	
+	if ($screen && property_exists($screen, 'id')) return $screen->id;
+	
+	return false;
+	
+}
+
 
 function sbs_on_deactivation() {
 	
@@ -114,26 +148,35 @@ function sbs_posts($attr, $content = null) {
 	$cache = isset($sbs_options['sbs_enable_cache']) ? $sbs_options['sbs_enable_cache'] : false;
 	
 	extract(shortcode_atts(array(
-		'type'    => 'post',
-		'status'  => 'publish',
-		'cat'     => null,
-		'tag'     => null,
-		'exclude' => false,
+		
+		'type'          => 'post',
+		'status'        => 'publish',
+		'cat'           => null,
+		'tag'           => null,
+		'exclude'       => null,
+		'exclude_cat'   => null,
+		'number_format' => ',',
+		
 	), $attr));
 	
 	$limit = apply_filters('sbs_get_posts_limit', -1);
 	
-	$exclude = $exclude ? array_map('trim', explode(',', $exclude)) : false;
+	$exclude     = $exclude     ? array_map('trim', explode(',', $exclude)) : null;
+
+	$exclude_cat = $exclude_cat ? array_map('trim', explode(',', $exclude_cat)) : null;
 	
 	$args = array(
-		'posts_per_page' => $limit,
-		'post_type'      => $type,
-		'post_status'    => $status,
-		'category_name'  => $cat,
-		'tag'            => $tag,
-		'fields'         => 'ids',
-		'post__not_in'   => $exclude,
+		'posts_per_page'   => $limit,
+		'post_type'        => $type,
+		'post_status'      => $status,
+		'category_name'    => $cat,
+		'tag'              => $tag,
+		'fields'           => 'ids',
+		'post__not_in'     => $exclude,
+		'category__not_in' => $exclude_cat,
 	);
+	
+	$args = apply_filters('sbs_posts_args', $args);
 	
 	$posts = get_posts($args);
 	
@@ -153,7 +196,7 @@ function sbs_posts($attr, $content = null) {
 		
 	}
 	
-	return $sbs_options['count_posts_before'] . number_format($count) . $sbs_options['count_posts_after'];
+	return $sbs_options['count_posts_before'] . number_format($count, 0, '.', $number_format) . $sbs_options['count_posts_after'];
 	
 }
 add_shortcode('sbs_posts', 'sbs_posts');
@@ -448,7 +491,7 @@ function sbs_roles($attr, $content = null) {
 		
 		foreach ($roles as $key => $value) {
 			
-			$label = ngettext(ucfirst($key), ucfirst($key) . esc_html__('s', 'simple-blog-stats'), intval($value));
+			$label = function_exists('ngettext') ? ngettext(ucfirst($key), ucfirst($key) . esc_html__('s', 'simple-blog-stats'), intval($value)) : ucfirst($key) .'s';
 			
 			if ($txt) $label = $txt;
 			
@@ -468,7 +511,7 @@ function sbs_roles($attr, $content = null) {
 			
 			if (strtolower($key) === strtolower($role)) {
 				
-				$label = ngettext(ucfirst($role), ucfirst($role) . esc_html__('s', 'simple-blog-stats'), intval($value));
+				$label = function_exists('ngettext') ? ngettext(ucfirst($role), ucfirst($role) . esc_html__('s', 'simple-blog-stats'), intval($value)) : ucfirst($role) .'s';
 				
 				if ($txt) $label = $txt;
 				
@@ -1861,7 +1904,7 @@ function sbs_render_form() {
 					</div>
 					
 					<div id="mm-panel-current" class="postbox">
-						<h2><?php esc_html_e('Show Support', 'simple-blog-stats'); ?></h2>
+						<h2><?php esc_html_e('WP Resources', 'simple-blog-stats'); ?></h2>
 						<div class="toggle<?php if (isset($_GET["settings-updated"])) { echo ' default-hidden'; } ?>">
 							<?php require_once('support-panel.php'); ?>
 						</div>

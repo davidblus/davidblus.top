@@ -21,7 +21,7 @@ class Pages
     {
 
         //Set Default Option
-        $current_page = array("type" => "unknown", "id" => 0);
+        $current_page = array("type" => "unknown", "id" => 0, "search_query" => '');
 
         //Check Query object
         $id = get_queried_object_id();
@@ -53,7 +53,11 @@ class Pages
 
         //Single Post From All Post Type
         if (is_singular()) {
-            $current_page['type'] = "post";
+            $post_type = get_post_type();
+            if ($post_type != 'post') {
+                $post_type = 'post_type_' . $post_type;
+            }
+            $current_page['type'] = $post_type;
         }
 
         //Single Page
@@ -82,7 +86,7 @@ class Pages
         }
 
         //is search page
-        $search_query = filter_var(get_search_query(false), FILTER_SANITIZE_STRING);
+        $search_query = sanitize_url(get_search_query(false));
         if (trim($search_query) != "") {
             return array("type" => "search", "id" => 0, "search_query" => $search_query);
         }
@@ -125,11 +129,11 @@ class Pages
 
         // Get the site's path from the URL.
         $site_uri     = parse_url(site_url(), PHP_URL_PATH);
-        $site_uri_len = strlen($site_uri);
+        $site_uri_len = strlen($site_uri ? $site_uri : '');
 
         // Get the site's path from the URL.
         $home_uri     = parse_url(home_url(), PHP_URL_PATH);
-        $home_uri_len = strlen($home_uri);
+        $home_uri_len = strlen($home_uri ? $home_uri : '');
 
         // Get the current page URI.
         $page_uri = sanitize_url(wp_unslash($_SERVER["REQUEST_URI"]));
@@ -158,8 +162,8 @@ class Pages
             }
         }
 
-        //Sanitize Xss injection
-        $page_uri = filter_var($page_uri, FILTER_SANITIZE_STRING);
+        // Sanitize the page URI.
+        $page_uri = sanitize_url($page_uri);
 
         // If we're at the root (aka the URI is blank), let's make sure to indicate it.
         if ($page_uri == '') {
@@ -292,7 +296,7 @@ class Pages
      * @param string $type
      * @return array
      */
-    public static function get_page_info($page_id, $type = 'post')
+    public static function get_page_info($page_id, $type = 'post', $slug = false)
     {
 
         //Create Empty Object
@@ -352,19 +356,41 @@ class Pages
                     );
                     break;
                 case "feed":
-                    $result['title'] = __('Feed', 'wp-statistics');
+                    $arg['title'] = __('Feed', 'wp-statistics');
                     break;
                 case "loginpage":
-                    $result['title'] = __('Login Page', 'wp-statistics');
+                    $arg['title'] = __('Login Page', 'wp-statistics');
                     break;
                 case "search":
-                    $result['title'] = __('Search Page', 'wp-statistics');
+                    $arg['title'] = __('Search Page', 'wp-statistics');
                     break;
                 case "404":
-                    $result['title'] = __('404 not found', 'wp-statistics');
+                    $arg['title'] = __('404 not found', 'wp-statistics');
                     break;
                 case "archive":
-                    $result['title'] = __('Post Archive', 'wp-statistics');
+                    if ($slug) {
+                        $post_type   = trim($slug, '/');
+                        $post_object = get_post_type_object($post_type);
+
+                        if ($post_object instanceof \WP_Post_Type) {
+                            $arg['title'] = sprintf(__('Post Archive: %s', 'wp-statistics'), $post_object->labels->name);
+                        } else {
+                            $arg['title'] = sprintf(__('Post Archive: %s', 'wp-statistics'), $slug);
+                        }
+                    } else {
+                        $arg['title'] = __('Post Archive', 'wp-statistics');
+                    }
+
+                    break;
+                default:
+                    $arg = array(
+                        'title'     => esc_html(get_the_title($page_id)),
+                        'link'      => get_the_permalink($page_id),
+                        'edit_link' => get_edit_post_link($page_id),
+                        'meta'      => array(
+                            'post_type' => get_post_type($page_id)
+                        )
+                    );
                     break;
             }
         }
@@ -387,19 +413,58 @@ class Pages
             'per_page' => 10,
             'paged'    => 1,
             'from'     => '',
-            'to'       => ''
+            'to'       => '',
+            'ago'      => '',
+            'type'     => '',
         );
 
         $args = wp_parse_args($args, $defaults);
 
-        // Date Time SQL
-        $DateTimeSql = "";
+        // Check Default
+        if (empty($args['from']) and empty($args['to'])) {
+            if (array_key_exists($args['ago'], TimeZone::getDateFilters())) {
+                $dateFilter   = TimeZone::calculateDateFilter($args['ago']);
+                $args['from'] = $dateFilter['from'];
+                $args['to']   = $dateFilter['to'];
+            }
+        }
+
+        // Prepare Count Day
         if (!empty($args['from']) and !empty($args['to'])) {
-            $DateTimeSql = "WHERE (`pages`.`date` BETWEEN '{$args['from']}' AND '{$args['to']}')";
+            $count_day = TimeZone::getNumberDayBetween($args['from'], $args['to']);
+        } else {
+            if (is_numeric($args['ago']) and $args['ago'] > 0) {
+                $count_day = $args['ago'];
+            } else {
+                $count_day = 30;
+            }
+        }
+
+        // Get time ago Days Or Between Two Days
+        if (!empty($args['from']) and !empty($args['to'])) {
+            $days_list = TimeZone::getListDays(array('from' => $args['from'], 'to' => $args['to']));
+        } else {
+            if (is_numeric($args['ago']) and $args['ago'] > 0) {
+                $days_list = TimeZone::getListDays(array('from' => TimeZone::getTimeAgo($args['ago'])));
+            } else {
+                $days_list = TimeZone::getListDays(array('from' => TimeZone::getTimeAgo($count_day)));
+            }
+        }
+
+        // Get List Of Days
+        $days_time_list = array_keys($days_list);
+
+        // Date Time SQL
+        $DateTimeSql = "WHERE (`pages`.`date` BETWEEN '" . reset($days_time_list) . "' AND '" . end($days_time_list) . "')";
+
+        // Post Type SQL
+        $postTypeSql = '';
+        if (!empty($args['type'])) {
+            $postTypeSql = $wpdb->prepare(" AND `pages`.`type`=%s", $args['type']);
         }
 
         // Generate SQL
-        $sql = "SELECT `pages`.`date`,`pages`.`uri`,`pages`.`id`,`pages`.`type`, SUM(`pages`.`count`) + IFNULL(`historical`.`value`, 0) AS `count_sum` FROM `" . DB::table('pages') . "` `pages` LEFT JOIN `" . DB::table('historical') . "` `historical` ON `pages`.`uri`=`historical`.`uri` AND `historical`.`category`='uri' {$DateTimeSql} GROUP BY `uri` ORDER BY `count_sum` DESC";
+        $sql = "SELECT `pages`.`date`,`pages`.`uri`,`pages`.`id`,`pages`.`type`, SUM(`pages`.`count`) + IFNULL(`historical`.`value`, 0) AS `count_sum` FROM `" . DB::table('pages') . "` `pages` LEFT JOIN `" . DB::table('historical') . "` `historical` ON `pages`.`uri`=`historical`.`uri` AND `historical`.`category`='uri' {$DateTimeSql} {$postTypeSql} GROUP BY `pages`.`id` ORDER BY `count_sum` DESC";
 
         // Get List Of Pages
         $list   = array();
@@ -407,13 +472,13 @@ class Pages
         foreach ($result as $item) {
 
             // Lookup the post title.
-            $page_info = Pages::get_page_info($item->id, $item->type);
+            $page_info = Pages::get_page_info($item->id, $item->type, $item->uri);
 
             // Push to list
             $list[] = array(
                 'title'     => $page_info['title'],
                 'link'      => $page_info['link'],
-                'str_url'   => urldecode($item->uri),
+                'str_url'   => urldecode(sanitize_text_field($item->uri)),
                 'hits_page' => Menus::admin_url('pages', array('ID' => $item->id, 'type' => $item->type)),
                 'number'    => number_format_i18n($item->count_sum)
             );
@@ -432,15 +497,23 @@ class Pages
     public static function TotalCount($group_by = 'uri', $args = array())
     {
         global $wpdb;
-        $where = '';
+        $where = [];
 
         // Date
         if (isset($args['from']) and isset($args['to']) and !empty($args['from']) and !empty($args['to'])) {
-            $where .= "WHERE `date` BETWEEN '{$args['from']}' AND '{$args['to']}'";
+            $where[] = $wpdb->prepare("`date` BETWEEN %s AND %s", $args['from'], $args['to']);
         }
 
+        if (!empty($args['type'])) {
+            $where[] = $wpdb->prepare("`type` = %s", $args['type']);
+        }
+
+        $where = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";
+
+        $query = "SELECT COUNT(*) FROM (SELECT COUNT(page_id) FROM `" . DB::table('pages') . "` `pages` {$where} GROUP BY `{$group_by}`) AS totalCount";
+
         // Return
-        return $wpdb->get_var("SELECT COUNT(*) FROM `" . DB::table('pages') . "` `pages` {$where} GROUP BY `{$group_by}`");
+        return $wpdb->get_var($query);
     }
 
     /**
@@ -452,7 +525,7 @@ class Pages
     public static function get_post_type($post_id)
     {
         $post_type = get_post_type($post_id);
-        return (in_array($post_type, array("page", "product", "attachment")) ? $post_type : "post");
+        return (in_array($post_type, array("post", "page", "product", "attachment")) ? $post_type : "post_type_" . $post_type);
     }
 
     /**

@@ -58,7 +58,7 @@
 
         <tr valign="top">
             <th scope="row">
-                <label for="visits"><?php _e('Visits:', 'wp-statistics'); ?></label>
+                <label for="visits"><?php _e('Status:', 'wp-statistics'); ?></label>
             </th>
 
             <td>
@@ -79,12 +79,12 @@
 
         <tr valign="top" id="visitors_tr">
             <th scope="row">
-                <label for="visitors"><?php _e('Visitors:', 'wp-statistics'); ?></label>
+                <label for="visitors"><?php _e('Status:', 'wp-statistics'); ?></label>
             </th>
             <td>
                 <input id="visitors" type="checkbox" value="1" name="wps_visitors" <?php echo WP_STATISTICS\Option::get('visitors') == true ? "checked='checked'" : ''; ?>>
                 <label for="visitors"><?php _e('Enable', 'wp-statistics'); ?></label>
-                <p class="description"><?php _e('Enable this option to show the number of Page Hits (It is the number of unique users which have visited your site)', 'wp-statistics'); ?></p>
+                <p class="description"><?php _e('Enable this option to show the number of Unique Users who have visited your website', 'wp-statistics'); ?></p>
             </td>
         </tr>
 
@@ -107,16 +107,6 @@
                 <input id="enable_user_column" type="checkbox" value="1" name="wps_enable_user_column" <?php echo WP_STATISTICS\Option::get('enable_user_column') == true ? "checked='checked'" : ''; ?>>
                 <label for="enable_user_column"><?php _e('Enable', 'wp-statistics'); ?></label>
                 <p class="description"><?php _e('Enable this option to show the list of user visits, link in the WordPress admin user list page.', 'wp-statistics'); ?></p>
-            </td>
-        </tr>
-
-        <tr valign="top" data-view="visitors_log_tr" <?php echo(WP_STATISTICS\Option::get('visitors') == false ? 'style="display:none;"' : '') ?>>
-            <th scope="row">
-                <label for="coefficient"><?php _e('Coefficient per Visitor:', 'wp-statistics'); ?></label>
-            </th>
-            <td>
-                <input type="text" class="small-text code" id="coefficient" name="wps_coefficient" value="<?php echo esc_attr(WP_STATISTICS\Option::get('coefficient')); ?>"/>
-                <p class="description"><?php echo sprintf(__('This feature multiplies the number of each visitor. Currently %s.', 'wp-statistics'), WP_STATISTICS\Option::get('coefficient')); ?></p>
             </td>
         </tr>
         </tbody>
@@ -255,7 +245,15 @@
                 <input id="use_cache_plugin" type="checkbox" value="1" name="wps_use_cache_plugin" <?php echo WP_STATISTICS\Option::get('use_cache_plugin') == true ? "checked='checked'" : ''; ?>>
                 <label for="use_cache_plugin"><?php _e('Enable', 'wp-statistics'); ?></label>
                 <p class="description"><?php _e('Enable this option if the Cache is enabled in your WordPress', 'wp-statistics'); ?></p>
-                <p class="description"><?php echo sprintf(__('To register WP Statistics REST API endpoint ( %s ) , go to the <a href="%s">Permalink page</a> and update the permalink by pressing Save Changes and then clear the cache.', 'wp-statistics'), WP_STATISTICS\RestAPI::$namespace, admin_url('options-permalink.php')); ?></p>
+                <p class="description">
+                <ul>
+                    <li><?php echo sprintf(__('To register WP Statistics REST API endpoint ( %s ) , go to the <a href="%s">Permalink page</a> and update the permalink by pressing Save Changes and then clear the cache.', 'wp-statistics'), WP_STATISTICS\RestAPI::$namespace, admin_url('options-permalink.php')); ?></li>
+                    <li>
+                        <?php echo __('To prevent Google index the REST API endpoints, add the below code in <strong>robots.txt</strong>', 'wp-statistics'); ?>
+                        <pre>User-Agent: * <?php echo PHP_EOL; ?> Disallow: /wp-json</pre>
+                    </li>
+                </ul>
+                </p>
             </td>
         </tr>
         </tbody>

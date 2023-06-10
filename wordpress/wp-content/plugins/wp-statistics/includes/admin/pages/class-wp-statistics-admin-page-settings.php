@@ -113,8 +113,8 @@ class settings_page
             // Update GEO IP
             if (Option::get('geoip') and isset($_POST['update_geoip']) and isset($_POST['geoip_name'])) {
                 //Check Geo ip Exist in Database
-                if (isset(GeoIP::$library[$_POST['geoip_name']])) {
-                    $result = GeoIP::download($_POST['geoip_name'], "update");
+                if (isset(GeoIP::$library[sanitize_text_field($_POST['geoip_name'])])) {
+                    $result = GeoIP::download(sanitize_text_field($_POST['geoip_name']), "update");
                     if (is_array($result) and isset($result['status'])) {
                         Helper::addAdminNotice($result['notice'], ($result['status'] === false ? "error" : "success"));
                         $redirectAfterSave = false;
@@ -169,6 +169,7 @@ class settings_page
             'wps_hash_ips',
             'wps_store_ua',
             'wps_all_online',
+            'wps_do_not_track',
         );
 
         // If the IP hash's are enabled, disable storing the complete user agent.

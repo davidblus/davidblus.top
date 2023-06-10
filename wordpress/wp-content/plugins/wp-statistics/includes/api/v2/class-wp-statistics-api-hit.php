@@ -2,6 +2,7 @@
 
 namespace WP_STATISTICS\Api\v2;
 
+use WP_STATISTICS\Exclusion;
 use WP_STATISTICS\Hits;
 
 class Hit extends \WP_STATISTICS\RestAPI
@@ -35,15 +36,8 @@ class Hit extends \WP_STATISTICS\RestAPI
     public static function require_params_hit()
     {
         return array(
-            'browser'   => array('required' => true, 'type' => 'string'),
-            'platform'  => array('required' => true, 'type' => 'string'),
-            'version'   => array('required' => true, 'type' => 'string'),
-            'ip'        => array('required' => true, 'type' => 'string', 'format' => 'ip'),
             'track_all' => array('required' => true, 'type' => 'integer'),
-            'timestamp' => array('required' => true, 'type' => 'integer'),
-            'page_uri'  => array('required' => true, 'type' => 'string'),
-            'user_id'   => array('required' => true, 'type' => 'integer'),
-            '_wpnonce'  => array('required' => false, 'type' => 'string')
+            'page_uri'  => array('required' => true, 'type' => 'string')
         );
     }
 
@@ -54,7 +48,9 @@ class Hit extends \WP_STATISTICS\RestAPI
      */
     public function register_routes()
     {
-        // Record WP-Statistics when Cache is enable
+        $GLOBALS['wp_statistics_user_id'] = get_current_user_id();
+
+        // Record WP Statistics when Cache is enable
         register_rest_route(self::$namespace, '/' . self::$endpoint, array(
             array(
                 'methods'             => \WP_REST_Server::READABLE,
@@ -68,7 +64,7 @@ class Hit extends \WP_STATISTICS\RestAPI
     }
 
     /**
-     * Record WP-Statistics when Cache is enable
+     * Record WP Statistics when Cache is enable
      *
      * @param \WP_REST_Request $request
      * @return \WP_REST_Response
@@ -76,14 +72,12 @@ class Hit extends \WP_STATISTICS\RestAPI
      */
     public function hit_callback(\WP_REST_Request $request)
     {
-        if (!empty($_GET['_wpnonce'])) {
-            // Start Record
-            Hits::record();
-        }
+        // Start Record
+        Hits::record();
 
         $response = new \WP_REST_Response(array(
             'status'  => true,
-            'message' => __('Visitor Hit was recorded successfully.', 'wp-statistics'),
+            'message' => __('Visitor Hit recorded successfully.', 'wp-statistics'),
         ), 200);
 
         /**

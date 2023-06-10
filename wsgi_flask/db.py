@@ -94,7 +94,7 @@ class BuyFundOrder(Base):
 
 
 # 初始化数据库连接:
-MYSQL_HOST = 'database-1.cq0aeueppgwj.ap-northeast-1.rds.amazonaws.com'
+MYSQL_HOST = 'database-1.c0itxboe2uno.ap-northeast-1.rds.amazonaws.com'
 engine = create_engine('mysql+pymysql://davidblus:davidblus@' + MYSQL_HOST + ':3306/interest?charset=utf8', encoding='utf-8')
 # 创建DBSession类型:
 DBSession = sessionmaker(bind=engine)

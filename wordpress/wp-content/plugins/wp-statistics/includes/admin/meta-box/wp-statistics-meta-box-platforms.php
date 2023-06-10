@@ -7,7 +7,7 @@ use WP_STATISTICS\Helper;
 use WP_STATISTICS\Menus;
 use WP_STATISTICS\TimeZone;
 
-class platforms
+class platforms extends MetaBoxAbstract
 {
     /**
      * Get Platforms Chart
@@ -30,37 +30,12 @@ class platforms
         );
         $args     = wp_parse_args($arg, $defaults);
 
-        // Check Default
-        if (empty($args['from']) and empty($args['to']) and $args['ago'] < 1) {
-            $args['ago'] = 'all';
-        }
-
-        // Prepare Count Day
-        if (!empty($args['from']) and !empty($args['to'])) {
-            $count_day = TimeZone::getNumberDayBetween($args['from'], $args['to']);
-        } else {
-            if (is_numeric($args['ago']) and $args['ago'] > 0) {
-                $count_day = $args['ago'];
-            } else {
-                $first_day = Helper::get_date_install_plugin();
-                $count_day = (int)TimeZone::getNumberDayBetween($first_day);
-            }
-        }
-
-        // Get time ago Days Or Between Two Days
-        if (!empty($args['from']) and !empty($args['to'])) {
-            $days_list = TimeZone::getListDays(array('from' => $args['from'], 'to' => $args['to']));
-        } else {
-            if (is_numeric($args['ago']) and $args['ago'] > 0) {
-                $days_list = TimeZone::getListDays(array('from' => TimeZone::getTimeAgo($args['ago'])));
-            } else {
-                $days_list = TimeZone::getListDays(array('from' => TimeZone::getTimeAgo($count_day)));
-            }
-        }
+        // Filter By Date
+        self::filterByDate($args);
 
         // Get List Of Days
-        $days_time_list = array_keys($days_list);
-        foreach ($days_list as $k => $v) {
+        $days_time_list = array_keys(self::$daysList);
+        foreach (self::$daysList as $k => $v) {
             $date[]          = $v['format'];
             $total_daily[$k] = 0;
         }
@@ -69,8 +44,15 @@ class platforms
         $total       = $count = 0;
         $lists_value = $lists_name = array();
 
+        $order_by = '';
+        if ($args['order'] and in_array($args['order'], array('DESC', 'ASC', 'desc', 'asc'))) {
+            $order_by = "ORDER BY `count` " . esc_sql($args['order']);
+        }
+
+        $sql = $wpdb->prepare("SELECT platform, COUNT(*) as count FROM " . DB::table('visitor') . " WHERE platform != '" . _x('Unknown', 'Platform', 'wp-statistics') . "' AND `last_counter` BETWEEN %s AND %s GROUP BY platform {$order_by}", reset($days_time_list), end($days_time_list));
+
         // Get List All Platforms
-        $list = $wpdb->get_results("SELECT platform, COUNT(*) as count FROM " . DB::table('visitor') . " WHERE `last_counter` BETWEEN '" . reset($days_time_list) . "' AND '" . end($days_time_list) . "' GROUP BY platform " . ($args['order'] != "" ? 'ORDER BY `count` ' . $args['order'] : ''), ARRAY_A);
+        $list = $wpdb->get_results($sql, ARRAY_A);
 
         // Sort By Count
         Helper::SortByKeyValue($list, 'count');
@@ -96,17 +78,13 @@ class platforms
 
         // Set Title
         if (end($days_time_list) == TimeZone::getCurrentDate("Y-m-d")) {
-            $title = sprintf(__('%s Statistics in the last %s days', 'wp-statistics'), __('Platforms', 'wp-statistics'), $count_day);
+            $title = sprintf(__('%s Statistics in the last %s days', 'wp-statistics'), __('Platforms', 'wp-statistics'), self::$countDays);
         } else {
             $title = sprintf(__('%s Statistics from %s to %s', 'wp-statistics'), __('Platforms', 'wp-statistics'), $args['from'], $args['to']);
         }
 
         // Prepare Response
         $response = array(
-            'days'           => $count_day,
-            'from'           => reset($days_time_list),
-            'to'             => end($days_time_list),
-            'type'           => (($args['from'] != "" and $args['to'] != "") ? 'between' : 'ago'),
             'title'          => $title,
             'platform_name'  => $lists_name,
             'platform_value' => $lists_value,
@@ -122,7 +100,7 @@ class platforms
         }
 
         // Response
-        return $response;
+        return self::response($response);
     }
 
 }

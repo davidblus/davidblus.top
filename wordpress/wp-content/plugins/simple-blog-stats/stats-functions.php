@@ -6,17 +6,23 @@
 
 function simple_blog_stats_count_logged() {
 	
+	if (wp_doing_ajax() || wp_doing_cron()) return;
+	
 	if (is_user_logged_in()) {
 		
 		$logged_in_users = get_transient('online_status');
 		
+		$logged_in_users = $logged_in_users ? $logged_in_users : array();
+		
 		$user = wp_get_current_user();
 		
-		$no_need_to_update = isset($logged_in_users[$user->ID]) && $logged_in_users[$user->ID] > (time() - (1 * 60));
+		$user_id = isset($user->ID) ? $user->ID : null;
+		
+		$no_need_to_update = isset($logged_in_users[$user_id]) && $logged_in_users[$user_id] > (time() - (1 * 60));
 		
 		if (!$no_need_to_update) {
 			
-			$logged_in_users[$user->ID] = time();
+			$logged_in_users[$user_id] = time();
 			
 			set_transient('online_status', $logged_in_users, (2 * 60));
 			
@@ -25,8 +31,10 @@ function simple_blog_stats_count_logged() {
 	}
 	
 }
-add_action('wp', 'simple_blog_stats_count_logged');
+add_action('wp',         'simple_blog_stats_count_logged');
 add_action('admin_init', 'simple_blog_stats_count_logged');
+
+
 
 function simple_blog_stats_clear_transient() {
 	
@@ -58,6 +66,8 @@ function simple_blog_stats_clear_transient() {
 }
 add_action('clear_auth_cookie', 'simple_blog_stats_clear_transient');
 
+
+
 function sbs_logged_users_shortcode() {
 	
 	global $sbs_options;
@@ -79,11 +89,15 @@ function sbs_logged_users_shortcode() {
 }
 add_shortcode('sbs_logged_users', 'sbs_logged_users_shortcode');
 
+
+
 function sbs_logged_users() {
 	
 	echo sbs_logged_users_shortcode();
 
 }
+
+
 
 function simple_blog_stats_logged_users_widget() {
 	
@@ -95,7 +109,3 @@ function simple_blog_stats_logged_users_widget() {
 	
 }
 add_action('wp_dashboard_setup', 'simple_blog_stats_logged_users_widget');
-
-//
-
-

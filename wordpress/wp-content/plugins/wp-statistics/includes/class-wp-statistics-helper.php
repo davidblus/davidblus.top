@@ -78,8 +78,9 @@ class Helper
         if (empty($_SERVER['REQUEST_URI'])) {
             return false;
         }
+
         $rest_prefix = trailingslashit(rest_get_url_prefix());
-        return (false !== strpos($_SERVER['REQUEST_URI'], $rest_prefix));
+        return (false !== strpos($_SERVER['REQUEST_URI'], $rest_prefix)) or isset($_REQUEST['rest_route']);
     }
 
     /**
@@ -95,6 +96,11 @@ class Helper
         }
 
         if (defined('WP_CLI') && WP_CLI) {
+            return false;
+        }
+
+        // Backward compatibility
+        if (empty($_SERVER['SERVER_PROTOCOL']) or empty($_SERVER['HTTP_HOST'])) {
             return false;
         }
 
@@ -172,37 +178,37 @@ class Helper
 
         /* WordPress core */
         if (defined('WP_CACHE') && WP_CACHE) {
-            return array('status' => true, 'plugin' => 'core');
+            $use = array('status' => true, 'plugin' => 'core');
         }
 
         /* WP Rocket */
         if (function_exists('get_rocket_cdn_url')) {
-            return array('status' => true, 'plugin' => 'WP Rocket');
+            $use = array('status' => true, 'plugin' => 'WP Rocket');
         }
 
         /* WP Super Cache */
         if (function_exists('wpsc_init')) {
-            return array('status' => true, 'plugin' => 'WP Super Cache');
+            $use = array('status' => true, 'plugin' => 'WP Super Cache');
         }
 
         /* Comet Cache */
         if (function_exists('___wp_php_rv_initialize')) {
-            return array('status' => true, 'plugin' => 'Comet Cache');
+            $use = array('status' => true, 'plugin' => 'Comet Cache');
         }
 
         /* WP Fastest Cache */
         if (class_exists('WpFastestCache')) {
-            return array('status' => true, 'plugin' => 'WP Fastest Cache');
+            $use = array('status' => true, 'plugin' => 'WP Fastest Cache');
         }
 
         /* Cache Enabler */
         if (defined('CE_MIN_WP')) {
-            return array('status' => true, 'plugin' => 'Cache Enabler');
+            $use = array('status' => true, 'plugin' => 'Cache Enabler');
         }
 
         /* W3 Total Cache */
         if (defined('W3TC')) {
-            return array('status' => true, 'plugin' => 'W3 Total Cache');
+            $use = array('status' => true, 'plugin' => 'W3 Total Cache');
         }
 
         return apply_filters('wp_statistics_cache_status', $use);
@@ -691,7 +697,7 @@ class Helper
     {
         // Email Template
         if ($email_template) {
-            $email_template = wp_normalize_path(WP_STATISTICS_DIR . 'includes/admin/templates/email.php');
+            $email_template = wp_normalize_path(WP_STATISTICS_DIR . 'includes/admin/templates/emails/layout.php');
         }
 
         // Email from
@@ -701,13 +707,19 @@ class Helper
 
         //Template Arg
         $template_arg = array(
-            'title'       => $subject,
-            'logo'        => '',
-            'content'     => $content,
-            'site_url'    => home_url(),
-            'site_title'  => get_bloginfo('name'),
-            'footer_text' => '',
-            'is_rtl'      => (is_rtl() ? true : false)
+            'title'        => $subject,
+            'logo'         => '',
+            'content'      => $content,
+            'site_url'     => home_url(),
+            'site_title'   => get_bloginfo('name'),
+            'footer_text'  => '',
+            'email_title'  => apply_filters('wp_statistics_email_title', __('Email from', 'wp-statistics') . ' ' . parse_url(get_site_url())['host']),
+            'logo_image'   => apply_filters('wp_statistics_email_logo', WP_STATISTICS_URL . 'assets/images/logo-statistics-header-blue.png'),
+            'logo_url'     => apply_filters('wp_statistics_email_logo_url', get_bloginfo('url')),
+            'copyright'    => apply_filters('wp_statistics_email_footer_copyright', Admin_Template::get_template('emails/copyright', array(), true)),
+            'email_header' => apply_filters('wp_statistics_email_header', ""),
+            'email_footer' => apply_filters('wp_statistics_email_footer', ""),
+            'is_rtl'       => (is_rtl() ? true : false)
         );
         $arg          = wp_parse_args($args, $template_arg);
 
@@ -816,8 +828,13 @@ class Helper
                 $where = "`$field` = '{$current_date}'";
                 break;
             case 'yesterday':
-                $getCurrentDate = TimeZone::getCurrentDate('Y-m-d', -1);
+                $getCurrentDate = TimeZone::getTimeAgo(1, 'Y-m-d');
                 $where          = "`$field` = '{$getCurrentDate}'";
+                break;
+            case 'last-week':
+                $fromDate = TimeZone::getTimeAgo(14, 'Y-m-d');
+                $toDate   = TimeZone::getTimeAgo(7, 'Y-m-d');
+                $where    = "`$field` BETWEEN '{$fromDate}' AND '{$toDate}'";
                 break;
             case 'week':
                 $where = $field_sql(-7);
@@ -825,8 +842,24 @@ class Helper
             case 'month':
                 $where = $field_sql(-30);
                 break;
+            case '60days':
+                $where = $field_sql(-60);
+                break;
+            case '90days':
+                $where = $field_sql(-90);
+                break;
             case 'year':
                 $where = $field_sql(-365);
+                break;
+            case 'this-year':
+                $fromDate = TimeZone::getLocalDate('Y-m-d', strtotime(date('Y-01-01')));
+                $toDate   = TimeZone::getCurrentDate('Y-m-d');
+                $where    = "`$field` BETWEEN '{$fromDate}' AND '{$toDate}'";
+                break;
+            case 'last-year':
+                $fromDate = TimeZone::getTimeAgo((365 * 2), 'Y-m-d');
+                $toDate   = TimeZone::getTimeAgo(365, 'Y-m-d');
+                $where    = "`$field` BETWEEN '{$fromDate}' AND '{$toDate}'";
                 break;
             case 'total':
                 $where = "";
@@ -1093,28 +1126,8 @@ class Helper
         // Create Empty Params Object
         $params = array();
 
-        //Set UserAgent [browser|platform|version]
-        $params = wp_parse_args($params, UserAgent::getUserAgent());
-
-        //Set Referred
-        $params['referred'] = urlencode(Referred::get());
-
-        //Set IP
-        $params['ip'] = esc_html(IP::getIP());
-
-        //exclude
-        $exclude                    = Exclusion::check();
-        $params['exclusion_match']  = ($exclude['exclusion_match'] === true ? 'yes' : 'no');
-        $params['exclusion_reason'] = (string)$exclude['exclusion_reason'];
-
-        //User Agent String
-        $params['ua'] = urlencode(esc_html(UserAgent::getHttpUserAgent()));
-
         //track all page
         $params['track_all'] = (Pages::is_track_all_page() === true ? 1 : 0);
-
-        //timestamp
-        $params['timestamp'] = TimeZone::getCurrentTimestamp();
 
         //Set Page Type
         $get_page_type               = Pages::get_page_type();
@@ -1123,12 +1136,49 @@ class Helper
         $params['search_query']      = (isset($get_page_type['search_query']) ? esc_html($get_page_type['search_query']) : '');
 
         //page url
-        $params['page_uri'] = Pages::get_page_uri();
-
-        //Get User id
-        $params['user_id'] = User::get_user_id();
+        $params['page_uri'] = base64_encode(Pages::get_page_uri());
 
         //return Json Data
         return $params;
+    }
+
+    /**
+     * The version number will be anonymous using this function
+     *
+     * @param $version
+     * @return string
+     * @example 106.2.124.0 -> 106.0.0.0
+     *
+     */
+    public static function makeAnonymousVersion($version)
+    {
+        $mainVersion         = substr($version, 0, strpos($version, '.'));
+        $subVersion          = substr($version, strpos($version, '.') + 1);
+        $anonymousSubVersion = preg_replace('/[0-9]+/', '0', $subVersion);
+
+        return "{$mainVersion}.{$anonymousSubVersion}";
+    }
+
+    /**
+     * Do not track browser detection
+     *
+     * @return bool
+     */
+    public static function dntEnabled()
+    {
+        if (Option::get('do_not_track')) {
+            return (isset($_SERVER['HTTP_DNT']) && $_SERVER['HTTP_DNT'] == 1) or (function_exists('getallheaders') && isset(getallheaders()['DNT']) && getallheaders()['DNT'] == 1);
+        }
+
+        return false;
+    }
+
+    public static function getRequestUri()
+    {
+        if (self::is_rest_request() and isset($_REQUEST['page_uri'])) {
+            return base64_decode($_REQUEST['page_uri']);
+        }
+
+        return sanitize_url(wp_unslash($_SERVER['REQUEST_URI']));
     }
 }
