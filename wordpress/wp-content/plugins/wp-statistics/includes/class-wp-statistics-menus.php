@@ -22,17 +22,15 @@ class Menus
         'hits'         => 'hits',
         'online'       => 'online',
         'pages'        => 'pages',
-        'categories'   => 'categories',
         'authors'      => 'authors',
-        'tags'         => 'tags',
         'referrers'    => 'referrers',
         'searches'     => 'searches',
-        'words'        => 'words',
         'top-visitors' => 'top_visitors',
         'visitors'     => 'visitors',
         'optimization' => 'optimization',
         'settings'     => 'settings',
         'plugins'      => 'plugins',
+        'taxonomies'   => 'taxonomies',
     );
 
     /**
@@ -137,7 +135,7 @@ class Menus
     {
 
         // Get the read/write capabilities.
-        $manage_cap     = User::ExistCapability(Option::get('manage_capability', 'manage_options'));
+        $manage_cap = User::ExistCapability(Option::get('manage_capability', 'manage_options'));
 
         /**
          * List of WP Statistics Admin Menu
@@ -169,7 +167,7 @@ class Menus
             'hits'         => array(
                 'require'  => array('visits' => true),
                 'sub'      => 'overview',
-                'title'    => __('Hits', 'wp-statistics'),
+                'title'    => __('Views', 'wp-statistics'),
                 'page_url' => 'hits',
                 'method'   => 'hits',
             ),
@@ -194,13 +192,6 @@ class Menus
                 'page_url' => 'referrers',
                 'method'   => 'refer',
             ),
-            'words'        => array(
-                'require'  => array('visitors' => true),
-                'sub'      => 'overview',
-                'title'    => __('Search Words', 'wp-statistics'),
-                'page_url' => 'words',
-                'method'   => 'words',
-            ),
             'searches'     => array(
                 'require'  => array('visitors' => true),
                 'sub'      => 'overview',
@@ -216,21 +207,21 @@ class Menus
                 'method'   => 'country'
             ),
             'pages'        => array(
-                'require'  => array('pages' => true),
+                'require'  => array('visits' => true),
                 'sub'      => 'overview',
                 'title'    => __('Post Types', 'wp-statistics'),
                 'page_url' => 'pages',
                 'method'   => 'pages',
             ),
             'taxonomies'   => array(
-                'require'  => array('pages' => true),
+                'require'  => array('visits' => true),
                 'sub'      => 'overview',
                 'title'    => __('Taxonomies', 'wp-statistics'),
                 'page_url' => 'taxonomies',
                 'method'   => 'taxonomies',
             ),
             'authors'      => array(
-                'require'  => array('pages' => true),
+                'require'  => array('visits' => true),
                 'sub'      => 'overview',
                 'title'    => __('Authors', 'wp-statistics'),
                 'page_url' => 'authors',
@@ -246,7 +237,7 @@ class Menus
             'platforms'    => array(
                 'require'  => array('visitors' => true),
                 'sub'      => 'overview',
-                'title'    => __('Platforms', 'wp-statistics'),
+                'title'    => __('Operating Systems', 'wp-statistics'),
                 'page_url' => 'platform',
                 'method'   => 'platform'
             ),
@@ -344,14 +335,30 @@ class Menus
             $capability = $read_cap;
             $method     = 'log';
             $name       = $menu['title'];
+
             if (array_key_exists('cap', $menu)) {
                 $capability = $menu['cap'];
             }
+
             if (array_key_exists('method', $menu)) {
                 $method = $menu['method'];
             }
+
             if (array_key_exists('name', $menu)) {
                 $name = $menu['name'];
+            }
+
+            // Assume '\WP_STATISTICS\\' is a constant base namespace for your classes.
+            $baseNamespace = '\WP_STATISTICS\\';
+
+            // Determine the class name. Use $menu['callback'] if it's set; otherwise, construct the name from $method.
+            $className = isset($menu['callback']) ? $menu['callback'] : $baseNamespace . $method . '_page';
+
+            // Now, ensure that the 'view' method exists in the determined class.
+            if (method_exists($className, 'view')) {
+                $callback = [$className::instance(), 'view'];
+            } else {
+                continue;
             }
 
             //Check if SubMenu or Main Menu
@@ -359,15 +366,15 @@ class Menus
 
                 //Check Conditions For Show Menu
                 if (Option::check_option_require($menu) === true) {
-                    add_submenu_page(self::get_page_slug($menu['sub']), $menu['title'], $name, $capability, self::get_page_slug($menu['page_url']), array('\WP_STATISTICS\\' . $method . '_page', 'view'));
+                    add_submenu_page(self::get_page_slug($menu['sub']), $menu['title'], $name, $capability, self::get_page_slug($menu['page_url']), $callback);
                 }
 
                 //Check if add Break Line
                 if (array_key_exists('break', $menu)) {
-                    add_submenu_page(self::get_page_slug($menu['sub']), '', '', $capability, 'wps_break_menu', array('\WP_STATISTICS\\' . $method . '_page', $method));
+                    add_submenu_page(self::get_page_slug($menu['sub']), '', '', $capability, 'wps_break_menu', $callback);
                 }
             } else {
-                add_menu_page($menu['title'], $name, $capability, self::get_page_slug($menu['page_url']), array('\WP_STATISTICS\\' . $method . '_page', 'view'), $menu['icon']);
+                add_menu_page($menu['title'], $name, $capability, self::get_page_slug($menu['page_url']), $callback, $menu['icon']);
             }
         }
 

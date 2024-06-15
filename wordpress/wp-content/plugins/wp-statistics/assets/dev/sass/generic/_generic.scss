@@ -36,6 +36,15 @@
 
   .postbox-header .handle-actions {
     margin-top: 8px;
+    .wps-refresh{
+      .wps-refresh-icon{
+        width: 10px!important;
+        height: 12px!important;
+      }
+      .screen-reader-text{
+        font-size: 11px;
+      }
+    }
   }
 
   .postbox-header.postbox-toggle {
@@ -60,7 +69,32 @@
   }
 }
 
-.wps-wrap {
+.wps-wrap ,.rtl .wps-wrap{
+  .wps-postbox-wrap.postbox{
+    padding: 20px 32px;
+    @media(max-width: 600px){
+      padding: 20px 15px;
+    }
+    .postbox-header{
+      border-bottom: 0!important;
+      padding: 0!important;
+      h2{
+        padding: 0;
+        margin-bottom: 25px;
+        margin-top: 0;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 16.41px;
+        display: flex;
+        justify-content: flex-start;
+        cursor: default;
+
+        .wps-tooltip{
+          flex-grow: unset;
+        }
+      }
+    }
+  }
   .postbox-container {
     border-radius: 8px;
     overflow: visible;
@@ -138,7 +172,7 @@
 #wp-statistics-quickstats-widget,
 #wp-statistics-devices-widget,
 #wp-statistics-useronline-widget {
-  font-family: $font-base, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-family: $font-stack;
   overflow: visible;
 
   &.postbox.has-focus {
@@ -148,10 +182,19 @@
   .postbox-header {
 
     h2 {
-      font-weight: 600;
+      font-family: $font-stack;
+      font-weight: 500;
       font-size: 14px;
       margin: 0;
-      line-height: 1.4;
+      line-height:16.41px;
+    }
+  }
+
+  .inside {
+    table {
+      span.quickstats-values {
+        font-family: $font-stack;
+      }
     }
   }
 

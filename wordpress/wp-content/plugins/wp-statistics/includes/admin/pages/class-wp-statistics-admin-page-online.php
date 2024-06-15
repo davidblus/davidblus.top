@@ -1,8 +1,9 @@
 <?php
 
 namespace WP_STATISTICS;
+use WP_Statistics\Components\Singleton;
 
-class online_page
+class online_page extends Singleton
 {
 
     public function __construct()
@@ -31,7 +32,7 @@ class online_page
         if ($args['total_user_online'] > 0) {
             $args['user_online_list'] = UserOnline::get(array('offset' => Admin_Template::getCurrentOffset(), 'per_page' => Admin_Template::$item_per_page));
         } else {
-            $args['user_online_list'] = __('Currently, there are no online users on the site.', 'wp-statistics');
+            $args['user_online_list'] = __('No Users Currently Online on the Site.', 'wp-statistics');
         }
 
         // Create WordPress Pagination
@@ -48,4 +49,4 @@ class online_page
 
 }
 
-new online_page;
+online_page::instance();

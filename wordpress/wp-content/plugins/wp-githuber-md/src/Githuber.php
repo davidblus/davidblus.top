@@ -33,6 +33,7 @@ class Githuber {
 
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'front_enqueue_styles' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'front_enqueue_scripts' ) );
 		add_action( 'wp_print_footer_scripts', array( $this, 'front_print_footer_scripts' ) );
 
 		if ( ! isset( $_SERVER['HTTP_HOST'] ) || ! isset( $_SERVER['REQUEST_URI'] ) ) {
@@ -212,7 +213,7 @@ class Githuber {
 	 * @return void
 	 */
 	public function load_textdomain() {
-		load_plugin_textdomain( GITHUBER_PLUGIN_TEXT_DOMAIN, false, GITHUBER_PLUGIN_LANGUAGE_PACK ); 
+		load_plugin_textdomain( GITHUBER_PLUGIN_TEXT_DOMAIN, false, GITHUBER_PLUGIN_LANGUAGE_PACK );
 	}
 
 	/**
@@ -224,6 +225,16 @@ class Githuber {
 		wp_register_style( 'md-style', false );
 		wp_enqueue_style( 'md-style' );
 		wp_add_inline_style( 'md-style', $this->get_front_enqueue_styles() );
+		wp_enqueue_script( 'jquery' );
+	}
+
+	/**
+	 * Load Javascript files for frontend use.
+	 *
+	 * @return void
+	 */
+	public function front_enqueue_scripts() {
+		wp_enqueue_script( 'jquery' );
 	}
 
 	/**

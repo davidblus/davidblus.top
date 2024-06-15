@@ -3,21 +3,21 @@
 Plugin Name: Simple Blog Stats
 Plugin URI: https://perishablepress.com/simple-blog-stats/
 Description: Provides shortcodes and template tags to display a variety of statistics about your site.
-Tags: stats, statistics, analytics, posts, pages,  drafts, comments, categories, recent posts, tags, users
+Tags: stats, statistics, analytics, numbers, blog
 Author: Jeff Starr
 Author URI: https://plugin-planet.com/
 Donate link: https://monzillamedia.com/donate.html
 Contributors: specialk
 Requires at least: 4.6
-Tested up to: 6.2
-Stable tag: 20230228
-Version:    20230228
+Tested up to: 6.5
+Stable tag: 20240303
+Version:    20240303
 Requires PHP: 5.6.20
 Text Domain: simple-blog-stats
 Domain Path: /languages
 License: GPL v2 or later
 
-Displays a wealth of useful statistics about your site.
+Displays a wealth of useful statistics about your site. Display total number of posts, pages, categories, tags, and much more.
 
 
 
@@ -132,7 +132,7 @@ Visit the plugin settings page for a complete list of shortcodes. There you may 
 	[sbs_drafts]               = number of drafts
 	[sbs_comments]             = number of comments *
 	[sbs_moderated]            = moderated comments
-	[sbs_approved]             = approved comments
+	[sbs_approved]             = approved comments *
 	[sbs_users]                = number of users
 	[sbs_cats]                 = number of categories
 	[sbs_tags]                 = number of tags
@@ -214,6 +214,15 @@ By default, the `[sbs_comments]` shortcode displays the total number of comments
 You can change the category ID to display number of comments for any category.
 
 
+**[sbs_approved]**
+
+By default, the `[sbs_approved]` shortcode displays the total number of comments that have been approved/published on your site. This shortcode provides an optional attribute to specify the number format:
+
+	[sbs_approved number_format=","]
+
+You can change the number format to whatever makes sense for your site.
+
+
 **[sbs_tax_posts]**
 
 The `[sbs_tax_posts]` shortcode displays the number of posts that belong to a specific post type and taxonomy term(s). Here is an example:
@@ -251,6 +260,21 @@ The `[sbs_roles]` shortcode displays a list of all user roles and corresponding 
 	[sbs_roles role="all"]     // displays list of roles and number of users
 
 The `role` attribute accepts a value of `all` or any valid user role.
+
+
+**[sbs_cpt_count]**
+
+The `[sbs_cpt_count]` shortcode displays the number of posts for the specified post type. For example, if you want to display the number of posts for a post type called `food`, would like this:
+
+	[sbs_cpt_count cpt="food"]
+
+The default post type for this shortcode is `post`. The `[sbs_cpt_count]` shortcode accepts three attributes that can be used to customize:
+
+	cpt           - specifies the post type
+	txt           - specifies custom label/name
+	number_format - thousands separator  (default: comma, like 1,234)
+	
+By default, `[sbs_cpt_count]` with no attributes will display the total number of published posts. 
 
 
 **[sbs_logged_users]**
@@ -404,12 +428,12 @@ add_filter('sbs_word_count_all_disable', 'sbs_word_count_all_disable');`
 
 By default, the shortcode `[sbs_word_count_all]` counts words in posts from any/all post types. To customize the post type, add the following code to your theme functions.php, or add via [custom plugin](https://digwp.com/2022/02/custom-code-wordpress/):
 
-function sbs_word_count_all_post_type($type) {
-	
-	return array('post', 'page', 'movie', 'book'); // whatever post types
-	
-}
-add_filter('sbs_word_count_all_post_type', 'sbs_word_count_all_post_type');
+	function sbs_word_count_all_post_type($type) {
+		
+		return array('post', 'page', 'movie', 'book'); // whatever post types
+		
+	}
+	add_filter('sbs_word_count_all_post_type', 'sbs_word_count_all_post_type');
 
 You can customize the post types in the array as desired.
 
@@ -425,300 +449,13 @@ Send any questions or feedback via my [contact form](https://plugin-planet.com/s
 If you like Simple Blog Stats, please take a moment to [give a 5-star rating](https://wordpress.org/support/plugin/simple-blog-stats/reviews/?rate=5#new-post). It helps to keep development and support going strong. Thank you!
 
 
-**20230228**
+**20240303**
 
-* Improves responsive styles
-* Improves logic for `simple_blog_stats_count_logged()`
-* Improves logic when calling `get_current_screen()`
-* Moves WP Resources panel to its own function
-* Removes SES Pro from WP Resources panel
-* Tests on WordPress 6.1 + 6.2 (beta)
-* Tests on PHP 8.1 and 8.2
-
-**20220928**
-
-* Adds filter hook `sbs_posts_args`
-* Adds `number_format` for `[sbs_posts]`
-* Adds `exclude_cat` to exclude categories with `[sbs_posts]`
-* Fixes bug with "call to undefined function ngettext()"
-* Adds custom footer text to plugin settings
-* Improves plugin documentation
-* Updates "Show Support" panel
-* Updates translation template
-* Tests on WordPress 6.1
-
-**20220516**
-
-* Adds `exclude` attribute to `[sbs_posts]`
-* Adds filter hook `sbs_word_count_all_disable`
-* Adds filter hook `sbs_word_count_all_post_type`
-* Adds `[sbs_reading_time]` for estimated reading time (Thanks Maxime)
-* Improves plugin documentation
-* Tests on WordPress 6.0
-
-**20220116**
-
-* Updates support panel
-* Improves plugin documentation
-* Improves loading of translations
-* Adds new shortcode `[sbs_word_count_custom]`
-* Adds filter hook `sbs_include_commas`
-* Adds filter hook `sbs_updated_post_type`
-* Changes string variable to array for `sbs_updated_post_status`
-* Updates some links to external resources
-* Changes minimum required WP version to 4.6
-* Tests on WordPress 5.9
-
-**20210716**
-
-* Fixes bug with word count shortcode
-* Adds format attribute for `[sbs_updated]`
-* Improves escaping and number formatting
-* Tests on WordPress 5.8
-
-**20210210**
-
-* Adds filter hook `sbs_updated_post_status`
-* Tests on PHP 7.4 and 8.0
-* Tests on WordPress 5.7
-
-**20201114**
-
-* Fixes some bugs with PHP 8.0
-* Updates/improves readme.txt/docs
-* Tests on PHP 7.4 and 8.0
-* Tests on WordPress 5.6
-
-**20200808**
-
-* Improves `[sbs_media_count]` to display any media type(s) (Thanks to esmus)
-* Adds new `cat` attribute to `[sbs_comments]` shortcode (Thanks to Mark R.)
-* Adds new filter hook `sbs_cat_comments_args_comments`
-* Adds new filter hook `sbs_cat_comments_args_post`
+* Adds `number_format` attribute for `[sbs_cpt_count]`
+* Updates plugin settings page
 * Updates default translation template
-* Refines plugin setting page styles
-* Refines readme/documentation
-* Tests on WordPress 5.5
+* Improves plugin docs/readme.txt
+* Tests on WordPress 6.5 (beta)
 
-**20200317**
 
-* Adds new shortcode, `[sbs_tax_posts]`
-* Improves display of plugin settings page
-* Generates new default translation template
-* Tests on WordPress 5.4
-
-**20191105**
-
-* Updates styles for plugin settings page
-* Tests on WordPress 5.3
-
-**20190902**
-
-* Fixes bug with count all words in posts
-* Adds `number_format()` to format numbers with commas
-* Updates some links to https
-* Generates new default translation template
-* Tests on WordPress 5.3 (alpha)
-
-**20190429**
-
-* Bumps [minimum PHP version](https://codex.wordpress.org/Template:Server_requirements) to 5.6.20
-* Adds shortcode for count of images or videos in Media Library
-* Fixes PHP Notices: "trying to get property of non-object"
-* Tweaks plugin settings screen content
-* Updates default translation template
-* Tests on WordPress 5.2
-
-**20190308**
-
-* Adds new taxonomy shortcode,`[sbs_tax]`
-* Adds alternate posts shortcode, `[sbs_posts_alt]`
-* Adds check for admin user for settings shortcut link
-* Tweaks plugin settings screen UI
-* Generates new default translation template
-* Tests on WordPress 5.1 and 5.2 (alpha)
-
-**20190220**
-
-* Just a version bump for compat with WP 5.1
-* Full update coming soon :)
-
-**20181114**
-
-* Adds shortcode and dashboard widget for current number of logged-in users
-* Adds `sbs_last_update` filter hook for date format
-* Adds homepage link to Plugins screen
-* Updates default translation template
-* Tests on WordPress 5.0
-
-**20180828**
-
-* Fixes bug with caching and correct stats
-* Adds new option to enable/disable caching
-* Generates new default translation template
-* Further tests on WP 4.9 and 5.0 (alpha)
-
-**20180820**
-
-* Implements transients to some count functions for better performance
-* Adds filter hook `sbs_get_posts_limit` for `sbs_word_count_all` and `sbs_posts`
-* Adds `txt` attribute to `[sbs_cpt_count]` and `[sbs_roles]`
-* Fixes plural nouns on user role counts
-* Adds `rel="noopener noreferrer"` to all [blank-target links](https://perishablepress.com/wordpress-blank-target-vulnerability/)
-* Updates GDPR blurb and donate link
-* Regenerates default translation template
-* Further tests on WP versions 4.9 and 5.0 (alpha)
-
-**20180508**
-
-* Adds shortcode `[sbs_cpts_count]`, displays list of CPT counts
-* Adds shortcode `[sbs_cpt_count cpt="post"]`, displays CPT count
-* Tweaks some styles on the plugin settings page
-* Generates new translation template
-* Updates Show Support panel
-* Updates plugin image files
-* Tests on WordPress 5.0
-
-**20171103**
-
-* Fixes bug with new `[sbs_posts]` shortcode (see docs for info)
-* Removes extra `manage_options` check for settings validation
-* Tests on WordPress 4.9
-
-**20171024**
-
-* Adds new attributes for `[sbs_posts]` (see documentation for info)
-* Adds extra `manage_options` capability check to modify settings
-* Improves logic of `sbs_require_wp_version`
-* Streamlines Support panel in plugin settings
-* Regenerates default translation template
-* Tests on WordPress 4.9
-
-**20170801**
-
-* Updates GPL license blurb
-* Adds GPL license text file
-* Tests on WordPress 4.9 (alpha)
-
-**20170325**
-
-* Refines display of settings panels
-* Adds dashboard widget to display stats
-* Adds user-role shortcode `[sbs_roles role="all"]`
-* Updates show support panel in plugin settings
-* Replaces global `$wp_version` with `get_bloginfo('version')`
-* Regenerates default translation template
-* Tests on WordPress version 4.8
-
-**20161118**
-
-* New shortcodes to count words in posts!
-* Added shortcode to count words in any post: `[sbs_word_count]`
-* Added shortcode to count words in all posts: `[sbs_word_count_all]`
-* Added new shortcodes to `sbs_blog_stats()` function
-* Updated plugin author URL
-* Changed stable tag from trunk to latest version
-* Added `&raquo;` to rate plugin link and home link
-* Updated URL for rate this plugin links
-* Removed default abbr styles
-* Generated new default language template
-* Tested on WordPress version 4.7 (beta)
-
-**20160813**
-
-* Streamlined and optimized the plugin settings page
-* Replaced `_e()` with `esc_html_e()` or `esc_attr_e()`
-* Replaced `__()` with `esc_html__()` or `esc_attr__()`
-* Added plugin icons and larger banner image
-* Replaced plugin icon on settings page
-* Changed text-domain from "sbs" to "simple-blog-stats"
-* Removed local translations in favor of [GlotPress](https://make.wordpress.org/polyglots/handbook/tools/glotpress-translate-wordpress-org/)
-* Improved translation support
-* Generated new translation template
-* Added ellipsis to recent comment excerpt
-* Tested on WordPress 4.6
-
-**20160408**
-
-* Replaced icon with retina version
-* Added screenshot to readme/docs
-* Added retina version of banner
-* Reorganized and refreshed readme.txt
-* Tested on WordPress version 4.5 beta
-
-**20151111**
-
-* Updated heading hierarchy in plugin settings
-* Updated minimum version requirement
-* Tested on WordPress 4.4 beta
-
-**20150808**
-
-* Tested on WordPress 4.3
-* Updated minimum version requirement
-
-**20150507**
-
-* Tested with WP 4.2 + 4.3 (alpha)
-* Changed a few "http" links to "https"
-
-**20150315**
-
-* Tested with latest version of WP (4.1)
-* Increased minimum version to WP 3.8
-* Removed deprecated screen_icon()
-* Streamline/fine-tune plugin code
-* Added $sbs_wp_vers for version check
-* Added Text Domain and Domain Path to file header
-* Added .pot translation template to /languages/
-
-**20140925**
-
-* Tested on latest version of WP (4.0)
-* Increased min-version requirement to WP 3.7
-* Added conditional check for min-version function
-
-**20140305**
-
-* Bugfix: replaced mysql_real_escape_string() with esc_attr(), resolves PHP error
-
-**20140123**
-
-* Tested with latest WordPress (3.8)
-* Added trailing slash to load_plugin_textdomain()
-
-**20131106**
-
-* Removed closing `?>` from simple-blog-stats.php
-* General code cleanup and maintenance
-* Tested on latest version of WordPress 3.7
-* Added "rate this plugin" links
-* Added uninstall.php file
-* Added i18n support
-* Added line to prevent direct loading of script
-
-**20130713**
-
-* General code check n clean
-* Improved localization support
-* Overview and Updates admin panels toggled open by default
-
-**20130104**
-
-* Added margins to submit buttons
-
-**20121029** 
-
-* Initial release of new plugin
-
-**20121028**
-
-* Fine-tuned, tested, tested, etc.
-
-**20121027**
-
-* Rebuilt and renamed BlogStats PCC plugin
-
-**20060828**
-
-* Initial release of [BlogStats PCC](https://perishablepress.com/blogstats-pcc-plugin/)
+Full changelog @ [https://plugin-planet.com/wp/changelog/simple-blog-stats.txt](https://plugin-planet.com/wp/changelog/simple-blog-stats.txt)

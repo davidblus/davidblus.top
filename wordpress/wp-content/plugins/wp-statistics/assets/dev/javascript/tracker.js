@@ -1,12 +1,16 @@
-let WP_Statistics_CheckTime = 30; //sec
+let WP_Statistics_CheckTime = 60000;
 
 // Check DoNotTrack Settings on User Browser
 let WP_Statistics_Dnd_Active = parseInt(navigator.msDoNotTrack || window.doNotTrack || navigator.doNotTrack, 10);
 
 let wpStatisticsUserOnline = {
     init: function () {
-        this.checkHitRequestConditions();
-        this.keepUserOnline();
+        if (typeof WP_Statistics_Tracker_Object == "undefined") {
+            console.log('Variable WP_Statistics_Tracker_Object not found on the page source. Please ensure that you have excluded the /wp-content/plugins/wp-statistics/assets/js/tracker.js file from your cache and then clear your cache.');
+        } else {
+            this.checkHitRequestConditions();
+            this.keepUserOnline();
+        }
     },
 
     // Check Conditions for Sending Hit Request
@@ -23,11 +27,24 @@ let wpStatisticsUserOnline = {
     },
 
     //Sending Hit Request
-    sendHitRequest: function () {
-        var WP_Statistics_http = new XMLHttpRequest();
-        WP_Statistics_http.open("GET", WP_Statistics_Tracker_Object.hitRequestUrl + "&referred=" + encodeURIComponent(document.referrer) + "&_=" + Date.now(), true);
-        WP_Statistics_http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        WP_Statistics_http.send(null);
+    sendHitRequest: async function () {
+        try {
+            const referred = encodeURIComponent(document.referrer);
+            const timestamp = Date.now();
+            const requestUrl = `${WP_Statistics_Tracker_Object.hitRequestUrl}&referred=${referred}&_=${timestamp}`;
+
+            const response = await fetch(requestUrl, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json;charset=UTF-8',
+                },
+            });
+            if (!response.ok) {
+                console.error('Hit request failed!');
+            }
+        } catch (error) {
+            console.error('An error occurred on sending hit request:', error);
+        }
     },
 
     // Send Request to REST API to Show User Is Online
@@ -51,10 +68,11 @@ let wpStatisticsUserOnline = {
                         this.sendOnlineUserRequest();
                     }
                 }
-            }.bind(this),
-            WP_Statistics_CheckTime * 1000
+            }.bind(this), WP_Statistics_CheckTime
         );
     },
 };
 
-wpStatisticsUserOnline.init();
+document.addEventListener('DOMContentLoaded', function () {
+    wpStatisticsUserOnline.init();
+});

@@ -1,8 +1,9 @@
 <?php
 
 namespace WP_STATISTICS;
+use WP_Statistics\Components\Singleton;
 
-class browser_page
+class browser_page extends Singleton
 {
 
     public function __construct()
@@ -20,7 +21,7 @@ class browser_page
             // Is Validate Date Request
             $DateRequest = Admin_Template::isValidDateRequest();
             if (!$DateRequest['status']) {
-                wp_die($DateRequest['message']);
+                wp_die(esc_html($DateRequest['message']));
             }
         }
     }
@@ -32,22 +33,22 @@ class browser_page
      */
     public static function view()
     {
-
         // Page title
-        $args['title'] = __('Browser Statistics', 'wp-statistics');
+        $args['title'] = __('Web Browser Usage Statistics', 'wp-statistics');
 
         // Get Current Page Url
         $args['pageName']   = Menus::get_page_slug('browser');
         $args['pagination'] = Admin_Template::getCurrentPaged();
 
         // Get Date-Range
-        $args['DateRang'] = Admin_Template::DateRange();
+        $args['DateRang']    = Admin_Template::DateRange();
+        $args['HasDateRang'] = True;
 
 
         // Show Template Page
-        Admin_Template::get_template(array('layout/header', 'layout/title', 'layout/date.range', 'pages/browsers', 'layout/postbox.toggle', 'layout/footer'), $args);
+        Admin_Template::get_template(array('layout/header', 'layout/title', 'pages/browsers', 'layout/postbox.toggle', 'layout/footer'), $args);
     }
 
 }
 
-new browser_page;
+browser_page::instance();

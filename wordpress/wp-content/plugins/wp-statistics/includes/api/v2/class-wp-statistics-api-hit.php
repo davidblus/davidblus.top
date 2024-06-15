@@ -36,7 +36,6 @@ class Hit extends \WP_STATISTICS\RestAPI
     public static function require_params_hit()
     {
         return array(
-            'track_all' => array('required' => true, 'type' => 'integer'),
             'page_uri'  => array('required' => true, 'type' => 'string')
         );
     }
@@ -73,11 +72,14 @@ class Hit extends \WP_STATISTICS\RestAPI
     public function hit_callback(\WP_REST_Request $request)
     {
         // Start Record
-        Hits::record();
+        $exclusion = Hits::record();
 
         $response = new \WP_REST_Response(array(
             'status'  => true,
-            'message' => __('Visitor Hit recorded successfully.', 'wp-statistics'),
+            'data'    => array(
+                'exclusion' => $exclusion,
+            ),
+            'message' => __('Visitor Interaction Successfully Logged.', 'wp-statistics'),
         ), 200);
 
         /**

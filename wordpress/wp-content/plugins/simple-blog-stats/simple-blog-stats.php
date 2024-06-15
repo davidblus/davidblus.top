@@ -3,15 +3,15 @@
 	Plugin Name: Simple Blog Stats
 	Plugin URI: https://perishablepress.com/simple-blog-stats/
 	Description: Provides shortcodes and template tags to display a variety of statistics about your site.
-	Tags: stats, statistics, analytics, posts, pages,  drafts, comments, categories, recent posts, tags, users
+	Tags: stats, statistics, analytics, numbers, blog
 	Author: Jeff Starr
 	Author URI: https://plugin-planet.com/
 	Donate link: https://monzillamedia.com/donate.html
 	Contributors: specialk
 	Requires at least: 4.6
-	Tested up to: 6.2
-	Stable tag: 20230228
-	Version:    20230228
+	Tested up to: 6.5
+	Stable tag: 20240303
+	Version:    20240303
 	Requires PHP: 5.6.20
 	Text Domain: simple-blog-stats
 	Domain Path: /languages
@@ -32,7 +32,7 @@
 	You should have received a copy of the GNU General Public License
 	with this program. If not, visit: https://www.gnu.org/licenses/
 	
-	Copyright 2023 Monzilla Media. All rights reserved.
+	Copyright 2024 Monzilla Media. All rights reserved.
 */
 
 if (!defined('ABSPATH')) die();
@@ -40,17 +40,19 @@ if (!defined('ABSPATH')) die();
 
 
 $sbs_wp_vers = '4.6';
-$sbs_version = '20230228';
+$sbs_version = '20240303';
 $sbs_plugin  = esc_html__('Simple Blog Stats', 'simple-blog-stats');
 $sbs_options = get_option('sbs_options');
-$sbs_path    = plugin_basename(__FILE__); // 'simple-blog-stats/simple-blog-stats.php';
+$sbs_path    = plugin_basename(__FILE__); // simple-blog-stats/simple-blog-stats.php
 $sbs_homeurl = 'https://perishablepress.com/simple-blog-stats/';
 
 require_once('stats-functions.php');
 
 function sbs_i18n_init() {
 	
-	load_plugin_textdomain('simple-blog-stats', false, dirname(plugin_basename(__FILE__)) .'/languages/');
+	global $sbs_path;
+	
+	load_plugin_textdomain('simple-blog-stats', false, dirname($sbs_path) .'/languages/');
 	
 }
 add_action('init', 'sbs_i18n_init');
@@ -406,9 +408,15 @@ add_shortcode('sbs_moderated', 'sbs_moderated');
 
 
 // number of comments (approved)
-function sbs_approved() {
+function sbs_approved($attr, $content = null) {
 	
 	global $sbs_options;
+	
+	extract(shortcode_atts(array(
+		
+		'number_format' => ',',
+		
+	), $attr));
 	
 	$cache = isset($sbs_options['sbs_enable_cache']) ? $sbs_options['sbs_enable_cache'] : false;
 	
@@ -430,7 +438,7 @@ function sbs_approved() {
 		
 	}
 	
-	return $sbs_options['count_approved_before'] . number_format($count) . $sbs_options['count_approved_after'];
+	return $sbs_options['count_approved_before'] . number_format($count, 0, '.', $number_format) . $sbs_options['count_approved_after'];
 	
 }
 add_shortcode('sbs_approved', 'sbs_approved');
@@ -789,6 +797,8 @@ function sbs_word_count($atts) {
 		
 	}
 	
+	$count = is_int($count) ? $count : 0;
+	
 	return $sbs_options['count_words_before'] . number_format($count) .  $sbs_options['count_words_after'];
 	
 }
@@ -866,6 +876,8 @@ function sbs_word_count_all($wrap) {
 	
 	wp_reset_postdata();
 	
+	$count = is_int($count) ? $count : 0;
+	
 	$output = number_format($count);
 	
 	$output = ($wrap) ? $sbs_options['count_words_all_before'] . $output . $sbs_options['count_words_all_after'] : $output;
@@ -924,8 +936,9 @@ function sbs_cpt_count($atts) {
 	$after  = isset($sbs_options['sbs_cpt_after'])  ? $sbs_options['sbs_cpt_after']  : '';
 	
 	extract(shortcode_atts(array(
-		'cpt' => 'post',
-		'txt' => '',
+		'cpt'           => 'post',
+		'txt'           => '',
+		'number_format' => ','
 	), $atts));
 	
 	$post = get_post_type_object($cpt);
@@ -938,7 +951,7 @@ function sbs_cpt_count($atts) {
 	
 	$count = wp_count_posts($cpt);
 	
-	$publish = number_format($count->publish) .' '. $name;
+	$publish = ($count && property_exists($count, 'publish')) ? number_format($count->publish, 0, '.', $number_format) .' '. $name : '0' .' '. $name;
 	
 	return $before . $publish . $after;
 	
@@ -967,7 +980,7 @@ function sbs_cpts_count($atts) {
 		
 		$text = _n($post_type->labels->singular_name, $post_type->labels->name, intval($num_posts->publish));
 		
-		$html .= '<li>'. number_format($num) .' '. esc_html($text) .'</li>';
+		$html .= '<li>'. number_format(floatval($num)) .' '. esc_html($text) .'</li>';
 		
 	}
 	
@@ -1161,8 +1174,8 @@ add_action('wp_dashboard_setup', 'sbs_dashboard_widget');
 
 function sbs_plugin_action_links($links, $file) {
 	global $sbs_path, $sbs_path;
-	if ($file == $sbs_path && current_user_can('manage_options')) {
-		$sbs_links = '<a href="' . get_admin_url() . 'options-general.php?page=' . $sbs_path . '">' . esc_html__('Settings', 'simple-blog-stats') .'</a>';
+	if ($file === $sbs_path && current_user_can('manage_options')) {
+		$sbs_links = '<a href="'. admin_url('options-general.php?page=simple-blog-stats') .'">'. esc_html__('Settings', 'simple-blog-stats') .'</a>';
 		array_unshift($links, $sbs_links);
 	}
 	return $links;
@@ -1172,7 +1185,8 @@ add_filter ('plugin_action_links', 'sbs_plugin_action_links', 10, 2);
 
 
 function add_sbs_links($links, $file) {
-	if ($file == plugin_basename(__FILE__)) {
+	global $sbs_path;
+	if ($file === $sbs_path) {
 		
 		$home_href  = 'https://perishablepress.com/simple-blog-stats/';
 		$home_title = esc_attr__('Plugin Homepage', 'simple-blog-stats');
@@ -1359,7 +1373,8 @@ function sbs_validate_options($input) {
 
 
 function sbs_add_options_page() {
-	add_options_page('Simple Blog Stats', 'Simple Blog Stats', 'manage_options', __FILE__, 'sbs_render_form');
+	// add_options_page( $page_title, $menu_title, $capability, $menu_slug, $callback, $position )
+	add_options_page('Simple Blog Stats', 'Simple Blog Stats', 'manage_options', 'simple-blog-stats', 'sbs_render_form');
 }
 add_action ('admin_menu', 'sbs_add_options_page');
 
@@ -1412,11 +1427,19 @@ function sbs_render_form() {
 		#mm-plugin-options #mm-panel-primary td ul { margin-left: 20px; }
 		#mm-plugin-options .mm-table-wrap .widefat .sbs-padding th, 
 		#mm-plugin-options .mm-table-wrap .widefat .sbs-padding td { padding-top: 20px; padding-bottom: 20px; }
+		
+		.wp-admin .notice code { line-height: 1; font-size: 12px; }
+		.wp-admin .sbs-dismiss-notice { float: right; }
+		#mm-plugin-options .sbs-notice p { margin-left: 0; }
+		
+		@media (max-width: 1100px) {
+			.wp-admin .sbs-dismiss-notice { float: none; }
+			}
 	</style>
 
 	<div id="mm-plugin-options" class="wrap">
 		<h1><?php esc_html_e('Simple Blog Stats', 'simple-blog-stats'); ?> <small><?php echo 'v' . $sbs_version; ?></small></h1>
-		<div id="mm-panel-toggle"><a href="<?php get_admin_url() . 'options-general.php?page=' . $sbs_path; ?>"><?php esc_html_e('Toggle all panels', 'simple-blog-stats'); ?></a></div>
+		<div id="mm-panel-toggle"><a href="<?php echo admin_url('options-general.php?page=simple-blog-stats'); ?>"><?php esc_html_e('Toggle all panels', 'simple-blog-stats'); ?></a></div>
 
 		<form method="post" action="options.php">
 			<?php $sbs_options = get_option('sbs_options'); settings_fields('sbs_plugin_options'); ?>
@@ -1958,3 +1981,109 @@ function sbs_render_form() {
 	</script>
 
 <?php }
+
+function simple_blog_stats_admin_notice() {
+	
+	if (sbs_get_current_screen_id() === 'settings_page_simple-blog-stats') {
+		
+		if (!simple_blog_stats_check_date_expired() && !simple_blog_stats_dismiss_notice_check()) {
+			
+			?>
+			
+			<div class="notice notice-success sbs-notice">
+				<p>
+					<strong><?php esc_html_e('Go Pro!', 'simple-blog-stats'); ?></strong> 
+					<?php esc_html_e('Save 30% on our', 'simple-blog-stats'); ?> 
+					<a target="_blank" rel="noopener noreferrer" href="https://plugin-planet.com/"><?php esc_html_e('Pro WordPress plugins', 'simple-blog-stats'); ?></a> 
+					<?php esc_html_e('and', 'simple-blog-stats'); ?> 
+					<a target="_blank" rel="noopener noreferrer" href="https://books.perishablepress.com/"><?php esc_html_e('books', 'simple-blog-stats'); ?></a>. 
+					<?php esc_html_e('Apply code', 'simple-blog-stats'); ?> <code>PLANET24</code> <?php esc_html_e('at checkout. Sale ends 5/25/24.', 'simple-blog-stats'); ?> 
+					<?php echo simple_blog_stats_dismiss_notice_link(); ?>
+				</p>
+			</div>
+			
+			<?php
+			
+		}
+		
+	}
+	
+}
+add_action('admin_notices', 'simple_blog_stats_admin_notice');
+
+function simple_blog_stats_dismiss_notice_activate() {
+	
+	delete_option('simple-blog-stats-dismiss-notice');
+	
+}
+register_activation_hook(__FILE__, 'simple_blog_stats_dismiss_notice_activate');
+
+function simple_blog_stats_dismiss_notice_version() {
+	
+	global $sbs_version;
+	
+	$version_current = $sbs_version;
+	
+	$version_previous = get_option('simple-blog-stats-dismiss-notice');
+	
+	$version_previous = ($version_previous) ? $version_previous : $version_current;
+	
+	if (version_compare($version_current, $version_previous, '>')) {
+		
+		delete_option('simple-blog-stats-dismiss-notice');
+		
+	}
+	
+}
+add_action('admin_init', 'simple_blog_stats_dismiss_notice_version');
+
+function simple_blog_stats_dismiss_notice_check() {
+	
+	$check = get_option('simple-blog-stats-dismiss-notice');
+	
+	return ($check) ? true : false;
+	
+}
+
+function simple_blog_stats_dismiss_notice_save() {
+	
+	if (isset($_GET['dismiss-notice-verify']) && wp_verify_nonce($_GET['dismiss-notice-verify'], 'simple_blog_stats_dismiss_notice')) {
+		
+		if (!current_user_can('manage_options')) exit;
+		
+		global $sbs_version;
+		
+		$result = update_option('simple-blog-stats-dismiss-notice', $sbs_version, false);
+		
+		$result = $result ? 'true' : 'false';
+		
+		$location = admin_url('options-general.php?page=simple-blog-stats&dismiss-notice='. $result);
+		
+		wp_redirect($location);
+		
+		exit;
+		
+	}
+	
+}
+add_action('admin_init', 'simple_blog_stats_dismiss_notice_save');
+
+function simple_blog_stats_dismiss_notice_link() {
+	
+	$nonce = wp_create_nonce('simple_blog_stats_dismiss_notice');
+	
+	$href  = add_query_arg(array('dismiss-notice-verify' => $nonce), admin_url('options-general.php?page=simple-blog-stats'));
+	
+	$label = esc_html__('Dismiss', 'simple-blog-stats');
+	
+	echo '<a class="sbs-dismiss-notice" href="'. esc_url($href) .'">'. esc_html($label) .'</a>';
+	
+}
+
+function simple_blog_stats_check_date_expired() {
+	
+	$expires = apply_filters('simple_blog_stats_check_date_expired', '2024-05-25');
+	
+	return (new DateTime() > new DateTime($expires)) ? true : false;
+	
+}

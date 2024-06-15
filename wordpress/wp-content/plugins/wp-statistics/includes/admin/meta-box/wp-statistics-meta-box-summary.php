@@ -19,6 +19,15 @@ class summary
      */
     public static function get($args = array())
     {
+        /**
+         * Filters the args used from metabox for query stats
+         *
+         * @param array $args The args passed to query stats
+         * @since 14.2.1
+         *
+         */
+        $args = apply_filters('wp_statistics_meta_box_summary_args', $args);
+
         return self::getSummaryHits(array('user-online', 'visitors', 'visits'));
     }
 
@@ -30,7 +39,7 @@ class summary
     public static function lang()
     {
         return array(
-            'search_engine'     => __('Search Engine Referrals', 'wp-statistics'),
+            'search_engine'     => __('Overview of Search Engine Referrals', 'wp-statistics'),
             'current_time_date' => __('Current Time and Date', 'wp-statistics'),
             'adjustment'        => __('(Adjustment)', 'wp-statistics')
         );
@@ -118,13 +127,13 @@ class summary
 
                 // This Year
                 $data['visitors']['this-year'] = array(
-                    'link'  => Menus::admin_url('visitors', array('from' => TimeZone::getLocalDate('Y-m-d', strtotime(date('Y-01-01'))), 'to' => TimeZone::getCurrentDate("Y-m-d"))),
+                    'link'  => Menus::admin_url('visitors', array('from' => TimeZone::getLocalDate('Y-m-d', strtotime(date('Y-01-01'))), 'to' => TimeZone::getCurrentDate("Y-m-d"))),  // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date	
                     'value' => number_format_i18n(wp_statistics_visitor('this-year', null, true))
                 );
 
                 // Last Year
                 $data['visitors']['last-year'] = array(
-                    'link'  => Menus::admin_url('visitors', array('from' => TimeZone::getTimeAgo((365 * 2)), 'to' => TimeZone::getTimeAgo(365))),
+                    'link'  => Menus::admin_url('visitors', array('from' => TimeZone::getTimeAgo(365, 'Y-01-01'), 'to' => TimeZone::getTimeAgo(365, 'Y-12-31'))),
                     'value' => number_format_i18n(wp_statistics_visitor('last-year', null, true))
                 );
 
@@ -137,7 +146,7 @@ class summary
             }
         }
 
-        // Get Visits
+        // Get Views
         if (in_array('visits', $component)) {
             if (Option::get('visits')) {
                 $data['visits'] = array();
@@ -192,13 +201,13 @@ class summary
 
                 // This Year
                 $data['visits']['this-year'] = array(
-                    'link'  => Menus::admin_url('hits', array('from' => TimeZone::getLocalDate('Y-m-d', strtotime(date('Y-01-01'))), 'to' => TimeZone::getCurrentDate("Y-m-d"))),
+                    'link'  => Menus::admin_url('hits', array('from' => TimeZone::getLocalDate('Y-m-d', strtotime(date('Y-01-01'))), 'to' => TimeZone::getCurrentDate("Y-m-d"))),  // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date	
                     'value' => number_format_i18n(wp_statistics_visit('this-year'))
                 );
 
                 // Last Year
                 $data['visits']['last-year'] = array(
-                    'link'  => Menus::admin_url('hits', array('from' => TimeZone::getTimeAgo((365 * 2)), 'to' => TimeZone::getTimeAgo(365))),
+                    'link'  => Menus::admin_url('hits', array('from' => TimeZone::getTimeAgo(365, 'Y-01-01'), 'to' => TimeZone::getTimeAgo(365, 'Y-12-31'))),
                     'value' => number_format_i18n(wp_statistics_visit('last-year'))
                 );
 
@@ -223,7 +232,7 @@ class summary
 
                 // Push to List
                 $data['search-engine'][$key] = array(
-                    'name'      => __($value['name'], 'wp-statistics'),
+                    'name'      => sprintf(__('%s', 'wp-statistics'), $value['name']),
                     'logo'      => $value['logo_url'],
                     'today'     => number_format_i18n($today),
                     'yesterday' => number_format_i18n($yesterday)

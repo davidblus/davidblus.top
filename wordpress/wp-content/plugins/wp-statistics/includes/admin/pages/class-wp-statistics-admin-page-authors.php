@@ -1,8 +1,9 @@
 <?php
 
 namespace WP_STATISTICS;
+use WP_Statistics\Components\Singleton;
 
-class authors_page
+class authors_page extends Singleton
 {
 
     public function __construct()
@@ -17,12 +18,12 @@ class authors_page
             // Is Validate Date Request
             $DateRequest = Admin_Template::isValidDateRequest();
             if (!$DateRequest['status']) {
-                wp_die($DateRequest['message']);
+                wp_die(esc_html($DateRequest['message']));
             }
 
             // Check Validate int Params
             if (isset($_GET['ID']) and (!is_numeric($_GET['ID']) || ($_GET['ID'] != 0 and User::exists((int)trim($_GET['ID'])) === false))) {
-                wp_die(__("Request is not valid.", "wp-statistics"));
+                wp_die(__("The request is invalid.", "wp-statistics")); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped	
             }
         }
     }
@@ -36,14 +37,15 @@ class authors_page
     {
 
         // Page title
-        $args['title'] = __('Author Statistics', 'wp-statistics');
+        $args['title'] = __('Statistics by Author', 'wp-statistics');
 
         // Get Current Page Url
         $args['pageName']   = Menus::get_page_slug('authors');
         $args['pagination'] = Admin_Template::getCurrentPaged();
 
         // Get Date-Range
-        $args['DateRang'] = Admin_Template::DateRange();
+        $args['DateRang']    = Admin_Template::DateRange();
+        $args['HasDateRang'] = True;
 
         // Get List Authors
         $users = get_users((User::Access('manage') ? array('role__in' => array('author', 'administrator')) : array('role__in' => 'author')));
@@ -59,7 +61,7 @@ class authors_page
 
             // Set Type List
             $args['top_list_type'] = 'user';
-            $args['top_title']     = __('Top Author Sorted by Hits', 'wp-statistics');
+            $args['top_title']     = __('Top Authors by Page Views', 'wp-statistics');
 
             // Push List Category
             foreach ($users as $user) {
@@ -70,7 +72,7 @@ class authors_page
 
             // Set Type List
             $args['top_list_type'] = 'post';
-            $args['top_title']     = __('Top posts Sorted by Hits from the author', 'wp-statistics');
+            $args['top_title']     = __('Author’s Top Posts by Views', 'wp-statistics');
 
             // Get Top Posts From Category
             $post_lists = Helper::get_post_list(array(
@@ -83,19 +85,21 @@ class authors_page
 
         }
 
-        // Sort By Visit Count
+        // Sort By View Count
         Helper::SortByKeyValue($args['top_list'], 'count_visit');
 
+        $author_items = apply_filters('wp_statistics_author_items', 10);
+
         // Get Only 5 Item
-        if (count($args['top_list']) > 5) {
-            $args['top_list'] = array_chunk($args['top_list'], 5);
+        if (count($args['top_list']) > $author_items) {
+            $args['top_list'] = array_chunk($args['top_list'], $author_items);
             $args['top_list'] = $args['top_list'][0];
         }
 
         // Show Template Page
-        Admin_Template::get_template(array('layout/header', 'layout/title', 'layout/date.range', 'pages/author', 'layout/postbox.hide', 'layout/footer'), $args);
+        Admin_Template::get_template(array('layout/header', 'layout/title', 'pages/author', 'layout/postbox.hide', 'layout/footer'), $args);
     }
 
 }
 
-new authors_page;
+authors_page::instance();

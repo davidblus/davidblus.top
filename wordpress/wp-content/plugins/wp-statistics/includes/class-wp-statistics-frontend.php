@@ -45,7 +45,7 @@ class Frontend
      */
     public function enqueue_scripts()
     {
-        wp_enqueue_script('wp-statistics-tracker', WP_STATISTICS_URL . 'assets/js/tracker.js');
+        wp_enqueue_script('wp-statistics-tracker', WP_STATISTICS_URL . 'assets/js/tracker.js', [], WP_STATISTICS_VERSION, ['in_footer' => true]);
 
         $params = array(
             Hits::$rest_hits_key => 'yes',
@@ -75,7 +75,7 @@ class Frontend
     }
 
     /**
-     * Enqueue Scripts
+     * Enqueue Styles
      */
     public function enqueue_styles()
     {
@@ -92,7 +92,7 @@ class Frontend
     public function print_out_plugin_html()
     {
         if (apply_filters('wp_statistics_html_comment', true)) {
-            echo '<!-- Analytics by WP Statistics v' . WP_STATISTICS_VERSION . ' - ' . WP_STATISTICS_SITE . ' -->' . "\n";
+            echo '<!-- Analytics by WP Statistics v' . WP_STATISTICS_VERSION . ' - ' . WP_STATISTICS_SITE . ' -->' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         }
     }
 
@@ -115,7 +115,7 @@ class Frontend
 
         // Get post hits
         $hits      = wp_statistics_pages('total', "", $post_id);
-        $hits_html = '<p>' . sprintf(__('Hits: %s', 'wp-statistics'), $hits) . '</p>';
+        $hits_html = '<p>' . sprintf(__('Views: %s', 'wp-statistics'), $hits) . '</p>';
 
         // Check hits position
         if (Option::get('display_hits_position') == 'before_content') {

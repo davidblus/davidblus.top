@@ -46,9 +46,9 @@ function simple_blog_stats_wp_resources() {
 	$url2 = esc_url('https://plugin-planet.com/store/');
 	$url3 = esc_url('https://monzillamedia.com/donate.html');
 	
-	$title1 = esc_html__('Perishable Press Books', 'head-meta-data');
-	$title2 = esc_html__('Plugin Planet: Pro WordPress Plugins', 'head-meta-data');
-	$title3 = esc_html__('Donate via PayPal, credit card, or cryptocurrency', 'head-meta-data');
+	$title1 = esc_html__('Perishable Press Books', 'simple-blog-stats');
+	$title2 = esc_html__('Plugin Planet: Pro WordPress Plugins', 'simple-blog-stats');
+	$title3 = esc_html__('Donate via PayPal, credit card, or cryptocurrency', 'simple-blog-stats');
 	
 	$link1 = ' <a target="_blank" rel="noopener noreferrer" href="'. $url1 .'" title="'. $title1 .'">'. esc_html__('books',    'simple-blog-stats') .'</a> ';
 	$link2 = ' <a target="_blank" rel="noopener noreferrer" href="'. $url2 .'" title="'. $title2 .'">'. esc_html__('plugins',  'simple-blog-stats') .'</a>, ';
@@ -99,10 +99,10 @@ function simple_blog_stats_wp_resources() {
 			</div>
 		</div>
 		<div class="project-blurb">
-			<p><strong>Please Donate</strong></p>
+			<p><strong><?php esc_html_e('Please Donate', 'simple-blog-stats'); ?></strong></p>
 			<p><?php echo $donate; ?></p>
 			<ul>
-				<li><a target="_blank" rel="noopener noreferrer" href="https://monzillamedia.com/donate.html" title="<?php echo $title3; ?>">Make a donation&nbsp;&raquo;</a></li>
+				<li><a target="_blank" rel="noopener noreferrer" href="<?php echo $url3; ?>" title="<?php echo $title3; ?>"><?php esc_html_e('Make a donation&nbsp;&raquo;', 'simple-blog-stats'); ?></a></li>
 			</ul>
 		</div>
 	</div>

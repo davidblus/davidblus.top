@@ -32,12 +32,14 @@ class Uninstall
 
         // Delete the options from the WordPress options table.
         delete_option('wp_statistics');
+        delete_option('wp_statistics_privacy_status');
         delete_option('wp_statistics_plugin_version');
         delete_option('wp_statistics_referrals_detail');
         delete_option('wp_statistics_overview_page_ads');
         delete_option('wp_statistics_users_city');
         delete_option('wp_statistics_disable_addons');
         delete_option('wp_statistics_disable_addons_notice');
+        delete_option('wp_statistics_daily_salt');
 
         // Delete the transients.
         delete_transient('wps_top_referring');
