@@ -33,10 +33,11 @@ class TinyMCE
         $strings = array(
             'insert'         => __('WP Statistics Shortcodes', 'wp-statistics'),
             'stat'           => __('Statistics', 'wp-statistics'),
-            'usersonline'    => __('Online Users', 'wp-statistics'),
+            'usersonline'    => __('Online Visitors', 'wp-statistics'),
             'visits'         => __('Views', 'wp-statistics'),
             'visitors'       => __('Visitors', 'wp-statistics'),
             'pagevisits'     => __('Number of Page Views', 'wp-statistics'),
+            'pagevisitors'     => __('Number of Page Visitors', 'wp-statistics'),
             'searches'       => __('Searches', 'wp-statistics'),
             'postcount'      => __('Total Number of Posts', 'wp-statistics'),
             'pagecount'      => __('Total Number of Pages', 'wp-statistics'),
@@ -132,6 +133,11 @@ class TinyMCE
      */
     public function my_post_edit_page_footer()
     {
+        // Fix Avada builder messing up WP hooks
+        if (Helper::get_screen_id() !== 'widgets') {
+            return;
+        }
+
         echo '
         <script type="text/javascript">
         jQuery( document ).on( \'tinymce-editor-setup\', function( event, editor ) {

@@ -67,7 +67,6 @@ class Admin_Template
             $template_file = WP_STATISTICS_DIR . "includes/admin/templates/{$file}.php";
 
             if (!file_exists($template_file)) {
-                Helper::doing_it_wrong(__FUNCTION__, __('Unable to locate the template.', 'wp-statistics'));
                 continue;
             }
 
@@ -162,7 +161,7 @@ class Admin_Template
             'query_var'     => self::$paginate_link_name,
             'total'         => 0,
             'current'       => 0,
-            'show_now_page' => true,
+            'show_now_page' => false,
             'echo'          => false
         );
         $args            = wp_parse_args($args, $defaults);
@@ -178,8 +177,8 @@ class Admin_Template
                 'format'    => '',
                 'type'      => 'list',
                 'mid_size'  => 3,
-                'prev_text' => __('&laquo;'),
-                'next_text' => __('&raquo;'),
+                'prev_text' => __('Prev', 'wp-statistics'),
+                'next_text' => __('Next', 'wp-statistics'),
                 'total'     => $total_page,
                 'current'   => $args['current']
             ));
@@ -272,6 +271,54 @@ class Admin_Template
     public static function UnknownColumn()
     {
         return '<span aria-hidden="true">—</span><span class="screen-reader-text">' . __("Unknown", 'wp-statistics') . '</span>';
+    }
+
+    public static function isUnknown($value)
+    {
+        if (empty($value) or $value == 'Unknown' or $value == __("Unknown", 'wp-statistics')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function unknownToNotSet($value)
+    {
+        if (self::isUnknown($value)) {
+            return __('(not set)', 'wp-statistics');
+        }
+        return $value;
+    }
+
+    public static function locationColumn($location = '', $region = '', $city = '')
+    {
+        $result = "$region, $city";
+
+        $location = $location == Country::$unknown_location ? '' : $location;
+        $region   = self::isUnknown($region) ? '' : $region;
+        $city     = self::isUnknown($city) ? '' : $city;
+
+        // If location, region, and city are not set
+        if (empty($location) && empty($region) && empty($city)) {
+            $result = esc_html__('(location not set)', 'wp-statistics');
+        }
+
+        // If region, and city are not set
+        if (!empty($location) && empty($region) && empty($city)) {
+            $result = esc_html__('(region/city not set)', 'wp-statistics');
+        }
+
+        // If only region is set
+        if (!empty($location) && !empty($region) && empty($city)) {
+            $result = $region;
+        }
+
+        // If only city is set
+        if (!empty($location) && empty($region) && !empty($city)) {
+            $result = $city;
+        }
+
+        return apply_filters('wp_statistics_location_column_value', $result, $location, $region, $city);
     }
 
 }

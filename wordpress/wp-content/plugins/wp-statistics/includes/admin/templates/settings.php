@@ -1,4 +1,15 @@
-<div id="poststuff">
+
+<?php
+
+use WP_Statistics\Components\View;
+
+View::load('components/objects/share-anonymous-notice');
+?>
+<div class="wps-wrap__main">
+    <div class="wp-header-end"></div>
+
+<div id="poststuff" class="wps-wrap__settings">
+    <button class="wps-gototop" aria-label="Go to top of page"></button>
     <div id="post-body" class="metabox-holder wps-settingsPageFlex">
         <?php include WP_STATISTICS_DIR . 'includes/admin/templates/layout/menu-settings.php'; ?>
 
@@ -8,35 +19,26 @@
 
                 <div class="wp-statistics-container">
                     <?php if ($wps_admin) { ?>
-                        <div id="general-settings" class="tab-content current">
+                         <div id="general-settings" class="tab-content current">
                             <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/general.php'; ?>
                         </div>
-                        <div id="ip-configuration-settings" class="tab-content">
-                            <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/visitor-ip.php'; ?>
+                        <div id="advanced-settings" class="tab-content">
+                            <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/advanced.php'; ?>
                         </div>
                         <div id="privacy-settings" class="tab-content">
                             <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/privacy.php'; ?>
                         </div>
+                        <div id="display-settings" class="tab-content">
+                            <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/display.php'; ?>
+                        </div>
                         <div id="notifications-settings" class="tab-content">
                             <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/notifications.php'; ?>
-                        </div>
-                        <div id="overview-display-settings" class="tab-content">
-                            <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/overview-display.php'; ?>
                         </div>
                         <div id="access-settings" class="tab-content">
                             <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/access-level.php'; ?>
                         </div>
                         <div id="exclusions-settings" class="tab-content">
                             <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/exclusions.php'; ?>
-                        </div>
-                        <div id="externals-settings" class="tab-content">
-                            <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/externals.php'; ?>
-                        </div>
-                        <div id="maintenance-settings" class="tab-content">
-                            <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/maintenance.php'; ?>
-                        </div>
-                        <div id="reset-settings" class="tab-content">
-                            <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/reset.php'; ?>
                         </div>
                         <div id="data-plus-settings" class="tab-content">
                             <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/add-ons/data-plus.php'; ?>
@@ -60,12 +62,8 @@
                             <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/add-ons/widgets.php'; ?>
                         </div>
                     <?php } ?>
-                    <div id="about" class="tab-content">
-                        <?php include WP_STATISTICS_DIR . 'includes/admin/templates/settings/about.php'; ?>
-                    </div>
                 </div><!-- container -->
-
-                <input type="hidden" name="tab" id="wps_current_tab" value=""/>
+                 <input type="hidden" name="tab" id="wps_current_tab" value=""/>
             </form>
         </div>
     </div>

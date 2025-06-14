@@ -1,27 +1,30 @@
-<div class="wps-premium-feature">
-    <div class="wps-premium-feature__head">
-        <h1>
-            <?php esc_html_e('This Feature is Part of the', 'wp-statistics'); ?> <span><?php esc_html_e($addon_title, 'wp-statistics'); ?></span>
-        </h1>
-        <?php if (!empty($addon_description)): ?>
-            <p><?php esc_html_e($addon_description, 'wp-statistics'); ?></p>
-        <?php endif; ?>
-    </div>
+<?php
 
-    <?php if (!empty($addon_features)): ?>
-        <div class="wps-premium-feature__items <?php  echo $addon_title ; ?>">
-            <?php foreach ($addon_features as $feature): ?>
-                <div class="wps-premium-feature__item"><?php esc_html_e($feature, 'wp-statistics'); ?></div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-    <?php if (!empty($addon_info)): ?>
-        <div class="wps-premium-feature__info">
-            <?php esc_html_e($addon_info, 'wp-statistics'); ?>
-            <?php if (!empty($addon_documentation_title) && !empty($addon_documentation_slug)): ?>
-                <a href="<?php echo $addon_documentation_slug ?>" target="_blank" title="<?php esc_html_e($addon_documentation_title, 'wp-statistics'); ?>"><?php esc_html_e($addon_documentation_title, 'wp-statistics'); ?></a>.
-            <?php endif; ?>
-        </div>
-    <?php endif; ?>
-    <a target="_blank" class="button button-primary" href="<?php echo $addon_slug ?>"><?php esc_html_e('Upgrade Now', 'wp-statistics') ?></a>
+use WP_Statistics\Components\View;
+use WP_Statistics\Service\Admin\LicenseManagement\LicenseHelper;
+use WP_Statistics\Service\Admin\LicenseManagement\Plugin\PluginHandler;
+
+$pluginHandler = new PluginHandler();
+$isPremium     = LicenseHelper::isPremiumLicenseAvailable() ? true : false;
+$hasLicense    = LicenseHelper::isPluginLicenseValid($addon_modal_target) ? true : false;
+$isActive      = $pluginHandler->isPluginActive($addon_modal_target);
+?>
+
+<div class="wps-premium-feature wps-premium-feature--premium-user">
+    <?php
+    if (!$isActive && $hasLicense) :
+        View::load("components/lock-sections/setting-active-licensed-addon", ['addon_title' => $addon_title]);
+    elseif (!$isPremium && !$hasLicense) :
+        View::load("components/lock-sections/setting-unlock-premium", [
+            'addon_title'               => $addon_title,
+            'addon_description'         => $addon_description,
+            'addon_features'            => $addon_features,
+            'addon_info'                => $addon_info ?? '',
+            'addon_documentation_title' => $addon_documentation_title ?? '',
+            'addon_documentation_slug'  => $addon_documentation_slug ?? '',
+            'addon_modal_target'        => $addon_modal_target,
+            'addon_slug'                => $addon_slug
+        ]);
+    endif;
+    ?>
 </div>

@@ -2,6 +2,13 @@
 
 namespace WP_STATISTICS;
 
+use WP_Statistics\Components\DateRange;
+use WP_Statistics\Models\VisitorsModel;
+use WP_Statistics\Service\Geolocation\GeolocationFactory;
+use WP_Statistics\Service\Geolocation\Provider\DbIpProvider;
+use WP_Statistics\Service\Geolocation\Provider\MaxmindGeoIPProvider;
+use WP_Statistics\Utils\Request;
+
 class Ajax
 {
     public function __construct()
@@ -19,70 +26,80 @@ class Ajax
          */
         $list = [
             [
-                'class'  => $this, 
-                'action' => 'close_notice',
-                'public' => false
-            ],
-            [
-                'class'  => $this, 
+                'class'  => $this,
                 'action' => 'clear_user_agent_strings',
                 'public' => false
             ],
             [
-                'class'  => $this, 
+                'class'  => $this,
                 'action' => 'query_params_cleanup',
                 'public' => false
             ],
             [
-                'class'  => $this, 
+                'class'  => $this,
                 'action' => 'delete_agents',
                 'public' => false
             ],
             [
-                'class'  => $this, 
+                'class'  => $this,
                 'action' => 'delete_platforms',
                 'public' => false
             ],
             [
-                'class'  => $this, 
+                'class'  => $this,
                 'action' => 'delete_ip',
                 'public' => false
             ],
             [
-                'class'  => $this, 
+                'class'  => $this,
                 'action' => 'delete_user_ids',
                 'public' => false
             ],
             [
-                'class'  => $this, 
-                'action' => 'empty_table',
-                'public' => false
-            ],
-            [
-                'class'  => $this, 
+                'class'  => $this,
                 'action' => 'purge_data',
                 'public' => false
             ],
             [
-                'class'  => $this, 
+                'class'  => $this,
                 'action' => 'purge_visitor_hits',
                 'public' => false
             ],
             [
-                'class'  => $this, 
-                'action' => 'visitors_page_filters',
-                'public' => false
-            ],
-            [
-                'class'  => $this, 
+                'class'  => $this,
                 'action' => 'update_geoip_database',
                 'public' => false
             ],
             [
-                'class'  => $this, 
+                'class'  => $this,
                 'action' => 'admin_meta_box',
                 'public' => false
             ],
+            [
+                'class'  => $this,
+                'action' => 'get_page_filter_items',
+                'public' => false
+            ],
+            [
+                'class'  => $this,
+                'action' => 'search_visitors',
+                'public' => false
+            ],
+            [
+                'class'  => $this,
+                'action' => 'store_date_range',
+                'public' => false
+            ],
+            [
+                'class'  => $this,
+                'action' => 'dismiss_notices',
+                'public' => false
+            ],
+            [
+                'class'  => $this,
+                'action' => 'delete_word_count_data',
+                'public' => false
+            ]
         ];
 
         $list = apply_filters('wp_statistics_ajax_list', $list);
@@ -94,55 +111,15 @@ class Ajax
             $isPublic = isset($item['public']) && $item['public'] == true ? true : false;
 
             // If callback exists in the class, register the action
-            if (method_exists($class, $callback)) {
+            if (! empty($class) && method_exists($class, $callback)) {
                 add_action('wp_ajax_wp_statistics_' . $action, [$class, $callback]);
-            
+
                 // Register the AJAX callback publicly
                 if ($isPublic) {
                     add_action('wp_ajax_nopriv_wp_statistics_' . $action, [$class, $callback]);
                 }
             }
         }
-    }
-
-    /**
-     * Setup an AJAX action to close the notice on the overview page.
-     */
-    public function close_notice_action_callback()
-    {
-
-        if (Helper::is_request('ajax') and User::Access('manage') and isset($_REQUEST['notice'])) {
-
-            // Check Refer Ajax
-            check_ajax_referer('wp_rest', 'wps_nonce');
-
-            // Check Type Of Notice
-            switch ($_REQUEST['notice']) {
-                case 'donate':
-                    Option::update('disable_donation_nag', true);
-                    break;
-
-                case 'suggestion':
-                    Option::update('disable_suggestion_nag', true);
-                    break;
-
-                case 'disable_all_addons':
-                    update_option('wp_statistics_disable_addons_notice', 'yes');
-                    break;
-
-                case 'disable_cleanup_db':
-                    Option::update('disable_db_cleanup_notice', true);
-                    break;
-
-                case 'disable_php_version_check':
-                    Option::update('disable_php_version_check_notice', true);
-                    break;
-            }
-
-            Option::update('admin_notices', false);
-        }
-
-        wp_die();
     }
 
     /**
@@ -311,6 +288,31 @@ class Ajax
         exit;
     }
 
+    public function delete_word_count_data_action_callback()
+    {
+        global $wpdb;
+
+        if (Request::isFrom('ajax') && User::Access('manage')) {
+
+            // Check Refer Ajax
+            check_ajax_referer('wp_rest', 'wps_nonce');
+
+            $result = $wpdb->query("DELETE FROM `" . $wpdb->postmeta . "` WHERE `meta_key` = 'wp_statistics_words_count'");
+            Option::deleteOptionGroup('word_count_process_initiated', 'jobs');
+
+            if ($result) {
+                esc_html_e('Successfully deleted word count data.', 'wp-statistics');
+            } else {
+                esc_html_e('Couldn’t find any word count data to delete.', 'wp-statistics');
+            }
+
+        } else {
+            esc_html_e('Unauthorized access!', 'wp-statistics');
+        }
+
+        exit;
+    }
+
     /**
      * Setup an AJAX action to clean up query parameters from pages table.
      */
@@ -361,53 +363,6 @@ class Ajax
                 esc_html_e('Couldn\'t find any user query string parameter data to delete from \'visitor\' table.', 'wp-statistics');
             }
 
-        } else {
-            esc_html_e('Unauthorized access!', 'wp-statistics');
-        }
-
-        exit;
-    }
-
-    /**
-     * Setup an AJAX action to empty a table in the optimization page.
-     */
-    public function empty_table_action_callback()
-    {
-
-        // Check Ajax Request
-        if (!Helper::is_request('ajax')) {
-            exit;
-        }
-
-        //Check isset Table-post
-        if (!isset($_POST['table-name'])) {
-            esc_html_e('Kindly select the items you want to work with.', 'wp-statistics');
-            exit;
-        }
-
-        // Check Refer Ajax
-        check_ajax_referer('wp_rest', 'wps_nonce');
-
-        //Check Valid Table name
-        $table_name    = sanitize_text_field($_POST['table-name']);
-        $list_db_table = DB::table('all', 'historical');
-
-        if (!array_key_exists($table_name, $list_db_table) and $table_name != 'all') {
-            esc_html_e('Unauthorized access!', 'wp-statistics');
-            exit;
-        }
-
-        if (User::Access('manage')) {
-
-            if ($table_name == "all") {
-                $x_tbl = 1;
-                foreach ($list_db_table as $tbl_key => $tbl_name) {
-                    echo ($x_tbl > 1 ? '<br>' : '') . DB::EmptyTable($tbl_name); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                    $x_tbl++;
-                }
-            } else {
-                echo DB::EmptyTable(DB::table($table_name)); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-            }
         } else {
             esc_html_e('Unauthorized access!', 'wp-statistics');
         }
@@ -470,73 +425,6 @@ class Ajax
     }
 
     /**
-     * Show Page Visitors Filter
-     */
-    public function visitors_page_filters_action_callback()
-    {
-
-        if (Helper::is_request('ajax') and isset($_REQUEST['page'])) {
-
-            // Run only Visitors Page
-            if ($_REQUEST['page'] != "visitors") {
-                exit;
-            }
-
-            // Check Refer Ajax
-            check_ajax_referer('wp_rest', 'wps_nonce');
-
-            // Create Output object
-            $filter = array();
-
-            // Browsers
-            $filter['browsers'] = array();
-            $browsers           = UserAgent::BrowserList();
-            foreach ($browsers as $key => $se) {
-                $filter['browsers'][$key] = $se;
-            }
-
-            // Location
-            $filter['location'] = array();
-            $country_list       = Country::getList();
-            foreach ($country_list as $key => $name) {
-                $filter['location'][$key] = $name;
-            }
-
-            // Push First "000" Unknown to End of List
-            $first_key = key($filter['location']);
-            $first_val = $filter['location'][$first_key];
-            unset($filter['location'][$first_key]);
-            $filter['location'][$first_key] = $first_val;
-
-            // Platforms
-            $filter['platform'] = array();
-            $platforms_list     = RestAPI::request(array('route' => 'metabox', 'params' => array('name' => 'platforms', 'number' => 15, 'order' => 'DESC')));
-
-            for ($x = 0; $x < count($platforms_list['platform_name']); $x++) {
-                $filter['platform'][$platforms_list['platform_name'][$x]] = $platforms_list['platform_name'][$x];
-            }
-
-            // Referrer
-            $filter['referrer'] = array();
-            $referrer_list      = Referred::getList(array('min' => 50, 'limit' => 300));
-            foreach ($referrer_list as $site) {
-                $filter['referrer'][$site->domain] = $site->domain;
-            }
-
-            // User
-            $filter['users'] = array();
-            $user_list       = Visitor::get_users_visitor();
-            foreach ($user_list as $user_id => $user_inf) {
-                $filter['users'][$user_id] = $user_inf['user_login'] . " #" . $user_id . "";
-            }
-
-            // Send Json
-            wp_send_json($filter);
-        }
-        exit;
-    }
-
-    /**
      * Setup an AJAX action to update geoIP database.
      */
     public function update_geoip_database_action_callback()
@@ -546,22 +434,21 @@ class Ajax
             // Check Refer Ajax
             check_ajax_referer('wp_rest', 'wps_nonce');
 
-            // Sanitize GeoIP Name
-            $geoip_name = sanitize_text_field($_POST['update_action']);
 
-            // When GeoIP is enabled, then user can update the GeoIP database
-            if ($geoip_name == "country" && Option::get("geoip") !== 'on') {
-                esc_html_e('Please first enable GeoIP Collection and save settings!', 'wp-statistics');
-            } elseif ($geoip_name == "city" && Option::get("geoip_city") !== 'on') {
-                esc_html_e('Please first enable GeoIP City and save settings!', 'wp-statistics');
+            $method   = Request::get('geoip_location_detection_method', 'maxmind');
+            $provider = MaxmindGeoIPProvider::class;
+
+            if ('dbip' === $method) {
+                $provider = DbIpProvider::class;
             }
 
-            $result = GeoIP::download($geoip_name, "update");
+            $result = GeolocationFactory::downloadDatabase($provider);
 
-            if ($result) {
-                esc_html_e($result["notice"]);
+            if (is_wp_error($result)) {
+                esc_html_e($result->get_error_message());
+            } else {
+                esc_html_e('GeoIP Database successfully updated.', 'wp-statistics');
             }
-
         } else {
             esc_html_e('Unauthorized access!', 'wp-statistics');
         }
@@ -598,6 +485,150 @@ class Ajax
             } else {
                 wp_send_json(array('code' => 'not_found_meta_box', 'message' => __('Invalid MetaBox Name in Request.', 'wp-statistics')), 400);
             }
+        }
+
+        exit;
+    }
+
+    /**
+     * Get page filter items
+     */
+    public function get_page_filter_items_action_callback()
+    {
+        if (Helper::is_request('ajax') and User::Access('read')) {
+
+            check_ajax_referer('wp_rest', 'wps_nonce');
+
+            $paged        = Request::get('paged', 1, 'number');
+            $postType     = Request::get('post_type', array_values(Helper::get_list_post_type()));
+            $authorId     = Request::get('author_id', '', 'number');
+            $search       = Request::get('search', '');
+            $page         = Request::get('page');
+            $selectedPost = Request::get('post_id', false, 'number');
+
+            if (!$page) {
+                wp_send_json([
+                    'code'    => 'not_found_page',
+                    'message' => esc_html__('Invalid Page in Request.', 'wp-statistics')
+                ], 400);
+            }
+
+            $query = new \WP_Query([
+                'post_status'    => 'publish',
+                'posts_per_page' => 10,
+                'paged'          => $paged,
+                'post_type'      => $postType,
+                'author'         => $authorId,
+                's'              => $search
+            ]);
+
+            $posts = [];
+            if ($query->have_posts()) {
+                if ($paged == 1 && empty($search)) {
+                    $allOption = [
+                        'id'   => Menus::admin_url($page),
+                        'text' => esc_html__('All', 'wp-statistics')
+                    ];
+
+                    if (!$selectedPost) {
+                        $allOption['selected'] = true;
+                    }
+
+                    $posts[] = $allOption;
+                }
+
+                while ($query->have_posts()) {
+                    $query->the_post();
+
+                    $option = [
+                        'id'   => get_the_ID(),
+                        'text' => get_the_title()
+                    ];
+
+                    if ($selectedPost == get_the_ID()) {
+                        $option['selected'] = true;
+                    }
+
+                    $posts[] = $option;
+                }
+            }
+
+            wp_send_json([
+                'results'    => $posts,
+                'pagination' => [
+                    'more' => $query->max_num_pages > $paged ? true : false
+                ]
+            ]);
+        }
+
+        exit;
+    }
+
+    public function search_visitors_action_callback()
+    {
+        if (Helper::is_request('ajax') and User::Access('read')) {
+
+            check_ajax_referer('wp_rest', 'wps_nonce');
+
+            $results = [];
+            $search  = Request::get('search', '');
+
+            $visitorsModel = new VisitorsModel();
+            $visitors      = $visitorsModel->searchVisitors([
+                'ip'       => $search,
+                'username' => $search,
+                'email'    => $search
+            ]);
+
+            foreach ($visitors as $visitor) {
+                $option = [
+                    'id'   => Menus::admin_url('visitors', ['type' => 'single-visitor', 'visitor_id' => $visitor->ID]),
+                    'text' => sprintf(esc_html__('Visitor (#%s)', 'wp-statistics'), $visitor->ID)
+                ];
+
+                $results[] = $option;
+            }
+
+            wp_send_json(['results' => $results]);
+        }
+
+        exit;
+    }
+
+    public function store_date_range_action_callback()
+    {
+        if (Helper::is_request('ajax')) {
+            check_ajax_referer('wp_rest', 'wps_nonce');
+
+            $date = Request::get('date', [], 'array');
+            DateRange::store($date);
+
+            wp_send_json_success(['message' => esc_html__('Date range has been stored successfully.', 'wp-statistics')]);
+
+        }
+
+        exit;
+    }
+
+    public function dismiss_notices_action_callback()
+    {
+        if (!Request::isFrom('ajax')) exit;
+
+        check_ajax_referer('wp_rest', 'wps_nonce');
+
+        $noticeId = Request::get('notice_id');
+
+        if (!empty($noticeId)) {
+            $dismissedNotices = get_option('wp_statistics_dismissed_notices', []);
+
+            if (!in_array($noticeId, $dismissedNotices)) {
+                $dismissedNotices[] = $noticeId;
+                update_option('wp_statistics_dismissed_notices', $dismissedNotices);
+            }
+
+            wp_send_json_success(['message' => esc_html__('Notice dismissed.', 'wp-statistics')]);
+        } else {
+            wp_send_json_error(['message' => esc_html__('Invalid Notice ID.', 'wp-statistics')]);
         }
 
         exit;

@@ -2,11 +2,20 @@
 
 namespace WP_STATISTICS;
 
-use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use WP_Statistics\Service\Analytics\VisitorProfile;
+use WP_Statistics\Utils\Request;
 
 class Exclusion
 {
+    /**
+     * Array for storing options.
+     *
+     * @access private
+     * @var array
+     * @static
+     */
+    private static $options = [];
+
     /**
      * Get Exclusion List
      *
@@ -17,7 +26,6 @@ class Exclusion
         return array(
             'ajax'            => __('Ajax', 'wp-statistics'),
             'cronjob'         => __('Cron job', 'wp-statistics'),
-            'CrawlerDetect'   => __('Crawler Detect', 'wp-statistics'),
             'robot'           => __('Robot', 'wp-statistics'),
             'BrokenFile'      => __('Broken Link', 'wp-statistics'),
             'ip match'        => __('IP Match', 'wp-statistics'),
@@ -29,9 +37,7 @@ class Exclusion
             '404'             => __('404', 'wp-statistics'),
             'excluded url'    => __('Excluded URL', 'wp-statistics'),
             'user role'       => __('User Role', 'wp-statistics'),
-            'hostname'        => __('Host name', 'wp-statistics'),
-            'geoip'           => __('GeoIP', 'wp-statistics'),
-            'honeypot'        => __('Honeypot', 'wp-statistics'),
+            'geoip'           => __('Geolocation', 'wp-statistics'),
             'robot_threshold' => __('Robot threshold', 'wp-statistics'),
             'xmlrpc'          => __('XML-RPC', 'wp-statistics'),
             'cross site'      => __('Cross site Request', 'wp-statistics'),
@@ -46,7 +52,7 @@ class Exclusion
      */
     public static function record_active()
     {
-        return Option::get('record_exclusions');
+        return !empty(self::$options['record_exclusions']);
     }
 
     /**
@@ -61,6 +67,10 @@ class Exclusion
 
         // Get List Of Exclusion WP Statistics
         $exclusion_list = apply_filters('wp_statistics_exclusion_list', array_keys(Exclusion::exclusion_list()));
+
+        if (empty(self::$options)) {
+            self::$options = Option::getOptions();
+        }
 
         // Check Exclusion
         foreach ($exclusion_list as $list) {
@@ -77,7 +87,7 @@ class Exclusion
             }
         }
 
-        return apply_filters('wp_statistics_exclusion', $exclude);
+        return apply_filters('wp_statistics_exclusion', $exclude, $visitorProfile);
     }
 
     /**
@@ -124,6 +134,11 @@ class Exclusion
      */
     public static function exclusion_ajax()
     {
+        // White list actions
+        if (Helper::isBypassAdBlockersRequest() || Request::compare('action', 'wp_statistics_event')) {
+            return false;
+        }
+
         return (defined('DOING_AJAX') and DOING_AJAX);
     }
 
@@ -140,7 +155,7 @@ class Exclusion
      */
     public static function exclusion_feed()
     {
-        return (Option::get('exclude_feeds') and is_feed());
+        return !empty(self::$options['exclude_feeds']) && is_feed();
     }
 
     /**
@@ -148,9 +163,9 @@ class Exclusion
      */
     public static function exclusion_404()
     {
-        if (Option::get('exclude_404s')) {
+        if (!empty(self::$options['exclude_404s'])) {
 
-            if (Helper::is_rest_request() && isset($_REQUEST['current_page_type']) && $_REQUEST['current_page_type'] == '404') {
+            if (Helper::is_rest_request() && isset($_REQUEST['source_type']) && $_REQUEST['source_type'] == '404') {
                 return true;
             }
 
@@ -159,24 +174,24 @@ class Exclusion
     }
 
     /**
-     * Detect if honeypot.
-     * @param $visitorProfile VisitorProfile
-     */
-    public static function exclusion_honeypot($visitorProfile)
-    {
-        $current_page = $visitorProfile->getCurrentPageType();
-        return (Option::get('use_honeypot') && Option::get('honeypot_postid') > 0 && Option::get('honeypot_postid') == $current_page['id'] && $current_page['id'] > 0);
-    }
-
-    /**
      * Detect if robot threshold.
      * @param $visitorProfile VisitorProfile
      */
     public static function exclusion_robot_threshold($visitorProfile)
     {
+        $robotThreshold = ! empty(self::$options['robot_threshold']) ? intval(self::$options['robot_threshold']) : 0;
+
+        if ($robotThreshold <= 0) {
+            return false;
+        }
+
         $visitor = $visitorProfile->isIpActiveToday();
 
-        return ($visitor != false and Option::get('robot_threshold') > 0 && $visitor->hits + 1 > Option::get('robot_threshold'));
+        if (!$visitor) {
+            return false;
+        }
+
+        return ($visitor->hits + 1 > $robotThreshold);
     }
 
     /**
@@ -186,8 +201,9 @@ class Exclusion
     {
         $current_user = false;
 
-        if (Helper::is_rest_request()) {
+        if (Helper::is_rest_request() && isset($GLOBALS['wp_statistics_user_id'])) {
             $user_id = $GLOBALS['wp_statistics_user_id'];
+
             if ($user_id) {
                 $current_user = get_user_by('id', $user_id);
             }
@@ -198,10 +214,14 @@ class Exclusion
         if ($current_user) {
             foreach ($current_user->roles as $role) {
                 $option_name = 'exclude_' . str_replace(' ', '_', strtolower($role));
-
-                if (Option::get($option_name) == true) {
+                if (!empty(self::$options[$option_name])) {
                     return true;
                 }
+            }
+        } else {
+            // Guest visitor
+            if (!empty(self::$options['exclude_anonymous_users'])) {
+                return true;
             }
         }
 
@@ -209,27 +229,53 @@ class Exclusion
     }
 
     /**
-     * Detect if Excluded URL.
-     * @param $visitorProfile VisitorProfile
+     * Detects if current URL opened by the visitor should be excluded.
+     *
+     * @param VisitorProfile $visitorProfile VisitorProfile
+     *
+     * @return bool
      */
     public static function exclusion_excluded_url($visitorProfile)
     {
+        $excludedUrls = self::$options['excluded_urls'] ?? '';
 
-        if (Option::get('excluded_urls')) {
-            $script    = $visitorProfile->getRequestUri();
-            $delimiter = strpos($script, '?');
+        if (!empty($excludedUrls)) {
+            $requestUri = $visitorProfile->getRequestUri();
+            $delimiter  = strpos($requestUri, '?');
 
+            // Remove query parameters from the request URI
             if ($delimiter > 0) {
-                $script = substr($script, 0, $delimiter);
+                $requestUri = substr($requestUri, 0, $delimiter);
             }
 
-            $excluded_urls = explode("\n", Option::get('excluded_urls'));
-            foreach ($excluded_urls as $url) {
-                $this_url = trim($url);
+            // Strip slashes from the beginning and the end of the request URI
+            $requestUri = trim($requestUri, '/\\');
 
-                if (strlen($this_url) > 2) {
-                    if (stripos($script, $this_url) === 0) {
-                        return true;
+            // Decode request URI since input URLs will be decoded too
+            $requestUri = urldecode($requestUri);
+
+            foreach (explode("\n", $excludedUrls) as $url) {
+                // Sanitize input URL
+                $url = wp_make_link_relative($url);
+                $url = trim($url);
+                $url = trim($url, '/\\');
+                $url = urldecode($url);
+
+                if (strlen($url) > 2) {
+                    // Check if the URL contains a wildcard (*)
+                    if (strpos($url, '*') !== false) {
+                        // Escape special characters for regex, then replace '*' with '.*' for wildcards
+                        $pattern = str_replace('\*', '.*', preg_quote($url, '/'));
+
+                        // Adjust the pattern to allow wildcards at both ends or in the middle
+                        if (preg_match('/^' . $pattern . '$/i', $requestUri)) {
+                            return true;
+                        }
+                    } else {
+                        // Exact match check
+                        if (strtolower($url) == strtolower($requestUri)) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -245,11 +291,11 @@ class Exclusion
     public static function exclusion_referrer_spam($visitorProfile)
     {
         // Check to see if we're excluding referrer spam.
-        if (Option::get('referrerspam')) {
+        if (!empty(self::$options['referrerspam'])) {
             $referrer = $visitorProfile->getReferrer();
 
             // Pull the referrer spam list from the database.
-            $referrer_spam_list = explode("\n", Option::get('referrerspamlist'));
+            $referrer_spam_list = explode("\n", self::$options['referrerspamlist'] ?? '');
 
             // Check to see if we match any of the robots.
             foreach ($referrer_spam_list as $item) {
@@ -268,25 +314,18 @@ class Exclusion
     }
 
     /**
-     * Detect if Crawler.
-     */
-    public static function exclusion_crawlerdetect()
-    {
-        $CrawlerDetect = new CrawlerDetect;
-        if ($CrawlerDetect->isCrawler()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Detect if Self Referral WordPress.
      * @param $visitorProfile VisitorProfile
      */
     public static function exclusion_self_referral($visitorProfile)
     {
-        return $visitorProfile->getHttpUserAgent() == 'WordPress/' . Helper::get_wordpress_version() . '; ' . get_home_url(null, '/') || $visitorProfile->getHttpUserAgent() == 'WordPress/' . Helper::get_wordpress_version() . '; ' . get_home_url();
+        $userAgent  = $visitorProfile->getHttpUserAgent();
+        $version    = Helper::get_wordpress_version();
+
+        return in_array($userAgent, [
+            'WordPress/' . $version . '; ' . get_home_url(null, '/'),
+            'WordPress/' . $version . '; ' . get_home_url()
+        ]);
     }
 
     /**
@@ -294,7 +333,7 @@ class Exclusion
      */
     public static function exclusion_login_page()
     {
-        return (Option::get('exclude_loginpage') and Helper::is_login_page());
+        return !empty(self::$options['exclude_loginpage']) && Helper::is_login_page();
     }
 
     /**
@@ -310,7 +349,8 @@ class Exclusion
 
             // Remove Query From Url
             $url = Helper::RemoveQueryStringUrl($_SERVER['SERVER_NAME'] . $requestUri);
-            if (stristr($url, "wp-admin") != false) {
+
+            if (!Helper::isBypassAdBlockersRequest() && !Request::compare('action', 'wp_statistics_event') && stripos($url, 'wp-admin') !== false) {
                 return true;
             }
         }
@@ -325,9 +365,12 @@ class Exclusion
      */
     public static function exclusion_iP_match()
     {
+        if (empty(self::$options['exclude_ip'])) {
+            return false;
+        }
 
         // Pull the sub nets from the database.
-        $SubNets = explode("\n", Option::get('exclude_ip'));
+        $SubNets = explode("\n", self::$options['exclude_ip']);
 
         // Check in Loop
         foreach ($SubNets as $subnet) {
@@ -339,10 +382,9 @@ class Exclusion
             if (strlen($subnet) > 6) {
 
                 // Check in Range
-                if (IP::CheckIPRange(array($subnet))) {
+                if (IP::checkIPRange(array($subnet))) {
                     return true;
                 }
-
             }
         }
 
@@ -384,9 +426,26 @@ class Exclusion
      */
     public static function exclusion_robot($visitorProfile)
     {
+        $rawUserAgent = $visitorProfile->getHttpUserAgent();
+
+        // Check user ip is empty or not user agent
+        if (empty($rawUserAgent) || empty($visitorProfile->getIp())) {
+            return true;
+        }
+
+        $userAgent = $visitorProfile->getUserAgent();
+
+        if ($userAgent->isBot()) {
+            return true;
+        }
+
+        if (!$userAgent->isBrowserDetected() && !$userAgent->isPlatformDetected()) {
+            return true;
+        }
 
         // Pull the robots from the database.
-        $robots = explode("\n", Option::get('robotlist'));
+        $robots = explode("\n", self::$options['robotlist'] ?? '');
+        $robots = apply_filters('wp_statistics_exclusion_robots', $robots);
 
         // Check to see if we match any of the robots.
         foreach ($robots as $robot) {
@@ -394,22 +453,9 @@ class Exclusion
 
             // If the match case is less than 4 characters long, it might match too much so don't execute it.
             if (strlen($robot) > 3) {
-                if (stripos($visitorProfile->getHttpUserAgent(), $robot) !== false) {
+                if (stripos($rawUserAgent, $robot) !== false) {
                     return true;
                 }
-            }
-        }
-
-        // Check user ip is empty or not user agent
-        if (Option::get('corrupt_browser_info')) {
-            if ($visitorProfile->getHttpUserAgent() == '' || $visitorProfile->getIp() == '') {
-                return true;
-            }
-
-            $userAgent = $visitorProfile->getUserAgent();
-
-            if (!$userAgent['isBrowserDetected'] && !$userAgent['isPlatformDetected']) {
-                return true;
             }
         }
 
@@ -419,75 +465,49 @@ class Exclusion
     /**
      * Detect if GeoIP include or exclude country.
      *
-     * @param $visitorProfile VisitorProfile
+     * @param VisitorProfile VisitorProfile
      * @throws \Exception
      */
     public static function exclusion_geoip($visitorProfile)
     {
-        // Get User Location
+        static $excludedCountries = null;
+        static $includedCountries = null;
+
+        if ($excludedCountries === null) {
+            $excluded_option   = self::$options['excluded_countries'] ?? '';
+            $excludedCountries = empty($excluded_option) ? [] :
+                array_flip(array_filter(explode("\n", strtoupper(str_replace("\r\n", "\n", $excluded_option)))));
+        }
+
+        if ($includedCountries === null) {
+            $included_option = self::$options['included_countries'] ?? '';
+
+            if (empty($included_option)) {
+                $includedCountries = [];
+            } else {
+                $included_countries_string = trim(strtoupper(str_replace("\r\n", "\n", $included_option)));
+                $includedCountries = $included_countries_string === '' ? [] :
+                    array_flip(array_filter(explode("\n", $included_countries_string)));
+            }
+        }
+
+        if ( empty($excludedCountries) && empty($includedCountries) ) {
+            return false;
+        }
+
         $location = $visitorProfile->getCountry();
 
-        // Grab the excluded/included countries lists, force the country codes to be in upper case to match what the GeoIP code uses.
-        $excluded_countries        = explode("\n", strtoupper(str_replace("\r\n", "\n", Option::get('excluded_countries'))));
-        $included_countries_string = trim(strtoupper(str_replace("\r\n", "\n", Option::get('included_countries'))));
-
-        // We need to be really sure this isn't an empty string or explode will return an array with one entry instead of none.
-        if ($included_countries_string == '') {
-            $included_countries = array();
-        } else {
-            $included_countries = explode("\n", $included_countries_string);
+        if (empty($location)) {
+            return false;
         }
 
-        // Check to see if the current location is in the excluded countries list.
-        if (in_array($location, $excluded_countries)) {
-            return true;
-        } // Check to see if the current location is not the included countries list.
-        else if (!in_array($location, $included_countries) && count($included_countries) > 0) {
+        $location = strtoupper($location);
+
+        if (isset($excludedCountries[$location])) {
             return true;
         }
 
-        return false;
-    }
-
-    /**
-     * Detect if Exclude Host name.
-     * @param $visitorProfile VisitorProfile
-     */
-    public static function exclusion_hostname($visitorProfile)
-    {
-        // Get Host name List
-        $excluded_host = explode("\n", Option::get('excluded_hosts'));
-
-        // If there's nothing in the excluded host list, don't do anything.
-        if (count($excluded_host) > 0) {
-            $transient_name = 'wps_excluded_hostname_to_ip_cache';
-
-            // Get the transient with the hostname cache.
-            $hostname_cache = get_transient($transient_name);
-
-            // If the transient has expired (or has never been set), create one now.
-            if ($hostname_cache === false) {
-                // Flush the failed cache variable.
-                $hostname_cache = array();
-
-                // Loop through the list of hosts and look them up.
-                foreach ($excluded_host as $host) {
-                    if (strpos($host, '.') > 0) {
-                        $hostname_cache[$host] = gethostbyname($host . '.');
-                    }
-                }
-
-                // Set the transient and store it for 1 hour.
-                set_transient($transient_name, $hostname_cache, 360);
-            }
-
-            // Check if the current IP address matches one of the ones in the excluded hosts list.
-            if (in_array($visitorProfile->getIp(), $hostname_cache)) {
-                return true;
-            }
-        }
-
-        return false;
+        return !empty($includedCountries) && !isset($includedCountries[$location]);
     }
 
     /**

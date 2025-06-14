@@ -2,6 +2,8 @@
 
 namespace WP_STATISTICS;
 
+use WP_Statistics\Utils\Request;
+
 class Menus
 {
     /**
@@ -14,23 +16,20 @@ class Menus
      * @var array
      */
     public static $pages = array(
-        'overview'     => 'overview',
-        'browser'      => 'browsers',
-        'platform'     => 'platforms',
-        'countries'    => 'countries',
-        'exclusions'   => 'exclusions',
-        'hits'         => 'hits',
-        'online'       => 'online',
-        'pages'        => 'pages',
-        'authors'      => 'authors',
-        'referrers'    => 'referrers',
-        'searches'     => 'searches',
-        'top-visitors' => 'top_visitors',
-        'visitors'     => 'visitors',
-        'optimization' => 'optimization',
-        'settings'     => 'settings',
-        'plugins'      => 'plugins',
-        'taxonomies'   => 'taxonomies',
+        'overview'           => 'overview',
+        'exclusions'         => 'exclusions',
+        'referrals'          => 'referrals',
+        'optimization'       => 'optimization',
+        'settings'           => 'settings',
+        'plugins'            => 'plugins',
+        'author-analytics'   => 'author-analytics',
+        'privacy-audit'      => 'privacy-audit',
+        'geographic'         => 'geographic',
+        'content-analytics'  => 'content-analytics',
+        'devices'            => 'devices',
+        'category-analytics' => 'category-analytics',
+        'pages'              => 'pages',
+        'visitors'           => 'visitors',
     );
 
     /**
@@ -62,10 +61,13 @@ class Menus
         /**
          * Get List Page
          */
+        $admin_list_page = [];
+
         foreach (self::$pages as $page_key => $page_slug) {
             $admin_list_page[$page_key] = self::get_page_slug($page_slug);
         }
-        return isset($admin_list_page) ? $admin_list_page : array();
+
+        return apply_filters('wp_statistics_admin_page_list', $admin_list_page);
     }
 
     /**
@@ -144,7 +146,7 @@ class Menus
          * name       : Menu name
          * title      : Page title / if not exist [title == name]
          * cap        : min require capability @default $read_cap
-         * icon       : Wordpress DashIcon name
+         * icon       : WordPress DashIcon name
          * method     : method that call in page @default log
          * sub        : if sub menu , add main menu slug
          * page_url   : link of Slug Url Page @see WP_Statistics::$page
@@ -153,130 +155,22 @@ class Menus
          *
          */
         $list = array(
-            'top'          => array(
-                'title'    => __('Statistics', 'wp-statistics'),
-                'page_url' => 'overview',
-                'method'   => 'log',
-                'icon'     => 'dashicons-chart-pie',
-            ),
-            'overview'     => array(
+            'settings'     => array(
                 'sub'      => 'overview',
-                'title'    => __('Overview', 'wp-statistics'),
-                'page_url' => 'overview',
-            ),
-            'hits'         => array(
-                'require'  => array('visits' => true),
-                'sub'      => 'overview',
-                'title'    => __('Views', 'wp-statistics'),
-                'page_url' => 'hits',
-                'method'   => 'hits',
-            ),
-            'online'       => array(
-                'require'  => array('useronline' => true),
-                'sub'      => 'overview',
-                'title'    => __('Online', 'wp-statistics'),
-                'method'   => 'online',
-                'page_url' => 'online',
-            ),
-            'visitors'     => array(
-                'require'  => array('visitors' => true),
-                'sub'      => 'overview',
-                'title'    => __('Visitors', 'wp-statistics'),
-                'page_url' => 'visitors',
-                'method'   => 'visitors',
-            ),
-            'referrers'    => array(
-                'require'  => array('visitors' => true),
-                'sub'      => 'overview',
-                'title'    => __('Referrers', 'wp-statistics'),
-                'page_url' => 'referrers',
-                'method'   => 'refer',
-            ),
-            'searches'     => array(
-                'require'  => array('visitors' => true),
-                'sub'      => 'overview',
-                'title'    => __('Search Engines', 'wp-statistics'),
-                'page_url' => 'searches',
-                'method'   => 'searches',
-            ),
-            'countries'    => array(
-                'require'  => array('geoip' => true, 'visitors' => true),
-                'sub'      => 'overview',
-                'title'    => __('Countries', 'wp-statistics'),
-                'page_url' => 'countries',
-                'method'   => 'country'
-            ),
-            'pages'        => array(
-                'require'  => array('visits' => true),
-                'sub'      => 'overview',
-                'title'    => __('Post Types', 'wp-statistics'),
-                'page_url' => 'pages',
-                'method'   => 'pages',
-            ),
-            'taxonomies'   => array(
-                'require'  => array('visits' => true),
-                'sub'      => 'overview',
-                'title'    => __('Taxonomies', 'wp-statistics'),
-                'page_url' => 'taxonomies',
-                'method'   => 'taxonomies',
-            ),
-            'authors'      => array(
-                'require'  => array('visits' => true),
-                'sub'      => 'overview',
-                'title'    => __('Authors', 'wp-statistics'),
-                'page_url' => 'authors',
-                'method'   => 'authors'
-            ),
-            'browsers'     => array(
-                'require'  => array('visitors' => true),
-                'sub'      => 'overview',
-                'title'    => __('Browsers', 'wp-statistics'),
-                'page_url' => 'browser',
-                'method'   => 'browser'
-            ),
-            'platforms'    => array(
-                'require'  => array('visitors' => true),
-                'sub'      => 'overview',
-                'title'    => __('Operating Systems', 'wp-statistics'),
-                'page_url' => 'platform',
-                'method'   => 'platform'
-            ),
-            'top.visitors' => array(
-                'require'  => array('visitors' => true),
-                'sub'      => 'overview',
-                'title'    => __('Top Visitors Today', 'wp-statistics'),
-                'page_url' => 'top-visitors',
-                'method'   => 'top_visitors'
-            ),
-            'exclusions'   => array(
-                'require'  => array('record_exclusions' => true),
-                'sub'      => 'overview',
-                'title'    => __('Exclusions', 'wp-statistics'),
-                'page_url' => 'exclusions',
-                'method'   => 'exclusions',
-                'break'    => true,
+                'title'    => __('Settings', 'wp-statistics'),
+                'cap'      => $manage_cap,
+                'page_url' => 'settings',
+                'method'   => 'settings',
+                'priority' => 100,
             ),
             'optimize'     => array(
                 'sub'      => 'overview',
                 'title'    => __('Optimization', 'wp-statistics'),
                 'cap'      => $manage_cap,
                 'page_url' => 'optimization',
-                'method'   => 'optimization'
-            ),
-            'settings'     => array(
-                'sub'      => 'overview',
-                'title'    => __('Settings', 'wp-statistics'),
-                'cap'      => $manage_cap,
-                'page_url' => 'settings',
-                'method'   => 'settings'
-            ),
-            'plugins'      => array(
-                'sub'      => 'overview',
-                'title'    => __('Add-Ons', 'wp-statistics'),
-                'name'     => '<span class="wps-text-warning">' . __('Add-Ons', 'wp-statistics') . '</span>',
-                'page_url' => 'plugins',
-                'method'   => 'plugins'
-            ),
+                'method'   => 'optimization',
+                'priority' => 110,
+            )
         );
 
         /**
@@ -284,7 +178,24 @@ class Menus
          *
          * @example add_filter('wp_statistics_admin_menu_list', function( $list ){ unset( $list['plugins'] ); return $list; });
          */
-        return apply_filters('wp_statistics_admin_menu_list', $list);
+        $list = apply_filters('wp_statistics_admin_menu_list', $list);
+
+        // Sort submenus by priority
+        uasort($list, function ($a, $b) {
+            if (empty($a['priority'])) {
+                $a['priority'] = 999;
+            }
+            if (empty($b['priority'])) {
+                $b['priority'] = 999;
+            }
+
+            if ($a['priority'] == $b['priority']) {
+                return 0;
+            }
+            return ($a['priority'] < $b['priority']) ? -1 : 1;
+        });
+
+        return $list;
     }
 
     /**
@@ -363,21 +274,37 @@ class Menus
 
             //Check if SubMenu or Main Menu
             if (array_key_exists('sub', $menu)) {
+                //Check if add Break Line
+                if (array_key_exists('break', $menu)) {
+                    add_submenu_page(self::get_page_slug($menu['sub']), '', '', $capability, 'wps_break_menu', $callback);
+                }
 
                 //Check Conditions For Show Menu
                 if (Option::check_option_require($menu) === true) {
                     add_submenu_page(self::get_page_slug($menu['sub']), $menu['title'], $name, $capability, self::get_page_slug($menu['page_url']), $callback);
-                }
-
-                //Check if add Break Line
-                if (array_key_exists('break', $menu)) {
-                    add_submenu_page(self::get_page_slug($menu['sub']), '', '', $capability, 'wps_break_menu', $callback);
                 }
             } else {
                 add_menu_page($menu['title'], $name, $capability, self::get_page_slug($menu['page_url']), $callback, $menu['icon']);
             }
         }
 
+    }
+
+    public static function getCurrentPage()
+    {
+        $currentPage = Request::get('page');
+        $pagesList   = self::get_menu_list();
+
+        if (!$currentPage) return false;
+
+        $currentPage = self::getPageKeyFromSlug($currentPage);
+        $currentPage = reset($currentPage);
+
+        $currentPage = array_filter($pagesList, function ($page) use ($currentPage) {
+            return $page['page_url'] === $currentPage;
+        });
+
+        return reset($currentPage);
     }
 
 }

@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Themes - Twenty Twenty-Two package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2022-08-11 18:08:50+0000\n"
+"PO-Revision-Date: 2024-11-24 09:54:56+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -15,13 +15,13 @@ msgstr ""
 #: style.css
 #, gp-priority: high
 msgid "Built on a solidly designed foundation, Twenty Twenty-Two embraces the idea that everyone deserves a truly unique website. The theme’s subtle styles are inspired by the diversity and versatility of birds: its typography is lightweight yet strong, its color palette is drawn from nature, and its layout elements sit gently on the page. The true richness of Twenty Twenty-Two lies in its opportunity for customization. The theme is built to take advantage of the Site Editor features introduced in WordPress 5.9, which means that colors, typography, and the layout of every single page on your site can be customized to suit your vision. It also includes dozens of block patterns, opening the door to a wide range of professionally designed layouts in just a few clicks. Whether you’re building a single-page website, a blog, a business website, or a portfolio, Twenty Twenty-Two will help you create a site that is uniquely yours."
-msgstr ""
+msgstr "二〇二二建立在坚实的设计基础上，秉承每个人都值得拥有一个真正独特的网站的理念。该主题的微妙风格灵感来自鸟类的多样性和多功能性：其字体轻巧而有力，其调色板取自自然，其布局元素轻柔地置于页面上。二〇二二的真正丰富之处在于其定制机会。该主题旨在利用 WordPress 5.9 中引入的站点编辑器功能，这意味着您可以自定义网站上每个页面的颜色、字体和布局，以满足您的愿景。它还包括数十种块模式，只需单击几下即可打开各种专业设计的布局。无论您是构建单页网站、博客、商业网站还是作品集，二〇二二都将帮助您创建一个独一无二的网站。"
 
 #. Theme Name of the theme
 #: style.css
 #, gp-priority: high
 msgid "Twenty Twenty-Two"
-msgstr "Twenty Twenty-Two"
+msgstr "二〇二二"
 
 #: styles/swiss.json
 msgctxt "Duotone name"
@@ -505,12 +505,12 @@ msgstr "含站点标题和按钮的页眉"
 
 #: inc/patterns/header-text-only-with-tagline-black-background.php:6
 msgid "Text-only header with tagline and background"
-msgstr ""
+msgstr "带有标语和背景的纯文本标题"
 
 #: inc/patterns/header-text-only-green-background.php:6
 #: inc/patterns/header-text-only-salmon-background.php:6
 msgid "Text-only header with background"
-msgstr ""
+msgstr "带背景的纯文本标题"
 
 #: inc/patterns/header-stacked.php:6
 msgid "Logo and navigation header"
@@ -522,7 +522,7 @@ msgstr "深色背景的小号页眉"
 
 #: inc/patterns/header-logo-navigation-social-black-background.php:6
 msgid "Logo, navigation, and social links header with background"
-msgstr ""
+msgstr "带背景的Logo、导航和社交链接标题"
 
 #: inc/patterns/header-logo-navigation-offset-tagline.php:6
 msgid "Logo, navigation, and offset tagline Header"
@@ -530,7 +530,7 @@ msgstr "含 Logo、导航栏和偏移副标题的页眉"
 
 #: inc/patterns/header-logo-navigation-gray-background.php:6
 msgid "Logo and navigation header with background"
-msgstr ""
+msgstr "带背景的Logo和导航标题"
 
 #: inc/patterns/header-large-dark.php:24
 #: inc/patterns/hidden-heading-and-bird.php:14
@@ -559,7 +559,7 @@ msgstr "默认页眉"
 
 #: inc/patterns/header-centered-title-navigation-social.php:6
 msgid "Centered header with navigation, social links, and background"
-msgstr ""
+msgstr "带有导航、社交链接和背景的居中标题"
 
 #: inc/patterns/header-centered-logo.php:6
 msgid "Header with centered logo"
@@ -567,7 +567,7 @@ msgstr "logo 居中的页眉"
 
 #: inc/patterns/header-centered-logo-black-background.php:6
 msgid "Header with centered logo and background"
-msgstr ""
+msgstr "带有居中logo和背景的标题"
 
 #: inc/patterns/general-wide-image-intro-buttons.php:31
 msgid "Learn More"

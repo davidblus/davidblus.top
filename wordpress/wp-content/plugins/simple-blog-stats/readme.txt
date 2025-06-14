@@ -8,10 +8,10 @@ Author: Jeff Starr
 Author URI: https://plugin-planet.com/
 Donate link: https://monzillamedia.com/donate.html
 Contributors: specialk
-Requires at least: 4.6
-Tested up to: 6.5
-Stable tag: 20240303
-Version:    20240303
+Requires at least: 4.7
+Tested up to: 6.8
+Stable tag: 20250423
+Version:    20250423
 Requires PHP: 5.6.20
 Text Domain: simple-blog-stats
 Domain Path: /languages
@@ -79,7 +79,7 @@ __NEW!__ Display number of words in any custom field
 
 This plugin does not collect or store any user data. It does not set any cookies, and it does not connect to any third-party locations. Thus, this plugin does not affect user privacy in any way.
 
-Simple Blog Stats is developed and maintained by [Jeff Starr](https://twitter.com/perishable), 15-year [WordPress developer](https://plugin-planet.com/) and [book author](https://books.perishablepress.com/).
+Simple Blog Stats is developed and maintained by [Jeff Starr](https://x.com/perishable), 15-year [WordPress developer](https://plugin-planet.com/) and [book author](https://books.perishablepress.com/).
 
 
 **Support development**
@@ -98,6 +98,7 @@ And/or purchase one of my premium WordPress plugins:
 * [Blackhole Pro](https://plugin-planet.com/blackhole-pro/) - Automatically block bad bots
 * [Banhammer Pro](https://plugin-planet.com/banhammer-pro/) - Monitor traffic and ban the bad guys
 * [GA Google Analytics Pro](https://plugin-planet.com/ga-google-analytics-pro/) - Connect WordPress to Google Analytics
+* [Head Meta Pro](https://plugin-planet.com/head-meta-pro/) - Ultimate Meta Tags for WordPress
 * [Simple Ajax Chat Pro](https://plugin-planet.com/simple-ajax-chat-pro/) - Unlimited chat rooms
 * [USP Pro](https://plugin-planet.com/usp-pro/) - Unlimited front-end forms
 
@@ -135,7 +136,7 @@ Visit the plugin settings page for a complete list of shortcodes. There you may 
 	[sbs_approved]             = approved comments *
 	[sbs_users]                = number of users
 	[sbs_cats]                 = number of categories
-	[sbs_tags]                 = number of tags
+	[sbs_tags]                 = number of tags *
 	[sbs_tax tax="tax_name"]   = number of taxonomy terms
 	[sbs_tax_posts ...]        = number of posts for tax term(s) *
 	[sbs_word_count]           = number of words in post *
@@ -173,7 +174,9 @@ Here is an example that makes use of the attributes:
 
 	[sbs_posts cat="sci-fi" tag="sequel" type="movie" status="draft"]
 
-So this will display all drafts of the custom post type "movie" that are in the "sci-fi" category and tagged as "sequel".
+That will display all drafts of the custom post type "movie" that are in the "sci-fi" category and tagged as "sequel".
+
+To display post count for multiple categories, separate category slugs with commas, like `[sbs_posts cat="cat-1,cat-2,cat-3"]`.
 
 More information about the possible values for these attributes:
 
@@ -185,11 +188,11 @@ More information about the possible values for these attributes:
 
 **[sbs_posts_alt]**
 
-The `[sbs_posts_alt]` shortcode is for sites with __LOTS__ of posts (like 10,000+). It is not as flexible as `[sbs_posts]`, but does provide a couple of attributes:
+The `[sbs_posts_alt]` shortcode is for sites with __LOTS__ of posts (like 10,000+). It is not as flexible as `[sbs_posts]`, but does provide several attributes:
 
-	[sbs_posts_alt type="page" status="draft"]
+	[sbs_posts_alt type="page" status="draft" number_format=","]
 
-You can change the `type` and `status` of the posts that should be counted. Again, this shortcode should be used only for sites with extreme numbers of posts.
+You can change the `type` and `status` of the posts that should be counted. The `number_format` attribute determines the separator for large numbers. Again, this shortcode should be used only for sites with extreme numbers of posts.
 
 
 **[sbs_updated]**
@@ -216,9 +219,18 @@ You can change the category ID to display number of comments for any category.
 
 **[sbs_approved]**
 
-By default, the `[sbs_approved]` shortcode displays the total number of comments that have been approved/published on your site. This shortcode provides an optional attribute to specify the number format:
+By default, the `[sbs_approved]` shortcode displays the total number of comments that have been approved/published. This shortcode provides an optional attribute to specify the number format:
 
 	[sbs_approved number_format=","]
+
+You can change the number format to whatever makes sense for your site.
+
+
+**[sbs_tags]**
+
+By default, the `[sbs_tags]` shortcode displays the total number of tags that have been created. This shortcode provides an optional attribute to specify the number format:
+
+	[sbs_tags number_format=","]
 
 You can change the number format to whatever makes sense for your site.
 
@@ -449,13 +461,23 @@ Send any questions or feedback via my [contact form](https://plugin-planet.com/s
 If you like Simple Blog Stats, please take a moment to [give a 5-star rating](https://wordpress.org/support/plugin/simple-blog-stats/reviews/?rate=5#new-post). It helps to keep development and support going strong. Thank you!
 
 
-**20240303**
+**20250423**
 
-* Adds `number_format` attribute for `[sbs_cpt_count]`
+* Improves sanitization for `txt` attribute for `[sbs_cpt_count]`
+* Improves sanitization for `txt` attribute for `[sbs_media_count]`
+
+**20250416**
+
+* Improves sanitization for `txt` attribute for `[sbs_roles]`
+
+**20250322**
+
+* Removes `sbs_i18n_init()` function
+* Adds uninstall option `simple-blog-stats-dismiss-notice`
+* Bumps minimum required WP version
 * Updates plugin settings page
-* Updates default translation template
-* Improves plugin docs/readme.txt
-* Tests on WordPress 6.5 (beta)
+* Generates new language template
+* Tests on WordPress 6.8
 
 
 Full changelog @ [https://plugin-planet.com/wp/changelog/simple-blog-stats.txt](https://plugin-planet.com/wp/changelog/simple-blog-stats.txt)

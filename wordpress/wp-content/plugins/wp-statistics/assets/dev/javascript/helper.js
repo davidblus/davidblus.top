@@ -5,6 +5,15 @@ wps_js.exist_tag = function (tag) {
     return (jQuery(tag).length);
 };
 
+
+/**
+ * Loading button
+ */
+wps_js.loading_button = function (btn) {
+    btn.classList.add('wps-loading-button');
+};
+
+
 /**
  * Jquery UI Picker
  */
@@ -27,7 +36,31 @@ wps_js.date_picker = function () {
             jQuery(correspondingPicker).addClass(ev.target.className);
         });
     }
+
 };
+
+wps_js.formatNumber = function (num, fixed = 0) {
+    if (num === null) {
+        return null;
+    }
+    num = parseFloat(num.toString().trim().replace(/[, ]/g, ''));
+
+    if (isNaN(num)) {
+        return null;
+    }
+
+    if (num === 0) {
+        return '0';
+    }
+    fixed = (!fixed || fixed < 0) ? 0 : fixed;
+    var b = (parseInt(num)).toPrecision(2).split("e"),
+        k = b.length === 1 ? 0 : Math.floor(Math.min(b[1].slice(1), 14) / 3),
+        c = k < 1 ? num.toFixed(0 + fixed) : (num / Math.pow(10, k * 3)).toFixed(1 + fixed),
+        d = c < 0 ? c : Math.abs(c),
+        e = d + ['', 'K', 'M', 'B', 'T'][k];
+    return e;
+}
+
 
 /**
  * Set Select2
@@ -35,55 +68,110 @@ wps_js.date_picker = function () {
 wps_js.select2 = function () {
     jQuery("select[data-type-show=select2]").select2();
 }
-
 const wpsSelect2 = jQuery('.wps-select2');
-const wpsFilterPage = jQuery('.wps-filter-page');
 const wpsBody = jQuery('body');
 const wpsDropdown = jQuery('.wps-dropdown');
 
-if (wpsSelect2.length && wpsFilterPage.length) {
-    var dirValue = wpsBody.hasClass('rtl') ? 'rtl' : 'ltr';
+if (wpsSelect2.length) {
+    const wpsFilterPage = jQuery('.wps-filter-page');
+    const wpsFilterVisitor = jQuery('.wps-filter-visitor');
+    const dirValue = wpsBody.hasClass('rtl') ? 'rtl' : 'ltr';
+    const dropdownParent = wpsFilterPage.length ? wpsFilterPage : wpsFilterVisitor;
 
+    const initializeSelect2 = (parentElement, ajaxAction) => {
+        wpsSelect2.select2({
+            dropdownParent: parentElement,
+            dir: dirValue,
+            dropdownAutoWidth: true,
+            dropdownCssClass: 'wps-select2-filter-dropdown',
+            minimumInputLength: 1,
+            ajax: {
+                delay: 500,
+                url: wps_js.global.ajax_url,
+                dataType: 'json',
+                data: function (params) {
+                    const query = {
+                        wps_nonce: wps_js.global.rest_api_nonce,
+                        search: params.term, // The term to search for
+                        action: ajaxAction,
+                        paged: params.page || 1
+                    };
+
+                    if (wps_js.isset(wps_js.global, 'request_params')) {
+                        const requestParams = wps_js.global.request_params;
+                        if (requestParams.author_id) query.author_id = requestParams.author_id;
+                        if (requestParams.page) query.page = requestParams.page;
+                        if (requestParams.pt) query.post_type = requestParams.pt;
+                        if (requestParams.pid) query.post_id = requestParams.pid;
+                    }
+                    return query;
+                },
+                processResults: function (data) {
+                    if (data && Array.isArray(data.results)) {
+                        return {
+                            results: data.results.map(item => ({
+                                id: item.id,
+                                text: item.text
+                            })),
+                            pagination: {
+                                more: false
+                            }
+                        };
+                    } else {
+                        console.error('Expected an array of results but got:', data);
+                        return {results: []};
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX request error:', status, error);
+                }
+            }
+        });
+    };
+
+    // Initial select2 setup without AJAX
     wpsSelect2.select2({
-        dropdownParent: $('.wps-filter-page'),
+        dropdownParent: dropdownParent,
         dir: dirValue,
         dropdownAutoWidth: true,
         dropdownCssClass: 'wps-select2-filter-dropdown'
     });
 
-    wpsFilterPage.on('click', function () {
-        wpsSelect2.select2('open');
-    });
-
-    wpsSelect2.on('select2:open', function () {
-        wpsDropdown.addClass('active');
-    });
-
-    wpsSelect2.on('select2:close', function () {
-        wpsDropdown.removeClass('active');
-    });
-
+    // Event listeners
+    wpsSelect2.on('select2:open', () => wpsDropdown.addClass('active'));
+    wpsSelect2.on('select2:close', () => wpsDropdown.removeClass('active'));
     wpsSelect2.on('change', function () {
-        var selectedOption = jQuery(this).find('option:selected');
-        var url = selectedOption.val();
-
+        const selectedOption = jQuery(this).find('option:selected');
+        const url = selectedOption.val();
         if (url) {
             window.location.href = url;
         }
     });
+
+    // Conditional initialization based on filter page or visitor
+    if (wpsFilterPage.length) {
+        initializeSelect2(wpsFilterPage, 'wp_statistics_get_page_filter_items');
+        wpsFilterPage.on('click', () => wpsSelect2.select2('open'));
+    }
+
+
+    if (wpsFilterVisitor.length) {
+        initializeSelect2(wpsFilterVisitor, 'wp_statistics_search_visitors');
+        wpsFilterVisitor.on('click', () => wpsSelect2.select2('open'));
+    }
 }
-
-
 /**
  * Set Tooltip
  */
 wps_js.tooltip = function () {
     jQuery('.wps-tooltip').tooltipster({
-        theme: 'tooltipster-flat'
+        theme: 'tooltipster-shadow',
+        contentCloning: true
     });
+
     jQuery('body').on('mouseenter touchstart', '.wps-tooltip:not(.tooltipstered)', function () {
         $(this).tooltipster({
-            theme: 'tooltipster-flat'
+            theme: 'tooltipster-shadow'
         }).tooltipster('open');
     });
 };
@@ -102,158 +190,74 @@ wps_js.redirect = function (url) {
     window.location.replace(url);
 };
 
-/**
- * Create Line Chart JS
- */
-wps_js.line_chart = function (tag_id, title, label, data, newOptions) {
-
-    // Get Element By ID
-    let ctx = document.getElementById(tag_id).getContext('2d');
-
-    // Check is RTL Mode
-    if (wps_js.is_active('rtl')) {
-        Chart.defaults.global = {
-            defaultFontFamily: "Tahoma"
-        }
-    }
-
-    const defaultOptions = {
-        type: 'line',
-        data: {
-            labels: label,
-            datasets: data
-        },
-        options: {
-            responsive: true,
-            legend: {
-                position: 'bottom',
-            },
-            animation: {
-                duration: 1500,
-            },
-            title: {
-                display: true,
-                text: title
-            },
-            tooltips: {
-                mode: 'index',
-                intersect: false,
-            },
-            interaction: {
-                intersect: false,
-                mode: 'index',
-            },
-            scales: {
-                y: {
-                    ticks: {
-                        stepSize: 1,
-                    }
-                },
-            },
-            plugins: {
-                zoom: {
-                    pan: {
-                        enabled: true,
-                        mode: 'xy',
-                    },
-                    zoom: {
-                        wheel: {
-                            enabled: true,
-                            speed: 0.05,
-                            modifierKey: 'ctrl'
-                        },
-                        pinch: {
-                            enabled: true
-                        },
-                        mode: 'xy',
-                    }
-                }
-            }
-        }
-    };
-
-    const options = Object.assign({}, defaultOptions, newOptions);
-
-    // Create Chart
-    new Chart(ctx, options);
-};
 
 /**
- * Create pie Chart JS
+ * Create Horizontal Bar Chart
  */
-wps_js.pie_chart = function (tag_id, label, data, label_callback = false, tooltip_callback = false) {
+wps_js.horizontal_bar = function (tag_id, labels, data, imageUrls) {
 
     // Get Element By ID
-    let ctx = document.getElementById(tag_id).getContext('2d');
+    let element = document.getElementById(tag_id);
 
-    // Check is RTL Mode
-    if (wps_js.is_active('rtl')) {
-        Chart.defaults.global = {
-            defaultFontFamily: "Tahoma"
-        }
-    }
-    // Set Default Label Callback
-    if (label_callback === false) {
-         label_callback = function (tooltipItem) {
-            return tooltipItem.formattedValue
-        };
-    }
+    if (element) {
+        let parent = element.parentNode;
+        let nextSibling = element.nextSibling;
+        parent.removeChild(element);
+        data = data.map(Number);
+        let total = data.reduce((sum, data) => sum + data, 0);
+        let blockDiv = document.createElement('div');
+        blockDiv.classList.add('wps-horizontal-bar');
+        for (let i = 0; i < data.length; i++) {
+            // Calculate percentage as a float with two decimal places
+            let percentage = total ? ((data[i] / total) * 100) : 0;
+            // Format the percentage
+            let percentageText = percentage % 1 === 0 ? percentage.toFixed(0) : percentage.toFixed(1);
 
-    // Set Default tooltip title Callback
-    if( tooltip_callback === false){
-        tooltip_callback = function (tooltipItem ) {
-            return tooltipItem.label;
-        }
-    }
-
-    // Create Chart
-    new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: label,
-            datasets: data
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: function (chart) {
-                        if (chart.chart.width > 400) {
-                            return 'left';
-                        }
-                        return 'top';
-                    }
-                },
-                tooltip: {
-                    enable: true,
-                    callbacks: {
-                        label: label_callback,
-                        title: tooltip_callback
-                    }
-                }
-            },
-            animation: {
-                duration: 1500,
-            },
-        },
-        plugins: [{
-            afterDraw: function (chart) {
-                if (chart.data.datasets[0].data.every(x => x == 0) === true) {
-                    let ctx = chart.ctx;
-                    let width = chart.width;
-                    let height = chart.height;
-                    chart.clear();
-                    ctx.save();
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.font = "14px normal 'Tahoma'";
-                    ctx.fillText(wps_js._('no_data'), width / 2, height / 2);
-                    ctx.restore();
-                }
+            // If percentage ends with .0, remove it
+            if (percentageText.endsWith('.0')) {
+                percentageText = percentageText.slice(0, -2);
             }
-        }]
-    });
+            let itemDiv = document.createElement('div');
+            itemDiv.classList.add('wps-horizontal-bar__item');
+            let labelImageDiv = document.createElement('div');
+            labelImageDiv.classList.add('wps-horizontal-bar__label-image-container');
+            if (imageUrls && imageUrls[i] && imageUrls[i] !== 'undefined') {
+                let img = document.createElement('img');
+                img.src = imageUrls[i];
+                img.alt = labels[i];
+                img.classList.add('wps-horizontal-bar__image');
+                labelImageDiv.appendChild(img);
+            }
+            let labelDiv = document.createElement('div');
+            labelDiv.innerHTML = labels[i];
+            labelDiv.setAttribute('title', labels[i]);
+            labelDiv.classList.add('wps-horizontal-bar__label');
+            labelImageDiv.appendChild(labelDiv);
+            itemDiv.appendChild(labelImageDiv);
+            let dataPercentDiv = document.createElement('div');
+            dataPercentDiv.classList.add('wps-horizontal-bar__data-percent-container');
+            let dataDiv = document.createElement('div');
+            dataDiv.innerHTML = `<span>${wps_js.formatNumber(data[i])}</span><span>${percentageText}%</span>`;
+            dataDiv.classList.add('wps-horizontal-bar__data');
+            dataPercentDiv.appendChild(dataDiv);
+            itemDiv.appendChild(dataPercentDiv);
+            let backgroundDiv = document.createElement('div');
+            backgroundDiv.classList.add('wps-horizontal-bar__background');
+            backgroundDiv.style.width = `${percentage}%`; // Set width according to percentage
+            itemDiv.appendChild(backgroundDiv);
+            blockDiv.appendChild(itemDiv);
+        }
+        if (nextSibling) {
+            parent.insertBefore(blockDiv, nextSibling);
+        } else {
+            parent.appendChild(blockDiv);
+        }
+    }
 };
+
+window.renderHorizontalBar = (id, label, data, icons) => {
+    wps_js.horizontal_bar(id, label, data, icons);
+}
 
 /**
  * Create Chart ID by Meta Box name
@@ -262,49 +266,6 @@ wps_js.pie_chart = function (tag_id, label, data, label_callback = false, toolti
  */
 wps_js.chart_id = function (meta_box) {
     return 'wp-statistics-' + meta_box + '-meta-box-chart';
-};
-
-/**
- * Generate Flat Random Color
- */
-wps_js.random_color = function (i = false) {
-    let colors = [
-        [243, 156, 18, "#f39c12"],
-        [52, 152, 219, "#3498db"],
-        [192, 57, 43, "#c0392b"],
-        [155, 89, 182, "#9b59b6"],
-        [39, 174, 96, "#27ae60"],
-        [230, 126, 34, "#e67e22"],
-        [142, 68, 173, "#8e44ad"],
-        [46, 204, 113, "#2ecc71"],
-        [41, 128, 185, "#2980b9"],
-        [22, 160, 133, "#16a085"],
-        [211, 84, 0, "#d35400"],
-        [44, 62, 80, "#2c3e50"],
-        [241, 196, 15, "#f1c40f"],
-        [231, 76, 60, "#e74c3c"],
-        [26, 188, 156, "#1abc9c"],
-        [46, 204, 113, "#2ecc71"],
-        [52, 152, 219, "#3498db"],
-        [155, 89, 182, "#9b59b6"],
-        [52, 73, 94, "#34495e"],
-        [22, 160, 133, "#16a085"],
-        [39, 174, 96, "#27ae60"],
-        [44, 62, 80, "#2c3e50"],
-        [241, 196, 15, "#f1c40f"],
-        [230, 126, 34, "#e67e22"],
-        [231, 76, 60, "#e74c3c"],
-        [236, 240, 241, "#9b9e9f"],
-        [149, 165, 166, "#a65d20"]
-    ];
-    return colors[(i === false ? Math.floor(Math.random() * colors.length) : i)];
-};
-
-/**
- * Show Domain Icon
- */
-wps_js.site_icon = function (domain) {
-    return `<img src="https://www.google.com/s2/favicons?domain=${domain}" width="18" height="18" alt="${domain}" style="vertical-align: middle;" />`;
 };
 
 /**
@@ -434,28 +395,13 @@ wps_js.sum = function (array) {
     }, 0);
 };
 
-
 /**
- * FeedbackBird position
- * */
-function moveFeedbackBird() {
-    let windowWidth = window.outerWidth || document.documentElement.clientWidth;
-    const feedbackBird = document.getElementById('feedback-bird-app');
-    const feedbackBirdTitle = document.querySelector('.c-fbb-widget__header__title');
-    const license = document.querySelector('.wps-mobileMenuContent .wps-bundle');
-    const support = document.querySelector('.wps-adminHeader__side');
-    if (feedbackBird && (document.body.classList.contains('wps_page'))) {
-        if (windowWidth <= 1030) {
-            const cutDiv = feedbackBird.parentNode.removeChild(feedbackBird);
-            license.parentNode.insertBefore(cutDiv, license);
-        } else {
-            const cutDiv = feedbackBird.parentNode.removeChild(feedbackBird);
-            support.appendChild(cutDiv);
-        }
-        feedbackBird.style.display = 'block';
-        feedbackBird.setAttribute('title', feedbackBirdTitle.innerHTML);
-    }
-}
+ * Show empty data
+ */
+wps_js.no_results = function () {
+    return '<div class="o-wrap o-wrap--no-data wps-center">' + wps_js._('no_result') + '</div>';
+};
+
 
 // Head filters drop down
 jQuery(document).ready(function () {
@@ -466,14 +412,36 @@ jQuery(document).ready(function () {
         dropdown.addEventListener("click", function (event) {
             var dropdownContent = dropdown.querySelector(".dropdown-content");
             if (dropdownContent) {
-                dropdownContent.classList.toggle("show");
+                if(!event.target.classList.contains('disabled')){
+                    dropdownContent.classList.toggle("show");
+                }
+            }
+        });
+    });
+
+    var searchInputs = jQuery(".wps-search-dropdown");
+
+
+    searchInputs.on("click", function (event) {
+        event.stopPropagation();
+    });
+
+    searchInputs.on("input", function () {
+        let filter = jQuery(this).val().toLowerCase();
+        let items = jQuery(this).parent().find(".dropdown-item");
+        items.each(function () {
+            let text = jQuery(this).text() || jQuery(this).innerText;
+            if (text.toLowerCase().indexOf(filter) > -1) {
+                jQuery(this).show();
+            } else {
+                jQuery(this).hide();
             }
         });
     });
 
     window.addEventListener("click", function (event) {
         dropdowns.forEach(function (dropdown) {
-            var dropdownContent = dropdown.querySelector(".dropdown-content");
+            let dropdownContent = dropdown.querySelector(".dropdown-content")
             if (dropdownContent && !dropdown.contains(event.target)) {
                 dropdownContent.classList.remove("show");
             }
@@ -481,60 +449,14 @@ jQuery(document).ready(function () {
     });
 });
 
-jQuery(document).ready(function () {
-    const targetElement = document.querySelector('.wp-header-end');
-    const noticeElement = document.querySelector('.notice.notice-warning.update-nag');
-    // Check if both targetElement and noticeElement exist
-    if (targetElement && noticeElement) {
-        // Move the notice element after the target element
-        targetElement.parentNode.insertBefore(noticeElement, targetElement.nextSibling);
-    }
+if (wps_js.isset(wps_js.global, 'request_params', 'page') && wps_js.global.request_params.page === "help-center") {
+    const body = document.body;
+    const targetClass = 'statistics_page_wps_help-center_page';
 
-    jQuery(document).on('click', '.wps-privacy-list__item .wps-privacy-list__title', (e) => {
-        const title = jQuery(e.currentTarget);
-        const content = title.siblings('.wps-privacy-list__content');
-
-        // If the action button is clicked, don't expand the item
-        if (jQuery(e.target).is('.wps-privacy-list__button')) {
-            return;
-        }
-
-        title.toggleClass('open');
-
-        if (content.hasClass('show')) {
-            content.removeClass('show');
-        } else {
-            content.addClass('show');
-        }
-    });
-});
-
-
-/**
- * FeedbackBird position
- * */
-function moveFeedbackBird() {
-    let windowWidth = window.outerWidth || document.documentElement.clientWidth;
-    const feedbackBird = document.getElementById('feedback-bird-app');
-    const feedbackBirdTitle = document.querySelector('.c-fbb-widget__header__title');
-    const license = document.querySelector('.wps-mobileMenuContent .wps-bundle');
-    const support = document.querySelector('.wps-adminHeader__side');
-    if (feedbackBird && (document.body.classList.contains('wps_page'))) {
-        if (windowWidth <= 1030) {
-            const cutDiv = feedbackBird.parentNode.removeChild(feedbackBird);
-            license.parentNode.insertBefore(cutDiv, license);
-        } else {
-            const cutDiv = feedbackBird.parentNode.removeChild(feedbackBird);
-            support.appendChild(cutDiv);
-        }
-        feedbackBird.style.display = 'block';
-        feedbackBird.setAttribute('title', feedbackBirdTitle.innerHTML);
+    if (!body.classList.contains(targetClass)) {
+        body.classList.add(targetClass);
     }
 }
-
-window.onload = moveFeedbackBird;
-window.addEventListener('resize', moveFeedbackBird);
-
 jQuery(document).ready(function () {
     const targetElement = document.querySelector('.wp-header-end');
     const noticeElement = document.querySelector('.notice.notice-warning.update-nag');
@@ -543,4 +465,9 @@ jQuery(document).ready(function () {
         // Move the notice element after the target element
         targetElement.parentNode.insertBefore(noticeElement, targetElement.nextSibling);
     }
+
 });
+
+window.renderFormatNum = function (data) {
+    return wps_js.formatNumber(data)
+}

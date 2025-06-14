@@ -33,23 +33,33 @@ $image_path: "../images";
 @import "component/jqvmap";
 @import "component/search";
 @import "component/filters-modal";
+@import "component/premium-modal";
+@import "component/skeleton";
+@import "component/modal";
+@import "component/spinner";
+@import "component/notifications";
 
 // WordPress Admin Page
 @import "pages/setting";
-@import "pages/add-one";
+@import "pages/referrals";
+@import "pages/add-ons";
 @import "pages/admin";
 @import "pages/overview";
+@import "pages/authors";
+@import "pages/content";
+@import "pages/category";
 @import "pages/browsers";
 @import "pages/visitors";
-@import "pages/pages";
 @import "pages/privacy";
+@import "pages/lock-page";
+@import "pages/tracker";
+@import "pages/help-center";
 
 // Load WordPress Meta Box
 @import "meta-box/about";
 @import "meta-box/summary";
 @import "meta-box/map";
 @import "meta-box/referring";
-@import "meta-box/country";
 @import "meta-box/post-edit-metabox";
 
 // UI styles

@@ -188,7 +188,7 @@ class Pages
         // Get the current page URI.
         $page_uri = Pages::get_page_uri();
 
-        // Get String Search Wordpress
+        // Get String Search WordPress
         if (array_key_exists("search_query", $current_page) and !empty($current_page["search_query"])) {
             $page_uri = "?s=" . $current_page['search_query'];
         }
@@ -300,7 +300,7 @@ class Pages
         );
         if (!$insert) {
             if (!empty($wpdb->last_error)) {
-                \WP_Statistics::log($wpdb->last_error);
+                \WP_Statistics::log($wpdb->last_error, 'warning');
             }
         }
 
@@ -329,10 +329,11 @@ class Pages
         //Create Empty Object
         $arg      = array();
         $defaults = array(
-            'link'      => '',
+            'link'      => $slug,
             'edit_link' => '',
             'object_id' => $page_id,
             'title'     => '-',
+            'report'    => Menus::admin_url('content-analytics', ['type' => 'single-resource', 'uri' => rawurlencode($slug)]),
             'meta'      => array()
         );
 
@@ -343,9 +344,10 @@ class Pages
                 case "post":
                 case "page":
                     $arg = array(
-                        'title'     => esc_html(get_the_title($page_id)),
+                        'title'     => get_the_title($page_id),
                         'link'      => get_the_permalink($page_id),
                         'edit_link' => get_edit_post_link($page_id),
+                        'report'    => Menus::admin_url('content-analytics', ['type' => 'single', 'post_id' => $page_id]),
                         'meta'      => array(
                             'post_type' => get_post_type($page_id)
                         )
@@ -360,6 +362,7 @@ class Pages
                             'title'     => esc_html($term->name),
                             'link'      => (is_wp_error(get_term_link($page_id)) === true ? '' : get_term_link($page_id)),
                             'edit_link' => get_edit_term_link($page_id),
+                            'report'    => Menus::admin_url('category-analytics', ['type' => 'single', 'term_id' => $term->term_taxonomy_id]),
                             'meta'      => array(
                                 'taxonomy'         => $term->taxonomy,
                                 'term_taxonomy_id' => $term->term_taxonomy_id,
@@ -371,8 +374,15 @@ class Pages
                 case "home":
                     $arg = array(
                         'title' => $page_id ? sprintf(__('Home Page: %s', 'wp-statistics'), get_the_title($page_id)) : __('Home Page', 'wp-statistics'),
-                        'link'  => get_site_url()
+                        'link'  => get_site_url(),
+                        'meta'  => array(
+                            'post_type' => get_post_type($page_id)
+                        )
                     );
+
+                    if ($page_id) {
+                        $arg['report'] = Menus::admin_url('content-analytics', ['type' => 'single', 'post_id' => $page_id]);
+                    }
                     break;
                 case "author":
                     $user_info = get_userdata($page_id);
@@ -380,6 +390,10 @@ class Pages
                         'title'     => ($user_info->display_name != "" ? esc_html($user_info->display_name) : esc_html($user_info->first_name . ' ' . $user_info->last_name)),
                         'link'      => get_author_posts_url($page_id),
                         'edit_link' => get_edit_user_link($page_id),
+                        'report'    => Menus::admin_url('author-analytics', ['type' => 'single-author', 'author_id' => $user_info->ID]),
+                        'meta'      => [
+                            'author_id' => $user_info->ID
+                        ]
                     );
                     break;
                 case "feed":
@@ -510,18 +524,27 @@ class Pages
 
         // Get List Of Pages
         $list   = array();
-        $result = $wpdb->get_results($sql . " LIMIT " . ($args['paged'] - 1) * $args['per_page'] . "," . $args['per_page']); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared	
+        $result = $wpdb->get_results($sql . " LIMIT " . ($args['paged'] - 1) * $args['per_page'] . "," . $args['per_page']); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
         foreach ($result as $item) {
             // Lookup the post title.
             $page_info = Pages::get_page_info($item->id, $item->type, $item->uri);
+
+            $reportUrl = '';
+            if (isset($page_info['meta']['term_taxonomy_id'])) {
+                $reportUrl = Menus::admin_url('category-analytics', ['type' => 'single', 'term_id' => $page_info['meta']['term_taxonomy_id']]);
+            } else if (isset($page_info['meta']['author_id'])) {
+                $reportUrl = Menus::admin_url('author-analytics', ['type' => 'single-author', 'author_id' => $page_info['meta']['author_id']]);
+            } else if (isset($page_info['meta']['post_type'])) {
+                $reportUrl = Menus::admin_url('content-analytics', ['type' => 'single', 'post_id' => $item->id]);
+            }
 
             // Push to list
             $list[] = array(
                 'title'     => esc_html($page_info['title']),
                 'link'      => $page_info['link'],
                 'str_url'   => esc_url(urldecode($item->uri)),
-                'hits_page' => Menus::admin_url('pages', array('ID' => $item->id, 'type' => $item->type)),
+                'hits_page' => $reportUrl,
                 'number'    => number_format_i18n($item->count_sum)
             );
         }
@@ -553,7 +576,7 @@ class Pages
         $where = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";
 
         // Return
-        return $wpdb->get_var("SELECT COUNT(*) FROM (SELECT COUNT(page_id) FROM `" . DB::table('pages') . "` `pages` {$where} GROUP BY `{$group_by}`) AS totalCount"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        return $wpdb->get_var("SELECT COUNT(*) FROM (SELECT COUNT(*) FROM `" . DB::table('pages') . "` `pages` {$where} GROUP BY `{$group_by}`) AS totalCount"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     }
 
     /**

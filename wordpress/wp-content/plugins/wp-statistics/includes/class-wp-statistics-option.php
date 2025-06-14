@@ -38,44 +38,48 @@ class Option
     {
 
         $options = array(
-            'robotlist'               => Helper::get_robots_list(),
-            'query_params_allow_list' => Helper::get_default_query_params_allow_list('string'),
-            'anonymize_ips'           => true,
-            'hash_ips'                => true,
-            'geoip'                   => false,
-            'useronline'              => true,
-            'visits'                  => true,
-            'visitors'                => true,
-            'pages'                   => true,
-            'check_online'            => UserOnline::$reset_user_time,
-            'menu_bar'                => false,
-            'coefficient'             => Visitor::getCoefficient(),
-            'stats_report'            => true,
-            'cache_plugin'            => true,
-            'time_report'             => 'weekly',
-            'send_report'             => 'mail',
-            'geoip_license_type'      => 'js-deliver',
-            'geoip_license_key'       => '',
-            'content_report'          => Admin_Template::get_template('emails/default', array(), true),
-            'update_geoip'            => true,
-            'privacy_audit'           => true,
-            'store_ua'                => false,
-            'do_not_track'            => true,
-            'exclude_administrator'   => true,
-            'referrerspam'            => true,
-            'corrupt_browser_info'    => true,
-            'disable_se_clearch'      => true,
-            'disable_se_qwant'        => true,
-            'disable_se_baidu'        => true,
-            'disable_se_ask'          => true,
-            'map_type'                => 'jqvmap',
-            'force_robot_update'      => true,
-            'ip_method'               => 'sequential',
-            'exclude_loginpage'       => true,
-            'exclude_404s'            => false,
-            'exclude_feeds'           => true,
-            'schedule_dbmaint'        => true,
-            'schedule_dbmaint_days'   => '180'
+            'robotlist'                       => Helper::get_robots_list(),
+            'query_params_allow_list'         => Helper::get_default_query_params_allow_list('string'),
+            'anonymize_ips'                   => true,
+            'hash_ips'                        => true,
+            'geoip'                           => true,
+            'useronline'                      => true,
+            'pages'                           => true,
+            'menu_bar'                        => true,
+            'coefficient'                     => Visitor::getCoefficient(),
+            'email_list'                      => get_bloginfo('admin_email'),
+            'use_cache_plugin'                => true,
+            'time_report'                     => '0',
+            'send_report'                     => 'mail',
+            'geoip_license_type'              => 'js-deliver',
+            'geoip_license_key'               => '',
+            'geoip_dbip_license_key_option'   => '',
+            'content_report'                  => '',
+            'email_free_content_header'       => '',
+            'email_free_content_footer'       => '',
+            'update_geoip'                    => true,
+            'privacy_audit'                   => true,
+            'store_ua'                        => false,
+            'consent_level_integration'       => 'disabled',
+            'anonymous_tracking'              => false,
+            'do_not_track'                    => false,
+            'exclude_administrator'           => true,
+            'referrerspam'                    => true,
+            'map_type'                        => 'jqvmap',
+            'ip_method'                       => 'sequential',
+            'exclude_loginpage'               => true,
+            'exclude_404s'                    => false,
+            'exclude_feeds'                   => true,
+            'schedule_dbmaint'                => true,
+            'schedule_dbmaint_days'           => '180',
+            'charts_previous_period'          => true,
+            'attribution_model'               => 'first-touch',
+            'geoip_location_detection_method' => 'maxmind',
+            'delete_data_on_uninstall'        => false,
+            'share_anonymous_data'            => false,
+            'display_notifications'           => true,
+            'word_count_analytics'            => true,
+            'show_privacy_issues_in_report'   => false,
         );
 
         return $options;
@@ -139,7 +143,7 @@ class Option
     }
 
     /**
-     * Update Wp-Statistics Option
+     * Update WP Statistics Option
      *
      * @param $option
      * @param $value
@@ -258,6 +262,18 @@ class Option
         return Option::get('email_list');
     }
 
+    public static function getAddonOptions($addon_name = '')
+    {
+        $setting_name = "wpstatistics_{$addon_name}_settings";
+
+        $options = get_option($setting_name);
+        if (!isset($options) || !is_array($options)) {
+            return false;
+        }
+
+        return $options;
+    }
+
     public static function getByAddon($option_name, $addon_name = '', $default = null)
     {
         $setting_name = "wpstatistics_{$addon_name}_settings";
@@ -278,5 +294,76 @@ class Option
     {
         $setting_name = "wpstatistics_{$addon_name}_settings";
         update_option($setting_name, $options);
+    }
+
+    public static function getOptionGroup($group, $key = null, $default = null)
+    {
+        $settingName = "wp_statistics_{$group}";
+        $options     = get_option($settingName);
+
+        if (!isset($options) || !is_array($options)) {
+            $options = array();
+        }
+
+        if (is_null($key)) {
+            $result = $options;
+        } else {
+            if (!array_key_exists($key, $options)) {
+                $result = !is_null($default) ? $default : false;
+            } else {
+                $result = $options[$key];
+            }
+        }
+
+        return apply_filters("wp_statistics_option_{$settingName}", $result);
+    }
+
+    public static function saveOptionGroup($key, $value, $group)
+    {
+        $settingName = "wp_statistics_{$group}";
+        $options     = get_option($settingName, []);
+
+        // Backward compatibility.
+        if (!is_array($options)) {
+            $options = array();
+        }
+
+        // Store the value in the array.
+        $options[$key] = $value;
+
+        // Write the array to the database.
+        update_option($settingName, $options);
+    }
+
+    public static function addOptionGroup($key, $value, $group)
+    {
+        $settingName = "wp_statistics_{$group}";
+        $options     = get_option($settingName, []);
+
+        // Backward compatibility.
+        if (!is_array($options)) {
+            $options = array();
+        }
+
+        // Store the value in the array.
+        $options[$key] = $value;
+
+        // Write the array to the database.
+        add_option($settingName, $options);
+    }
+
+    public static function deleteOptionGroup($key, $group)
+    {
+        $settingName = "wp_statistics_{$group}";
+        $options     = get_option($settingName, []);
+
+        // Check if the key exists in the array.
+        if (array_key_exists($key, $options)) {
+            // Remove the key from the array.
+            unset($options[$key]);
+
+            // Write the updated array back to the database.
+            update_option($settingName, $options);
+        }
     }
 }

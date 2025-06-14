@@ -2,6 +2,7 @@
 
 namespace WP_STATISTICS;
 
+use WP_Statistics\Service\Analytics\DeviceDetection\DeviceHelper;
 use WP_Statistics\Service\Analytics\VisitorProfile;
 
 class UserOnline
@@ -18,7 +19,7 @@ class UserOnline
      *
      * @var int
      */
-    public static $reset_user_time = 120; # Second
+    public static $reset_user_time = 65; # Second
 
     /**
      * UserOnline constructor.
@@ -26,7 +27,7 @@ class UserOnline
     public function __construct()
     {
         # Reset User Online Count
-        add_action('admin_init', array($this, 'reset_user_online'));
+        add_action('init', array($this, 'reset_user_online'));
     }
 
     /**
@@ -41,7 +42,7 @@ class UserOnline
          *
          * @example add_filter('wp_statistics_active_user_online', function(){ if( is_page() ) { return false; } });
          */
-        return (has_filter('wp_statistics_active_user_online')) ? apply_filters('wp_statistics_active_user_online', true) : Option::get('useronline');
+        return (has_filter('wp_statistics_active_user_online')) ? apply_filters('wp_statistics_active_user_online', true) : Option::get('useronline', true);
     }
 
     /**
@@ -60,17 +61,7 @@ class UserOnline
             $now = TimeZone::getCurrentTimestamp();
 
             // Set the default seconds a user needs to visit the site before they are considered offline.
-            $reset_time = self::$reset_user_time;
-
-            // Get the user set value for seconds to check for users online.
-            if (Option::get('check_online')) {
-                $reset_time = Option::get('check_online');
-            }
-
-            // Failsafe
-            if (!is_numeric($reset_time)) {
-                $reset_time = 120;
-            }
+            $reset_time = apply_filters('wp_statistics_reset_user_online_time', self::$reset_user_time);
 
             // We want to delete users that are over the number of seconds set by the admin.
             $time_diff = (int)$now - (int)$reset_time;
@@ -101,8 +92,12 @@ class UserOnline
      * @param $visitorProfile VisitorProfile
      * @throws \Exception
      */
-    public static function record($visitorProfile, $args = array())
+    public static function record($visitorProfile = null, $args = array())
     {
+        if (!$visitorProfile) {
+            $visitorProfile = new VisitorProfile();
+        }
+
         # Get User IP
         $user_ip = $visitorProfile->getProcessedIPForStorage();
 
@@ -149,28 +144,26 @@ class UserOnline
     {
         global $wpdb;
 
-        $current_page = $visitorProfile->getCurrentPageType();
-        $user_agent   = $visitorProfile->getUserAgent();
-
-        $pageId = Pages::getPageId($current_page['type'], $current_page['id']);
-
         //Prepare User online Data
         $user_online = array(
             'ip'        => $visitorProfile->getProcessedIPForStorage(),
             'timestamp' => TimeZone::getCurrentTimestamp(),
             'created'   => TimeZone::getCurrentTimestamp(),
             'date'      => TimeZone::getCurrentDate(),
-            'referred'  => $visitorProfile->getReferrer(),
-            'agent'     => $user_agent['browser'],
-            'platform'  => $user_agent['platform'],
-            'version'   => $user_agent['version'],
-            'location'  => $visitorProfile->getCountry(),
-            'region'    => $visitorProfile->getRegion(),
-            'continent' => $visitorProfile->getContinent(),
-            'city'      => $visitorProfile->getCity(),
-            'user_id'   => $visitorProfile->getUserId(),
-            'page_id'   => $pageId,
-            'type'      => $current_page['type']
+            'visitor_id'=> $visitorProfile->getVisitorId(),
+
+            // Set to null for backward compatibility
+            'referred'  => '',
+            'agent'     => '',
+            'platform'  => null,
+            'version'   => null,
+            'location'  => null,
+            'region'    => null,
+            'continent' => null,
+            'city'      => null,
+            'user_id'   => 0,
+            'page_id'   => 0,
+            'type'      => ''
         );
         $user_online = apply_filters('wp_statistics_user_online_information', wp_parse_args($args, $user_online));
 
@@ -182,7 +175,7 @@ class UserOnline
 
         if (!$insert) {
             if (!empty($wpdb->last_error)) {
-                \WP_Statistics::log($wpdb->last_error);
+                \WP_Statistics::log($wpdb->last_error, 'warning');
             }
         }
 
@@ -201,19 +194,15 @@ class UserOnline
     {
         global $wpdb;
 
-        $current_page = $visitorProfile->getCurrentPageType();
-        $user_id      = $visitorProfile->getUserId();
-
-        $pageId = Pages::getPageId($current_page['type'], $current_page['id']);
-
         //Prepare User online Update data
         $user_online = array(
             'timestamp' => TimeZone::getCurrentTimestamp(),
             'date'      => TimeZone::getCurrentDate(),
-            'referred'  => $visitorProfile->getReferrer(),
-            'user_id'   => $user_id,
-            'page_id'   => $pageId,
-            'type'      => $current_page['type']
+
+            // Set to null for backward compatibility
+            'user_id'   => 0,
+            'page_id'   => 0,
+            'type'      => ''
         );
         $user_online = apply_filters('wp_statistics_update_user_online_data', wp_parse_args($args, $user_online));
 
@@ -223,7 +212,7 @@ class UserOnline
         ));
 
         # Action After Update User Online
-        do_action('wp_statistics_update_user_online', $user_id, $user_online);
+        do_action('wp_statistics_update_user_online', $user_online);
     }
 
     /**
@@ -260,23 +249,23 @@ class UserOnline
         } else {
             $SQL .= $args['fields'];
         }
-        $SQL .= " FROM `" . DB::table('useronline') . "`";
+        $SQL .= " FROM `" . DB::table('useronline') . "` as useronline JOIN `" . DB::table('visitor') . "` as visitor ON `useronline`.`visitor_id` = `visitor`.`ID`";
 
         // Check Count
         if ($args['fields'] == "count") {
-            return $wpdb->get_var($SQL); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared	
+            return $wpdb->get_var($SQL); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
         }
 
         // Prepare Query
         if (empty($args['sql'])) {
-            $args['sql'] = "SELECT * FROM `" . DB::table('useronline') . "` ORDER BY ID DESC";
+            $args['sql'] = "SELECT * FROM `" . DB::table('useronline') . "` as useronline JOIN `" . DB::table('visitor') . "` as visitor ON `useronline`.`visitor_id` = `visitor`.`ID` ORDER BY useronline.ID DESC";
         }
 
         // Set Pagination
         $args['sql'] = esc_sql($args['sql']) . $wpdb->prepare(" LIMIT %d, %d", $args['offset'], $args['per_page']);
 
         // Send Request
-        $result = $wpdb->get_results($args['sql']); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared	
+        $result = $wpdb->get_results($args['sql']); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
         // Get List
         $list = array();
@@ -305,12 +294,12 @@ class UserOnline
             }
 
             // Page info
-            $item['page'] = Visitor::get_page_by_id($items->page_id);
+            $item['page'] = Visitor::get_page_by_id($items->last_page);
 
             // Push Browser
             $item['browser'] = array(
                 'name' => $agent,
-                'logo' => UserAgent::getBrowserLogo($agent),
+                'logo' => DeviceHelper::getPlatformLogo($agent),
                 'link' => Menus::admin_url('visitors', array('agent' => $agent))
             );
 
@@ -319,28 +308,36 @@ class UserOnline
                 $item['ip'] = array('value' => substr($ip, 6, 10), 'link' => Menus::admin_url('visitors', array('ip' => urlencode($ip))));
             } else {
                 $item['ip']  = array('value' => $ip, 'link' => Menus::admin_url('visitors', array('ip' => $ip)));
-                $item['map'] = GeoIP::geoIPTools($ip);
+                $item['map'] = Helper::geoIPTools($ip);
             }
 
-            // Push Country
-            if (GeoIP::active()) {
-                $item['country'] = array('location' => $items->location, 'flag' => Country::flag($items->location), 'name' => Country::getName($items->location));
-            }
+            $item['country'] = array('location' => $items->location, 'flag' => Country::flag($items->location), 'name' => Country::getName($items->location));
+            $item['city']    = $items->city;
+            $item['region']  = $items->region;
 
-            // Push City
-            if (GeoIP::active('city')) {
-                $item['city']   = !empty($items->city) ? $items->city : GeoIP::getCity($ip);
-                $item['region'] = $items->region;
-            }
+            $item['single_url'] = Menus::admin_url('visitors', ['type' => 'single-visitor', 'visitor_id' => $items->visitor_id]);
 
             // Online For Time
-            $time_diff = ($items->timestamp - $items->created);
-            if ($time_diff > 3600) {
-                $item['online_for'] = date("H:i:s", ($items->timestamp - $items->created)); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date	
-            } else if ($time_diff > 60) {
-                $item['online_for'] = "00:" . date("i:s", ($items->timestamp - $items->created)); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+            $current_time = current_time('timestamp'); // Fetch current server time in WordPress format
+            $time_diff    = $items->timestamp - $items->created;
+
+            if ($items->timestamp == $items->created) {
+                $time_diff = $current_time - $items->created;
+            }
+
+            // Ensure time_diff is positive and log the real time difference
+            if ($time_diff < 0) {
+                $time_diff = abs($time_diff);
+            }
+
+            if ($time_diff < 1) {
+                $item['online_for'] = "00:00:00";
+            } else if ($time_diff >= 3600) {
+                $item['online_for'] = gmdate("H:i:s", $time_diff); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+            } else if ($time_diff >= 60) {
+                $item['online_for'] = "00:" . gmdate("i:s", $time_diff); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
             } else {
-                $item['online_for'] = "00:00:" . date("s", ($items->timestamp - $items->created)); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+                $item['online_for'] = "00:00:" . str_pad($time_diff, 2, "0", STR_PAD_LEFT); // Display seconds correctly
             }
 
             $list[] = $item;

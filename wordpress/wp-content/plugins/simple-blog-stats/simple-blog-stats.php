@@ -8,10 +8,10 @@
 	Author URI: https://plugin-planet.com/
 	Donate link: https://monzillamedia.com/donate.html
 	Contributors: specialk
-	Requires at least: 4.6
-	Tested up to: 6.5
-	Stable tag: 20240303
-	Version:    20240303
+	Requires at least: 4.7
+	Tested up to: 6.8
+	Stable tag: 20250423
+	Version:    20250423
 	Requires PHP: 5.6.20
 	Text Domain: simple-blog-stats
 	Domain Path: /languages
@@ -32,31 +32,21 @@
 	You should have received a copy of the GNU General Public License
 	with this program. If not, visit: https://www.gnu.org/licenses/
 	
-	Copyright 2024 Monzilla Media. All rights reserved.
+	Copyright 2025 Monzilla Media. All rights reserved.
 */
 
 if (!defined('ABSPATH')) die();
 
 
 
-$sbs_wp_vers = '4.6';
-$sbs_version = '20240303';
-$sbs_plugin  = esc_html__('Simple Blog Stats', 'simple-blog-stats');
+$sbs_wp_vers = '4.7';
+$sbs_version = '20250423';
+$sbs_plugin  = 'Simple Blog Stats';
 $sbs_options = get_option('sbs_options');
 $sbs_path    = plugin_basename(__FILE__); // simple-blog-stats/simple-blog-stats.php
 $sbs_homeurl = 'https://perishablepress.com/simple-blog-stats/';
 
 require_once('stats-functions.php');
-
-function sbs_i18n_init() {
-	
-	global $sbs_path;
-	
-	load_plugin_textdomain('simple-blog-stats', false, dirname($sbs_path) .'/languages/');
-	
-}
-add_action('init', 'sbs_i18n_init');
-
 
 
 function sbs_require_wp_version() {
@@ -209,15 +199,18 @@ add_shortcode('sbs_posts', 'sbs_posts');
 function sbs_posts_alt($attr, $content = null) {
 	
 	extract(shortcode_atts(array(
-		'type'   => 'post',
-		'status' => 'publish',
+		
+		'type'          => 'post',
+		'status'        => 'publish',
+		'number_format' => ','
+		
 	), $attr));
 	
 	$property = "$status";
 	
 	$total = wp_count_posts($type)->{$property};
 	
-	return number_format($total);
+	return number_format($total, 0, '.', $number_format);
 	
 }
 add_shortcode('sbs_posts_alt', 'sbs_posts_alt');
@@ -487,6 +480,8 @@ function sbs_roles($attr, $content = null) {
 		'txt'  => '',
 	), $attr));
 	
+	$txt = esc_html($txt);
+	
 	$count_users = count_users();
 	
 	$roles = isset($count_users['avail_roles']) ? $count_users['avail_roles'] : false;
@@ -553,9 +548,20 @@ add_shortcode('sbs_cats', 'sbs_cats');
 
 
 // number of tags
-function sbs_tags() {
+function sbs_tags($attr, $content = null) {
+	
+	extract(shortcode_atts(array(
+		
+		'number_format' => ','
+		
+	), $attr));
+	
 	global $sbs_options;
-	return $sbs_options['count_tags_before'] . number_format(wp_count_terms('post_tag')) . $sbs_options['count_tags_after'];
+	
+	$count = wp_count_terms('post_tag');
+	
+	return $sbs_options['count_tags_before'] . number_format($count, 0, '.', $number_format) . $sbs_options['count_tags_after'];
+	
 }
 add_shortcode('sbs_tags', 'sbs_tags');
 
@@ -941,6 +947,8 @@ function sbs_cpt_count($atts) {
 		'number_format' => ','
 	), $atts));
 	
+	$txt = esc_html($txt);
+	
 	$post = get_post_type_object($cpt);
 	
 	$name = isset($post->labels->name) ? $post->labels->name : null;
@@ -1005,6 +1013,8 @@ function sbs_media_count($atts) {
 		'type' => 'image',
 		'txt' => '',
 	), $atts));
+	
+	$txt = esc_html($txt);
 	
 	$name = $txt ? ' '. $txt : '';
 	
@@ -1386,7 +1396,7 @@ function sbs_render_form() {
 	<style type="text/css">
 		#mm-plugin-options .mm-panel-overview {
 			padding: 0 15px 15px 150px;
-			background-image: url(<?php echo plugins_url('/simple-blog-stats/sbs-icon.png'); ?>);
+			background-image: url(<?php echo plugins_url('/simple-blog-stats/images/sbs-icon.png'); ?>);
 			background-repeat: no-repeat; background-position: 15px 0; background-size: 120px 120px;
 			}
 		#mm-plugin-options .mm-panel-toggle { margin: 5px 0; }
@@ -1430,7 +1440,17 @@ function sbs_render_form() {
 		
 		.wp-admin .notice code { line-height: 1; font-size: 12px; }
 		.wp-admin .sbs-dismiss-notice { float: right; }
-		#mm-plugin-options .sbs-notice p { margin-left: 0; }
+		
+		#mm-plugin-options .notice-margin p { margin: 10px 0; }
+		
+		#mm-plugin-options .notice-custom p { margin-left: 0; }
+		
+		.wp-admin .notice-custom { background-image: url(<?php echo plugins_url('/simple-blog-stats/images/sun-icon.png'); ?>); background-repeat: no-repeat; background-position: left 5px center; background-size: 60px 40px; }
+		.wp-admin .notice-custom p { margin: 15px 0; padding-left: 60px; line-height: 1.6; }
+		.wp-admin .notice-link { display: inline-block; margin-right: 5px; }
+		@media (max-width: 782px) {
+			.wp-admin .notice-custom p { margin: 10px 0; }
+		}
 		
 		@media (max-width: 1100px) {
 			.wp-admin .sbs-dismiss-notice { float: none; }
@@ -1938,7 +1958,7 @@ function sbs_render_form() {
 			
 			<div id="mm-credit-info">
 				<a target="_blank" rel="noopener noreferrer" href="<?php echo esc_url($sbs_homeurl); ?>" title="<?php esc_attr_e('Plugin Homepage', 'simple-blog-stats'); ?>"><?php echo esc_html($sbs_plugin); ?></a> <?php esc_html_e('by', 'simple-blog-stats'); ?> 
-				<a target="_blank" rel="noopener noreferrer" href="https://twitter.com/perishable" title="<?php esc_attr_e('Jeff Starr on Twitter', 'simple-blog-stats'); ?>">Jeff Starr</a> @ 
+				<a target="_blank" rel="noopener noreferrer" href="https://x.com/perishable" title="<?php esc_attr_e('Jeff Starr on X (Twitter)', 'simple-blog-stats'); ?>">Jeff Starr</a> @ 
 				<a target="_blank" rel="noopener noreferrer" href="https://monzillamedia.com/" title="<?php esc_attr_e('Obsessive Web Design &amp; Development', 'simple-blog-stats'); ?>">Monzilla Media</a>
 			</div>
 			
@@ -1990,14 +2010,14 @@ function simple_blog_stats_admin_notice() {
 			
 			?>
 			
-			<div class="notice notice-success sbs-notice">
+			<div class="notice notice-success notice-margin notice-custom">
 				<p>
-					<strong><?php esc_html_e('Go Pro!', 'simple-blog-stats'); ?></strong> 
-					<?php esc_html_e('Save 30% on our', 'simple-blog-stats'); ?> 
+					<strong><?php esc_html_e('Spring Sale!', 'simple-blog-stats'); ?></strong> 
+					<?php esc_html_e('Take 30% OFF any of our', 'simple-blog-stats'); ?> 
 					<a target="_blank" rel="noopener noreferrer" href="https://plugin-planet.com/"><?php esc_html_e('Pro WordPress plugins', 'simple-blog-stats'); ?></a> 
 					<?php esc_html_e('and', 'simple-blog-stats'); ?> 
 					<a target="_blank" rel="noopener noreferrer" href="https://books.perishablepress.com/"><?php esc_html_e('books', 'simple-blog-stats'); ?></a>. 
-					<?php esc_html_e('Apply code', 'simple-blog-stats'); ?> <code>PLANET24</code> <?php esc_html_e('at checkout. Sale ends 5/25/24.', 'simple-blog-stats'); ?> 
+					<?php esc_html_e('Apply code', 'simple-blog-stats'); ?> <code>SPRING2025</code> <?php esc_html_e('at checkout. Sale ends 6/25/2025.', 'simple-blog-stats'); ?> 
 					<?php echo simple_blog_stats_dismiss_notice_link(); ?>
 				</p>
 			</div>
@@ -2076,13 +2096,13 @@ function simple_blog_stats_dismiss_notice_link() {
 	
 	$label = esc_html__('Dismiss', 'simple-blog-stats');
 	
-	echo '<a class="sbs-dismiss-notice" href="'. esc_url($href) .'">'. esc_html($label) .'</a>';
+	return '<a class="sbs-dismiss-notice" href="'. esc_url($href) .'">'. esc_html($label) .'</a>';
 	
 }
 
 function simple_blog_stats_check_date_expired() {
 	
-	$expires = apply_filters('simple_blog_stats_check_date_expired', '2024-05-25');
+	$expires = apply_filters('simple_blog_stats_check_date_expired', '2025-06-25');
 	
 	return (new DateTime() > new DateTime($expires)) ? true : false;
 	

@@ -12,13 +12,6 @@ class Referred
     public static $top_referring_transient = 'wps_top_referring';
 
     /**
-     * Referral Url Details Option name
-     *
-     * @var string
-     */
-    public static $referral_detail_opt = 'wp_statistics_referrals_detail';
-
-    /**
      * Referrer Spam List
      *
      * @var string
@@ -42,7 +35,17 @@ class Referred
     public static function getRefererURL()
     {
         if (Helper::is_rest_request() && isset($_REQUEST['referred'])) {
-            return sanitize_url(wp_unslash($_REQUEST['referred']));
+
+            $referred = $_REQUEST['referred'];
+
+            /**
+             * Decode the url if the request type is client-side tracking
+             */
+            if (Option::get('use_cache_plugin')) {
+                $referred = base64_decode($referred);
+            }
+
+            return sanitize_url(wp_unslash(urldecode($referred)));
         }
 
         return (isset($_SERVER['HTTP_REFERER']) ? sanitize_url(wp_unslash($_SERVER['HTTP_REFERER'])) : '');
@@ -107,8 +110,13 @@ class Referred
         // Remove Url prefixes
         $host_name = Helper::get_domain_name($base_url['host']);
 
+        // Special case for android-app
+        if ($base_url['host'] === 'android-app' && !empty($base_url['path'])) {
+            $host_name = $base_url['host'] . ':' . $base_url['path'];
+        }
+
         // Get Html Link
-        return "<a href='{$html_referrer}' title='{$title}'" . ($is_blank === true ? ' target="_blank"' : '') . ">{$host_name}</a>";
+        return "<a class='wps-link-arrow' href='{$html_referrer}' title='{$title}'" . ($is_blank === true ? ' target="_blank"' : '') . "><span >{$host_name}</span></a>";
     }
 
     /**
@@ -159,8 +167,21 @@ class Referred
         if (count($time_rang) > 0 and !empty($time_rang)) {
             $time_sql = sprintf("AND `last_counter` BETWEEN '%s' AND '%s'", $time_rang[0], $time_rang[1]);
         }
-        $sql = $wpdb->prepare("SELECT " . ($type == 'number' ? 'COUNT(*)' : '*') . " FROM `" . DB::table('visitor') . "` WHERE `referred` REGEXP \"^(https?://|www\\.)[\.A-Za-z0-9\-]+\\.[a-zA-Z]{2,4}\" AND referred <> '' AND LENGTH(referred) >=12 AND (`referred` LIKE  %s OR `referred` LIKE %s OR `referred` LIKE %s OR `referred` LIKE %s) " . $time_sql . " ORDER BY `" . DB::table('visitor') . "`.`ID` DESC " . ($limit != null ? " LIMIT " . $limit : "") . "", 'https://www.' . $wpdb->esc_like($search_url) . '%', 'https://' . $wpdb->esc_like($search_url) . '%', 'http://www.' . $wpdb->esc_like($search_url) . '%', 'http://' . $wpdb->esc_like($search_url) . '%'); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared	
 
+        $sql = $wpdb->prepare(
+            "SELECT " . ($type == 'number' ? 'COUNT(*)' : '*') . ", CAST(`version` AS SIGNED) AS `casted_version`
+             FROM `" . DB::table('visitor') . "`
+             WHERE `referred` REGEXP \"^[A-Za-z0-9\\.-]+\\.[A-Za-z]{2,}\"
+               AND referred <> ''
+               AND (`referred` LIKE %s OR `referred` LIKE %s OR `referred` LIKE %s OR `referred` LIKE %s)
+               " . $time_sql . "
+             ORDER BY `" . DB::table('visitor') . "`.`ID` DESC " . ($limit != null ? " LIMIT " . $limit : ""),
+            'https://www.' . $wpdb->esc_like($search_url) . '%',
+            'https://' . $wpdb->esc_like($search_url) . '%',
+            'http://www.' . $wpdb->esc_like($search_url) . '%',
+            'http://' . $wpdb->esc_like($search_url) . '%'
+        ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        
         //Get Count
         return ($type == 'number' ? $wpdb->get_var($sql) : Visitor::prepareData($wpdb->get_results($sql))); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared	
     }
@@ -193,35 +214,6 @@ class Referred
         }
 
         return true;
-    }
-
-    /**
-     * Get WebSite IP Server And Country Name
-     *
-     * @param $url string domain name e.g : wp-statistics.com
-     * @return array
-     * @throws \Exception
-     */
-    public static function get_domain_server($url)
-    {
-
-        //Create Empty Object
-        $result = array('ip' => '', 'country' => '');
-
-        //Get Ip by Domain
-        if (function_exists('gethostbyname')) {
-
-            // Get Host Domain
-            $ip = gethostbyname($url);
-
-            // Check Validate IP
-            if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                $result['ip']      = $ip;
-                $result['country'] = GeoIP::getCountry($ip);
-            }
-        }
-
-        return $result;
     }
 
     /**
@@ -260,54 +252,19 @@ class Referred
      * @return array
      * @throws \Exception
      */
-    public static function PrepareReferData($get_urls)
+    public static function PrepareReferData($referrals)
     {
+        if (empty($referrals)) return [];
 
-        //Prepare List
-        $list = array();
-
-        //Load country Code
-        $ISOCountryCode = Country::getList();
-
-        //Get Refer Site Detail
-        $refer_opt     = get_option(self::$referral_detail_opt);
-        $referrer_list = (empty($refer_opt) ? array() : $refer_opt);
-
-        if (!$get_urls) {
-            return array();
-        }
-
-        // Check List
-        foreach ($get_urls as $domain => $number) {
-
-            //Get Site Link
-            $referrer_html = Referred::html_sanitize_referrer($domain);
-
-            //Get Site information if Not Exist
-            if (!array_key_exists($domain, $referrer_list)) {
-                $get_site_inf           = Referred::get_domain_server($domain);
-                $get_site_title         = Helper::get_site_title_by_url($domain);
-                $referrer_list[$domain] = array(
-                    'ip'      => $get_site_inf['ip'],
-                    'country' => $get_site_inf['country'],
-                    'title'   => ($get_site_title === false ? '' : $get_site_title),
-                );
-            }
-
-            // Push to list
-            $list[] = array(
+        $list = [];
+        foreach ($referrals as $domain => $number) {
+            $referrerUrl = Referred::html_sanitize_referrer($domain);
+            $list[]      = [
                 'domain'    => $domain,
-                'title'     => $referrer_list[$domain]['title'],
-                'ip'        => ($referrer_list[$domain]['ip'] != "" ? $referrer_list[$domain]['ip'] : '-'),
-                'country'   => ($referrer_list[$domain]['country'] != "" ? $ISOCountryCode[$referrer_list[$domain]['country']] : ''),
-                'flag'      => ($referrer_list[$domain]['country'] != "" ? Country::flag($referrer_list[$domain]['country']) : ''),
-                'page_link' => Menus::admin_url('referrers', array('referrer' => $referrer_html)),
+                'page_link' => Menus::admin_url('referrers', ['referrer' => $referrerUrl]),
                 'number'    => number_format_i18n($number)
-            );
+            ];
         }
-
-        //Save Referrer List Update
-        update_option(self::$referral_detail_opt, $referrer_list, 'no');
 
         // Return Data
         return $list;
@@ -364,7 +321,11 @@ class Referred
         }
 
         // Return SQL
-        return "SELECT SUBSTRING_INDEX(REPLACE( REPLACE( referred, 'http://', '') , 'https://' , '') , '/', 1 ) as `domain`, count(referred) as `number` FROM " . DB::table('visitor') . " WHERE `referred` REGEXP \"^(https?://|www\\.)[\.A-Za-z0-9\-]+\\.[a-zA-Z]{2,4}\" AND referred <> '' AND LENGTH(referred) >=12 " . $where . " GROUP BY domain " . $extra;
+        return "SELECT referred AS `domain`, count(referred) AS `number`
+            FROM " . DB::table('visitor') . "
+            WHERE `referred` REGEXP \"^[\.A-Za-z0-9\-]+\\.[a-zA-Z]{2,4}\"
+            AND referred <> '' " . $where . "
+            GROUP BY `domain` " . $extra;
     }
 
     /**
@@ -375,7 +336,6 @@ class Referred
     {
         if ($table_name == "visitor") {
             delete_transient(self::$top_referring_transient);
-            delete_option(self::$referral_detail_opt);
         }
     }
 }
